@@ -1,0 +1,36 @@
+#/** @file
+#
+#  RK3566/RK3568 MULTI-PHY Library.
+#
+#  Copyright (c) 2021, Jared McNeill <jmcneill@invisible.ca>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = MultiPhyLib
+  FILE_GUID                      = BBB14534-9946-4AC4-990D-291152D428B5
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = MultiPhyLib
+
+[Sources]
+  MultiPhyLib.c
+
+[Packages]
+  ArmPkg/ArmPkg.dec
+  MdePkg/MdePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  IoLib
+  CruLib
+
+[FixedPcd]
+
+[Guids]

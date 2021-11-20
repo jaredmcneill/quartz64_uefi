@@ -1,0 +1,6 @@
+Build/
+idblock.bin
+QUARTZ64_EFI_*.itb
+sdcard_*.img
+.uefitools_done
+.vscode

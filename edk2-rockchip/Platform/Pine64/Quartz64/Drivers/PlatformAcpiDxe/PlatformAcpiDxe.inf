@@ -1,0 +1,44 @@
+#/** @file
+#
+#  ACPI support for Quartz64 platforms
+#
+#  Copyright (c) 2021 Jared McNeill <jmcneill@invisible.ca>
+#  Copyright (c) 2017,2021 Andrei Warkentin <andrey.warkentin@gmail.com>
+#  Copyright (c) 2016, Linaro, Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = PlatformAcpiDxe
+  FILE_GUID                      = 525D6104-3F42-4C78-9E8D-8E3DA1B43E51
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = PlatformAcpiDriverEntryPoint
+
+[Sources]
+  PlatformAcpiDxe.c
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Platform/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  DxeServicesLib
+  AcpiLib
+  MemoryAllocationLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+
+[Guids]
+
+[Protocols]
+
+[Depex]
+  gEfiAcpiTableProtocolGuid

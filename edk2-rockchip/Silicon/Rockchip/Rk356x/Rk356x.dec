@@ -1,0 +1,33 @@
+## @file
+#
+#  Copyright (c) 2021, Andrei Warkentin <awarkentin@vmware.com>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  DEC_SPECIFICATION              = 0x0001001A
+  PACKAGE_NAME                   = Rk356xPkg
+  PACKAGE_GUID                   = 05867AA3-5789-4F13-859A-8229AAC59BAA
+  PACKAGE_VERSION                = 1.0
+
+[Includes]
+  Include
+
+[Guids]
+  gRk356xTokenSpaceGuid = {0x44045e56, 0x7056, 0x4be6, {0x88, 0xc0, 0x49, 0x0c, 0x6b, 0x90, 0xbf, 0xbb}}
+
+[PcdsFixedAtBuild.common]
+  # Pcds for USB
+  gRk356xTokenSpaceGuid.PcdUsb2BaseAddr|0xFD800000|UINT64|0x00000000
+  gRk356xTokenSpaceGuid.PcdUsb2Size|0x80000|UINT32|0x00000001
+  gRk356xTokenSpaceGuid.PcdNumUsb2Controller|2|UINT32|0x00000002
+  gRk356xTokenSpaceGuid.PcdUsb3BaseAddr|0xFCC00000|UINT64|0x00000003
+  gRk356xTokenSpaceGuid.PcdUsb3Size|0x400000|UINT32|0x00000004
+  gRk356xTokenSpaceGuid.PcdNumUsb3Controller|2|UINT32|0x00000005
+  gRk356xTokenSpaceGuid.PcdUsbPhyGrfBaseAddr|0xFDCA0000|UINT64|0x00000006
+  # Pcds for DwEmmc
+  gRk356xTokenSpaceGuid.PcdDwEmmcDxeBaseAddress|0xFE2B0000|UINT32|0x00000007
+  gRk356xTokenSpaceGuid.PcdDwEmmcDxeMaxClockFreqInHz|0|UINT32|0x00000008
+  gRk356xTokenSpaceGuid.PcdDwEmmcDxeFifoDepth|0|UINT32|0x00000009

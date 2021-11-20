@@ -1,0 +1,69 @@
+#/** @file
+#
+#  Copyright (c) 2021, Jared McNeill <jmcneill@invisible.ca>
+#  Copyright (c) 2017-2021, Andrei Warkentin <andrey.warkentin@gmail.com>
+#  Copyright (c) 2014-2016, Linaro Limited. All rights reserved.
+#  Copyright (c) 2011-2019, ARM Limited. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = PlatformLib
+  FILE_GUID                      = ADAB50A9-04BE-4B17-9CBF-17B781B3CB00
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = ArmPlatformLib|SEC PEIM
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  ArmPkg/ArmPkg.dec
+  ArmPlatformPkg/ArmPlatformPkg.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+  Platform/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  ArmLib
+  FdtLib
+  IoLib
+  MemoryAllocationLib
+  PcdLib
+  PrintLib
+
+[Sources.common]
+  Rk356x.c
+  Rk356xMem.c
+
+[Sources.AARCH64]
+  AArch64/Rk356xHelper.S
+
+[FixedPcd]
+  gArmTokenSpaceGuid.PcdFdBaseAddress
+  gArmTokenSpaceGuid.PcdFvBaseAddress
+  gRk356xTokenSpaceGuid.PcdFdtBaseAddress
+  gRk356xTokenSpaceGuid.PcdFdtSize
+  gRk356xTokenSpaceGuid.PcdTfaBaseAddress
+  gRk356xTokenSpaceGuid.PcdTfaSize
+  gRk356xTokenSpaceGuid.PcdOpteeBaseAddress
+  gRk356xTokenSpaceGuid.PcdOpteeSize
+  gRk356xTokenSpaceGuid.PcdReservedBaseAddress
+  gRk356xTokenSpaceGuid.PcdReservedSize
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase
+  gArmTokenSpaceGuid.PcdGicDistributorBase
+  gArmTokenSpaceGuid.PcdGicRedistributorsBase
+  gArmPlatformTokenSpaceGuid.PcdCoreCount
+  gArmTokenSpaceGuid.PcdArmPrimaryCoreMask
+  gArmTokenSpaceGuid.PcdArmPrimaryCore
+  gArmTokenSpaceGuid.PcdFdSize
+  gArmTokenSpaceGuid.PcdSystemMemoryBase
+  gArmTokenSpaceGuid.PcdSystemMemorySize
+
+[Pcd]
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialClockRate
+
+[Ppis]
+  gArmMpCoreInfoPpiGuid

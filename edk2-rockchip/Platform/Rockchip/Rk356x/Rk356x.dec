@@ -1,0 +1,43 @@
+## @file
+#
+#  Copyright (c) 2021, Andrei Warkentin <andrey.warkentin@gmail.com>
+#  Copyright (c) 2021, Jared McNeill <jmcneill@invisible.ca>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  DEC_SPECIFICATION              = 0x0001001A
+  PACKAGE_NAME                   = Rk356x
+  PACKAGE_GUID                   = 932EC83F-B707-403E-9BFD-5DF497352631
+  PACKAGE_VERSION                = 1.0
+
+[Includes]
+  Include
+
+[Protocols]
+
+[PcdsFixedAtBuild.common]
+  gRk356xTokenSpaceGuid.PcdFdtBaseAddress|0x00AE0000|UINT64|0x00000001
+  gRk356xTokenSpaceGuid.PcdFdtSize|0x10000|UINT32|0x00000002
+  gRk356xTokenSpaceGuid.PcdTfaBaseAddress|0x00000000|UINT64|0x00000003
+  gRk356xTokenSpaceGuid.PcdTfaSize|0x00A00000|UINT32|0x00000004
+  gRk356xTokenSpaceGuid.PcdOpteeBaseAddress|0x08400000|UINT64|0x00000005
+  gRk356xTokenSpaceGuid.PcdOpteeSize|0x01000000|UINT32|0x00000006
+  gRk356xTokenSpaceGuid.PcdReservedBaseAddress|0xF0000000|UINT64|0x00000007
+  gRk356xTokenSpaceGuid.PcdReservedSize|0x10000000|UINT64|0x00000008
+  gRk356xTokenSpaceGuid.PcdCpuSpeed|0x0|UINT32|0x00000009
+  gRk356xTokenSpaceGuid.PcdPlatformName|"Unknown"|VOID*|0x00000010
+  gRk356xTokenSpaceGuid.PcdCpuName|"Unknown"|VOID*|0x00000011
+  gRk356xTokenSpaceGuid.PcdFirmwareBlockSize|0x0|UINT32|0x00000029
+  gRk356xTokenSpaceGuid.PcdGicGsivId|0x0|UINT32|0x00000030
+  gRk356xTokenSpaceGuid.PcdGicPmuIrq0|0x0|UINT32|0x00000031
+  gRk356xTokenSpaceGuid.PcdGicPmuIrq1|0x0|UINT32|0x00000032
+  gRk356xTokenSpaceGuid.PcdGicPmuIrq2|0x0|UINT32|0x00000033
+  gRk356xTokenSpaceGuid.PcdGicPmuIrq3|0x0|UINT32|0x00000034
+  gRk356xTokenSpaceGuid.PcdRkMtlMailBoxBase|0x0010f000|UINT64|0x00001000
+  gRk356xTokenSpaceGuid.PcdRkMtlMailBoxSize|0x100|UINT32|0x00001001
+  gRk356xTokenSpaceGuid.PcdRkMtlMailBoxSmcId|0x82000010|UINT32|0x00010002
+
+[PcdsFixedAtBuild, PcdsPatchableInModule, PcdsDynamic, PcdsDynamicEx]

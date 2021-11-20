@@ -1,0 +1,49 @@
+#/** @file
+#
+#  Copyright (c) 2017,2021 Andrei Warkentin <andrey.warkentin@gmail.com>
+#  Copyright (c) 2016, Linaro, Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = FdtDxe
+  FILE_GUID                      = 8505280f-109e-437e-9fe4-1aa09c7074d9
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = FdtDxeInitialize
+
+[Sources]
+  FdtDxe.c
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Platform/Rockchip/Rk356x/Rk356x.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  DxeServicesLib
+  FdtLib
+  MemoryAllocationLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+
+[Guids]
+  gFdtTableGuid
+
+[Protocols]
+
+[Depex]
+  TRUE
+
+[FixedPcd]
+  gRk356xTokenSpaceGuid.PcdFdtBaseAddress
+
+[Pcd]
+

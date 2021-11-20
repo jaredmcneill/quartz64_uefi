@@ -1,0 +1,12 @@
+[submodule "rkbin"]
+	path = rkbin
+	url = https://github.com/rockchip-linux/rkbin
+[submodule "edk2"]
+	path = edk2
+	url = https://github.com/tianocore/edk2
+[submodule "edk2-platforms"]
+	path = edk2-platforms
+	url = https://github.com/tianocore/edk2-platforms
+[submodule "edk2-non-osi"]
+	path = edk2-non-osi
+	url = https://github.com/tianocore/edk2-non-osi
