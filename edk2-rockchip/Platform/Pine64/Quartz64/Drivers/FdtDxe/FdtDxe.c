@@ -1,5 +1,6 @@
 /** @file
  *
+ *  Copyright (c) 2021, Jared McNeill <jmcneill@invisible.ca>
  *  Copyright (c) 2017,2021 Andrey Warkentin <andrey.warkentin@gmail.com>
  *  Copyright (c) 2016, Linaro, Ltd. All rights reserved.
  *
@@ -10,10 +11,12 @@
 
 #include <Library/BaseLib.h>
 #include <Library/DebugLib.h>
+#include <Library/PrintLib.h>
 #include <Library/DxeServicesLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/UefiLib.h>
+#include <IndustryStandard/Rk356x.h>
 #include <libfdt.h>
 #include <Guid/Fdt.h>
 
@@ -47,6 +50,37 @@ CleanMemoryNodes (
   return EFI_SUCCESS;
 }
 
+STATIC
+EFI_STATUS
+FixUartSpeed (
+  VOID
+  )
+{
+  INTN Node;
+  const char *StdOutPath;
+  char Buf[80];
+  UINT8 UartIndex;
+
+  Node = fdt_path_offset (mFdtImage, "/chosen");
+  if (Node < 0) {
+    return EFI_SUCCESS;
+  }
+
+  StdOutPath = fdt_getprop (mFdtImage, Node, "stdout-path", NULL);
+  if (StdOutPath == NULL) {
+    return EFI_SUCCESS;
+  }
+
+  if (FixedPcdGet64 (PcdSerialRegisterBase) == UART_BASE (0)) {
+    UartIndex = 0;
+  } else {
+    UartIndex = 1 + (FixedPcdGet64 (PcdSerialRegisterBase) - UART_BASE (1)) / 0x10000;
+  }
+  AsciiSPrint (Buf, sizeof (Buf), "serial%u:%lun8", UartIndex, FixedPcdGet64 (PcdUartDefaultBaudRate));
+  fdt_setprop_string (mFdtImage, Node, "stdout-path", Buf);
+
+  return EFI_SUCCESS;
+}
 
 /**
   @param  ImageHandle   of the loaded driver
@@ -102,6 +136,11 @@ FdtDxeInitialize (
   Status = CleanMemoryNodes ();
   if (EFI_ERROR (Status)) {
     Print (L"Failed to clean memory nodes: %r\n", Status);
+  }
+
+  Status = FixUartSpeed ();
+  if (EFI_ERROR (Status)) {
+    Print (L"Failed to fix UART speed: %r\n", Status);
   }
 
   DEBUG ((DEBUG_INFO, "Installed devicetree at address %p\n", mFdtImage));

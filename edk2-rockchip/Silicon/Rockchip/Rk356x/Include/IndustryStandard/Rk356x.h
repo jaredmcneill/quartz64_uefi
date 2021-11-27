@@ -16,6 +16,7 @@
 #define PIPE_PHY_GRF(n)     (0xFDC70000UL + (n) * 0x10000)
 #define PMUCRU_BASE         0xFDD00000UL
 #define CRU_BASE            0xFDD20000UL
+#define UART_BASE(n)        ((n) == 0 ? 0xFDD50000UL : (0xFE650000UL + ((n) - 1) * 0x10000))
 #define GPIO_BASE(n)        ((n) == 0 ? 0xFDD60000UL : (0xFE740000UL + ((n) - 1) * 0x10000))
 #define PIPE_PHY(n)         (0xFE820000UL + (n) * 0x10000)
 

@@ -28,6 +28,7 @@
 [LibraryClasses]
   BaseLib
   DebugLib
+  PrintLib
   DxeServicesLib
   FdtLib
   MemoryAllocationLib
@@ -44,6 +45,8 @@
 
 [FixedPcd]
   gRk356xTokenSpaceGuid.PcdFdtBaseAddress
+  gEfiMdePkgTokenSpaceGuid.PcdUartDefaultBaudRate
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase
 
 [Pcd]
 
