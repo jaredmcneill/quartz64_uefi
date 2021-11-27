@@ -12,5 +12,3 @@ Run `make sdcard`.
 
 Connect a serial console to UART2 using settings 115200 8n1.
 
-Note that the initial bootloader will print some messages at a different baud rate so if you see garbage on the serial port you may need to reset your terminal emulator.
-
