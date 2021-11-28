@@ -18,13 +18,13 @@ fetch_deps() {
 build_uefitools() {
 	[ -r .uefitools_done ] && return
 	echo " => Building UEFI tools"
-	make -C edk2/BaseTools && touch .uefitools_done
+	make -C edk2/BaseTools -j$(getconf _NPROCESSORS_ONLN) && touch .uefitools_done
 }
 
 build_uefi() {
 	memsize=$1
 	echo " => Building UEFI (PcdSystemMemorySize=${memsize})"
-	build -n $(getconf _NPROCESSORS_CONF) -b DEBUG -a AARCH64 -t GCC5 \
+	build -n $(getconf _NPROCESSORS_ONLN) -b DEBUG -a AARCH64 -t GCC5 \
 	    --pcd gArmTokenSpaceGuid.PcdSystemMemorySize=${memsize} \
 	    -p Platform/Pine64/Quartz64/Quartz64.dsc
 }
