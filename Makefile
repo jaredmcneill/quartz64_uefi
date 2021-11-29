@@ -23,6 +23,11 @@ sdcard: uefi
 	done
 	rm -f sdcard.img
 
+.PHONY: release
+release: sdcard
+	gzip sdcard_4GB.img
+	gzip sdcard_8GB.img
+
 .PHONY: clean
 clean:
 	rm -rf Build

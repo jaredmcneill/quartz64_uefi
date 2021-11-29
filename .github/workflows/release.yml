@@ -1,0 +1,68 @@
+name: release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build_release:
+    name: build_release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install toolchain
+        run: |
+          sudo apt install gcc-aarch64-linux-gnu iasl device-tree-compiler python3-pyelftools
+      - name: version
+        run: echo "::set-output name=version::$(echo $GITHUB_REF | cut -d / -f 3)"
+        id: version
+      - name: build artifact
+        run: make release
+      - name: release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ steps.version.outputs.version }}
+          tag_name: ${{ github.ref }}
+          body_path: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: upload sdcard_4GB artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./sdcard_4GB.img.gz
+          asset_name: sdcard_4GB.img.gz
+          asset_content_type: application/gzip
+      - name: upload sdcard_8GB artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./sdcard_8GB.img.gz
+          asset_name: sdcard_8GB.img.gz
+          asset_content_type: application/gzip
+      - name: upload QUARTZ64_EFI_4GB artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./QUARTZ64_EFI_4GB.itb
+          asset_name: QUARTZ64_EFI_4GB.itb
+          asset_content_type: application/octet-stream
+      - name: upload QUARTZ64_EFI_8GB artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./QUARTZ64_EFI_8GB.itb
+          asset_name: QUARTZ64_EFI_8GB.itb
+          asset_content_type: application/octet-stream
