@@ -21,7 +21,7 @@ UINT64 mSystemMemoryBase = FixedPcdGet64 (PcdSystemMemoryBase);
 STATIC UINT64 mSystemMemorySize = FixedPcdGet64 (PcdSystemMemorySize);
 
 // The total number of descriptors, including the final "end-of-table" descriptor.
-#define MAX_VIRTUAL_MEMORY_MAP_DESCRIPTORS 9
+#define MAX_VIRTUAL_MEMORY_MAP_DESCRIPTORS 10
 
 STATIC BOOLEAN                     VirtualMemoryInfoInitialized = FALSE;
 STATIC RK356X_MEMORY_REGION_INFO   VirtualMemoryInfo[MAX_VIRTUAL_MEMORY_MAP_DESCRIPTORS];
@@ -62,6 +62,14 @@ ArmPlatformGetVirtualMemoryMap (
   VirtualMemoryTable[Index].Attributes      = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
   VirtualMemoryInfo[Index].Type             = RK356X_MEM_UNMAPPED_REGION;
   VirtualMemoryInfo[Index++].Name           = L"Reserved";
+
+  // MMIO > 4GB
+  VirtualMemoryTable[Index].PhysicalBase    = 0x0000000300000000UL;
+  VirtualMemoryTable[Index].VirtualBase     = VirtualMemoryTable[Index].PhysicalBase;
+  VirtualMemoryTable[Index].Length          = 0x00000000C0C00000UL;
+  VirtualMemoryTable[Index].Attributes      = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
+  VirtualMemoryInfo[Index].Type             = RK356X_MEM_UNMAPPED_REGION;
+  VirtualMemoryInfo[Index++].Name           = L"Reserved > 4GB";
 
   // Base System RAM
   VirtualMemoryTable[Index].PhysicalBase    = mSystemMemoryBase;

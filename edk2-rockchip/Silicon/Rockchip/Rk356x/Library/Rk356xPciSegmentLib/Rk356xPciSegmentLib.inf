@@ -1,0 +1,39 @@
+## @file
+# Instance of PCI Segment Library based on PCI Library.
+#
+# PCI Segment Library that layers on top of the PCI Library which only
+#  supports segment 0 PCI configuration access.
+#
+# Copyright (c) 2016 - 2018, Intel Corporation. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = Rk356xPciSegmentLib
+  MODULE_UNI_FILE                = Rk356xPciSegmentLib.uni
+  FILE_GUID                      = 5EDF4444-F65F-4CE8-9CC6-25CBFD488FAD
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = PciSegmentLib
+
+#
+# The following information is for reference only and not required by the build tools.
+#
+#  VALID_ARCHITECTURES           = IA32 X64 EBC
+#
+
+[Sources]
+  PciSegmentLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  BaseLib
+  PciLib
+  DebugLib

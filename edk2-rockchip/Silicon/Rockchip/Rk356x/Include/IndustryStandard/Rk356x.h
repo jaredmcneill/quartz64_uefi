@@ -18,6 +18,9 @@
 #define CRU_BASE            0xFDD20000UL
 #define UART_BASE(n)        ((n) == 0 ? 0xFDD50000UL : (0xFE650000UL + ((n) - 1) * 0x10000))
 #define GPIO_BASE(n)        ((n) == 0 ? 0xFDD60000UL : (0xFE740000UL + ((n) - 1) * 0x10000))
+#define PCIE2X1_APB_BASE    0xFE260000UL
 #define PIPE_PHY(n)         (0xFE820000UL + (n) * 0x10000)
+#define PCIE2X1_S_BASE      0x300000000UL
+#define PCIE2X1_DBI_BASE    0x3C0000000UL
 
 #endif /* RK356X_H__ */

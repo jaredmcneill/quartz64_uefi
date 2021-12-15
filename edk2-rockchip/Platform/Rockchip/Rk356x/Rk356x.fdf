@@ -144,6 +144,13 @@ READ_LOCK_STATUS   = TRUE
   INF Silicon/Rockchip/Rk356x/Drivers/UsbHcdInitDxe/UsbHcd.inf
 
   #
+  # PCI Support
+  #
+  INF Silicon/Rockchip/Rk356x/Drivers/PciHostDxe/PciHostDxe.inf
+  INF MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
+  INF MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
+
+  #
   # eMMC
   #
   #INF EmbeddedPkg/Universal/MmcDxe/MmcDxe.inf

@@ -20,6 +20,12 @@ CruDeassertSoftReset (
   IN UINT8 Bit
   );
 
+VOID
+CruEnableClock (
+  IN UINT32 Index,
+  IN UINT8 Bit
+  );
+
 UINTN
 CruGetSdmmcClockRate (
   IN UINT8 Index
@@ -29,6 +35,12 @@ VOID
 CruSetSdmmcClockRate (
   IN UINT8 Index,
   IN UINTN Rate
+  );
+
+VOID
+CruSetPciePhySource (
+  IN UINT8 Index,
+  IN UINT8 Source
   );
 
 UINTN

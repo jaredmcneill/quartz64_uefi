@@ -23,6 +23,7 @@
   Fadt.aslc
   Gtdt.aslc
   Madt.aslc
+  Mcfg.aslc
   Spcr.aslc
 
 [Packages]

@@ -202,6 +202,20 @@ CruSetSdmmcClockRate (
     DEBUG ((DEBUG_INFO, "CruSetSdmmcClockRate(%u, %lu): CRU_CLKSEL_CON30 = %08X (wrote %08X)\n", Index, Rate, MmioRead32 (CRU_CLKSEL_CON (30)), Val));
 }
 
+VOID
+CruSetPciePhySource (
+  IN UINT8 Index,
+  IN UINT8 Source
+  )
+{
+    ASSERT (Index <= 2);
+    ASSERT (Source <= 1);
+
+    MmioWrite32 (PMUCRU_PMUCLKSEL_CON (9),
+                 PMUCRU_PMUCLKSEL_CON09_PCIEPHY_SEL_MASK (Index) << 16 |
+                 ((UINT32)Source << PMUCRU_PMUCLKSEL_CON09_PCIEPHY_SEL_SHIFT (Index)));    
+}
+
 UINTN
 CruGetPciePhyClockRate (
   IN UINT8 Index
@@ -216,6 +230,7 @@ CruGetPciePhyClockRate (
 
     Val = MmioRead32 (PMUCRU_PMUCLKSEL_CON (9));
     Sel = (Val & PMUCRU_PMUCLKSEL_CON09_PCIEPHY_SEL_MASK (Index)) >> PMUCRU_PMUCLKSEL_CON09_PCIEPHY_SEL_SHIFT (Index);
+
     if (Sel == 0) {
         Rate = CRU_CLKREF_RATE;
     } else {
@@ -226,6 +241,15 @@ CruGetPciePhyClockRate (
     DEBUG ((DEBUG_INFO, "CruGetPciePhyClockRate(): Index = %u, Sel = %u, Rate = %lu Hz\n", Index, Sel, Rate));
 
     return Rate;
+}
+
+VOID
+CruEnableClock (
+  IN UINT32 Index,
+  IN UINT8 Bit
+  )
+{
+    MmioWrite32 (CRU_GATE_CON (Index), 1U << (Bit + 16));
 }
 
 VOID

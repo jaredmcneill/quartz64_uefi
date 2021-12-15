@@ -59,6 +59,7 @@
   PeCoffGetEntryPointLib|MdePkg/Library/BasePeCoffGetEntryPointLib/BasePeCoffGetEntryPointLib.inf
   PeCoffLib|MdePkg/Library/BasePeCoffLib/BasePeCoffLib.inf
   IoLib|MdePkg/Library/BaseIoLibIntrinsic/BaseIoLibIntrinsic.inf
+  PciExpressLib|MdePkg/Library/BasePciExpressLib/BasePciExpressLib.inf
   UefiDecompressLib|MdePkg/Library/BaseUefiDecompressLib/BaseUefiDecompressLib.inf
   CpuLib|MdePkg/Library/BaseCpuLib/BaseCpuLib.inf
 
@@ -123,8 +124,8 @@
   NonDiscoverableDeviceRegistrationLib|MdeModulePkg/Library/NonDiscoverableDeviceRegistrationLib/NonDiscoverableDeviceRegistrationLib.inf
 
   # UART
-  PciCf8Lib|MdePkg/Library/BasePciCf8Lib/BasePciCf8Lib.inf
-  PciLib|MdePkg/Library/BasePciLibCf8/BasePciLibCf8.inf
+  #PciCf8Lib|MdePkg/Library/BasePciCf8Lib/BasePciCf8Lib.inf
+  #PciLib|MdePkg/Library/BasePciLibCf8/BasePciLibCf8.inf
   SerialPortLib|MdeModulePkg/Library/BaseSerialPortLib16550/BaseSerialPortLib16550.inf
   PlatformHookLib|MdeModulePkg/Library/BasePlatformHookLibNull/BasePlatformHookLibNull.inf
 
@@ -165,6 +166,13 @@
   VarCheckLib|MdeModulePkg/Library/VarCheckLib/VarCheckLib.inf
   VariablePolicyLib|MdeModulePkg/Library/VariablePolicyLib/VariablePolicyLib.inf
   VariablePolicyHelperLib|MdeModulePkg/Library/VariablePolicyHelperLib/VariablePolicyHelperLib.inf
+
+  #
+  # PCI support
+  #
+  PciSegmentLib|Silicon/Rockchip/Rk356x/Library/Rk356xPciSegmentLib/Rk356xPciSegmentLib.inf
+  PciLib|MdePkg/Library/BasePciLibPciExpress/BasePciLibPciExpress.inf
+  PciHostBridgeLib|Silicon/Rockchip/Rk356x/Library/Rk356xPciHostBridgeLib/Rk356xPciHostBridgeLib.inf
 
 [LibraryClasses.common.SEC]
   PcdLib|MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf
@@ -418,6 +426,21 @@
   gRk356xTokenSpaceGuid.PcdPlatformName|"PINE64 Quartz64 Model A"
   gRk356xTokenSpaceGuid.PcdCpuName|"Rockchip RK3566 (Cortex-A55)"
 
+  #
+  # PCI support
+  #
+  gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress|0x0000000300000000
+  gArmTokenSpaceGuid.PcdPciBusMin|0
+  gArmTokenSpaceGuid.PcdPciBusMax|1
+  gArmTokenSpaceGuid.PcdPciMmio32Base|0xF4000000
+  gArmTokenSpaceGuid.PcdPciMmio32Size|0x02000000
+  gArmTokenSpaceGuid.PcdPciMmio64Base|0x0000000310000000
+  gArmTokenSpaceGuid.PcdPciMmio64Size|0x0000000030000000
+  gRk356xTokenSpaceGuid.PcdPcieResetGpioBank|1
+  gRk356xTokenSpaceGuid.PcdPcieResetGpioPin|10
+  gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|0
+  gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|22
+
 [PcdsDynamicHii.common.DEFAULT]
 
   #
@@ -547,6 +570,13 @@
   #
   Platform/Pine64/Quartz64/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.inf
   MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
+
+  #
+  # PCI Support
+  #
+  Silicon/Rockchip/Rk356x/Drivers/PciHostDxe/PciHostDxe.inf
+  MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
+  MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
 
   #
   # RAM Disk Support

@@ -31,3 +31,9 @@
   gRk356xTokenSpaceGuid.PcdDwEmmcDxeBaseAddress|0xFE2B0000|UINT32|0x00000007
   gRk356xTokenSpaceGuid.PcdDwEmmcDxeMaxClockFreqInHz|0|UINT32|0x00000008
   gRk356xTokenSpaceGuid.PcdDwEmmcDxeFifoDepth|0|UINT32|0x00000009
+  # Pcds for PCIe
+  gRk356xTokenSpaceGuid.PcdPcieResetGpioBank|0xFFFFFFFF|UINT32|0x0000000A
+  gRk356xTokenSpaceGuid.PcdPcieResetGpioPin|0xFFFFFFFF|UINT32|0x0000000B
+  gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|0xFFFFFFFF|UINT32|0x0000000C
+  gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|0xFFFFFFFF|UINT32|0x0000000D
+  gRk356xTokenSpaceGuid.PcdPcieLinkSpeed|0x3|UINT32|0x0000000E
