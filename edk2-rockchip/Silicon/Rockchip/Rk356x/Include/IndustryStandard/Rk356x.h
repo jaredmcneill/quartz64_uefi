@@ -13,11 +13,14 @@
 #define CRU_CLKREF_RATE     24000000UL
 
 /* Register base addresses */
+#define SYS_GRF             0xFDC60000UL
 #define PIPE_PHY_GRF(n)     (0xFDC70000UL + (n) * 0x10000)
 #define PMUCRU_BASE         0xFDD00000UL
 #define CRU_BASE            0xFDD20000UL
 #define UART_BASE(n)        ((n) == 0 ? 0xFDD50000UL : (0xFE650000UL + ((n) - 1) * 0x10000))
 #define GPIO_BASE(n)        ((n) == 0 ? 0xFDD60000UL : (0xFE740000UL + ((n) - 1) * 0x10000))
+#define VOP_BASE            0xFE040000UL
+#define HDMI_BASE           0xFE0A0000UL
 #define PCIE2X1_APB_BASE    0xFE260000UL
 #define PIPE_PHY(n)         (0xFE820000UL + (n) * 0x10000)
 #define PCIE2X1_S_BASE      0x300000000UL

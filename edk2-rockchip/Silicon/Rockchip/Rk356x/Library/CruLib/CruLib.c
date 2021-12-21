@@ -12,9 +12,26 @@
 #include <Library/BaseLib.h>
 #include <Library/DebugLib.h>
 #include <Library/IoLib.h>
+#include <Library/TimerLib.h>
 #include <Library/CruLib.h>
 #include <IndustryStandard/Rk356x.h>
 #include <IndustryStandard/Rk356xCru.h>
+
+typedef struct {
+    UINTN Rate;
+    UINT32 RefDiv;
+    UINT32 FbDiv;
+    UINT32 PostDiv1;
+    UINT32 PostDiv2;
+    UINT32 Dsmpd;
+    UINT32 Frac;
+} CRU_PLL_RATE;
+
+STATIC CRU_PLL_RATE CruPllRates[] = {
+    { .Rate = 148500000, .RefDiv = 1, .FbDiv = 99, .PostDiv1 = 4, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
+    { .Rate = 74250000,  .RefDiv = 2, .FbDiv = 99, .PostDiv1 = 4, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
+    { .Rate = 0 }
+};
 
 STATIC UINTN
 CruGetPllRate (
@@ -83,6 +100,45 @@ PmuCruGetPllRate (
     DEBUG ((DEBUG_INFO, "PmuCruGetPllRate(): PllNumber = %u, Rate = %lu\n", PllNumber, FOutVco / PostDiv1 / PostDiv2));
 
     return FOutVco / PostDiv1 / PostDiv2;
+}
+
+STATIC VOID
+PmuCruSetPllRate (
+  IN UINT32 PllNumber,
+  IN CRU_PLL_RATE *Rate
+  )
+{
+    UINT32 PllLockRetry = 0;
+
+    MmioWrite32 (PMUCRU_MODE_CON00,
+                 (PMUCRU_MODE_CON00_CLK_PLL_MODE_MASK (PllNumber) << 16) |
+                 (0U << PMUCRU_MODE_CON00_CLK_PLL_MODE_SHIFT (PllNumber)));
+
+    MmioWrite32 (PMUCRU_PLL_CON0 (PllNumber),
+                 ((CRU_PLL_CON0_FBDIV_MASK | CRU_PLL_CON0_POSTDIV1_MASK | CRU_PLL_CON0_BYPASS) << 16) |
+                 (Rate->PostDiv1 << CRU_PLL_CON0_POSTDIV1_SHIFT) |
+                 Rate->FbDiv);
+
+    MmioWrite32 (PMUCRU_PLL_CON1 (PllNumber),
+                 ((CRU_PLL_CON1_REFDIV_MASK | CRU_PLL_CON1_POSTDIV2_MASK | CRU_PLL_CON1_DSMPD) << 16) |
+                 (Rate->Dsmpd ? CRU_PLL_CON1_DSMPD : 0) |
+                 (Rate->PostDiv2 << CRU_PLL_CON1_POSTDIV2_SHIFT) |
+                 Rate->RefDiv);
+
+    MmioAndThenOr32 (PMUCRU_PLL_CON2 (PllNumber), ~CRU_PLL_CON2_FRACDIV_MASK, Rate->Frac);
+
+    do {
+        UINT32 Val = MmioRead32 (PMUCRU_PLL_CON1 (PllNumber));
+        if ((Val & CRU_PLL_CON1_LOCK_STATUS) != 0) {
+            break;
+        }
+        MicroSecondDelay (1000);
+    } while (++PllLockRetry < 100);
+    ASSERT (PllLockRetry < 100);
+
+    MmioWrite32 (PMUCRU_MODE_CON00,
+                 (PMUCRU_MODE_CON00_CLK_PLL_MODE_MASK (PllNumber) << 16) |
+                 (1U << PMUCRU_MODE_CON00_CLK_PLL_MODE_SHIFT (PllNumber)));
 }
 
 UINTN
@@ -241,6 +297,46 @@ CruGetPciePhyClockRate (
     DEBUG ((DEBUG_INFO, "CruGetPciePhyClockRate(): Index = %u, Sel = %u, Rate = %lu Hz\n", Index, Sel, Rate));
 
     return Rate;
+}
+
+UINTN
+CruGetHdmiClockRate (
+  VOID
+  )
+{
+    UINTN Rate;
+
+    Rate = PmuCruGetPllRate (PMUCRU_HPLL);
+
+    DEBUG ((DEBUG_INFO, "CruGetHdmiClockRate(): Rate = %lu Hz\n", Rate));
+
+    return Rate;
+}
+
+VOID
+CruSetHdmiClockRate (
+  IN UINTN Rate
+  )
+{
+    UINT32 Index;
+    CRU_PLL_RATE *PllRate = NULL;
+
+    DEBUG ((DEBUG_INFO, "CruSetHdmiClockRate(): Rate = %lu Hz\n", Rate));
+
+    for (Index = 0; CruPllRates[Index].Rate != 0; Index++) {
+        if (CruPllRates[Index].Rate == Rate) {
+            PllRate = &CruPllRates[Index];
+            break;
+        }
+    }
+    ASSERT (PllRate != NULL);
+
+    PmuCruSetPllRate (PMUCRU_HPLL, PllRate);
+
+#if 0
+    /* XXX Set DCLK0_VOP parent to GPLL (why?) */
+    MmioWrite32 (CRU_CLKSEL_CON (39), (0x3U << (10 + 16)) | (0x2U << 10));
+#endif
 }
 
 VOID

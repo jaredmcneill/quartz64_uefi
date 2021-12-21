@@ -48,4 +48,14 @@ CruGetPciePhyClockRate (
   IN UINT8 Index
   );
 
+UINTN
+CruGetHdmiClockRate (
+  VOID
+  );
+
+VOID
+CruSetHdmiClockRate (
+  IN UINTN Rate
+  );
+
 #endif /* CRULIB_H__ */

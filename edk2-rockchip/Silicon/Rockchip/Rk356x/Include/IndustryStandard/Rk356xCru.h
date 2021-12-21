@@ -28,13 +28,14 @@
 #define CRU_PLL_CON3(n)     (CRU_BASE + (n) * 0x20 + 0xc)
 
 /* PLL_CON0 fields */
-#define CRU_PLL_CON0_BYPASS                      (1U << 15)
+#define CRU_PLL_CON0_BYPASS                      BIT15
 #define CRU_PLL_CON0_POSTDIV1_SHIFT              12
 #define CRU_PLL_CON0_POSTDIV1_MASK               (0x7U << CRU_PLL_CON0_POSTDIV1_SHIFT)
 #define CRU_PLL_CON0_FBDIV_MASK                  0xfffU
 
 /* PLL_CON1 fields */
-#define CRU_PLL_CON1_DSMPD                       (1U << 12)
+#define CRU_PLL_CON1_DSMPD                       BIT12
+#define CRU_PLL_CON1_LOCK_STATUS                 BIT10
 #define CRU_PLL_CON1_POSTDIV2_SHIFT              6
 #define CRU_PLL_CON1_POSTDIV2_MASK               (0x7 << CRU_PLL_CON1_POSTDIV2_SHIFT)
 #define CRU_PLL_CON1_REFDIV_MASK                 0x3fU
@@ -70,6 +71,13 @@
 #define PMUCRU_PLL_CON2(n)  (PMUCRU_BASE + (n) * 0x40 + 0x8)
 #define PMUCRU_PLL_CON3(n)  (PMUCRU_BASE + (n) * 0x40 + 0xc)
 #define PMUCRU_PLL_CON4(n)  (PMUCRU_BASE + (n) * 0x40 + 0xc)
+
+/* PMU MODE registers */
+#define PMUCRU_MODE_CON00   (PMUCRU_BASE + 0x0080)
+
+/* PMUCRU_MODE_CON00 registers */
+#define PMUCRU_MODE_CON00_CLK_PLL_MODE_SHIFT(n)       ((n) * 2)
+#define PMUCRU_MODE_CON00_CLK_PLL_MODE_MASK(n)        (0x3U << PMUCRU_MODE_CON00_CLK_PLL_MODE_SHIFT(n))
 
 /* PMUCLKSEL registers */
 #define PMUCRU_PMUCLKSEL_CON(n)   (PMUCRU_BASE + (n) * 0x4 + 0x0100)

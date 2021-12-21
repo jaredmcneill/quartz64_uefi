@@ -1,0 +1,4 @@
+The source code in this directory is licensed under the standard EDK2 terms.
+
+Use of the PINE64 logo is subject to the terms and conditions put forward
+by Pine Store Limited at https://wiki.pine64.org/wiki/PINE64_brand_and_logo

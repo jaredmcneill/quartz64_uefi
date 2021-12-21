@@ -18,6 +18,7 @@ INF Platform/Pine64/Quartz64/Drivers/FdtDxe/FdtDxe.inf
 # ACPI Support
 #
 INF MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
+INF MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
 INF Platform/Pine64/Quartz64/Drivers/PlatformAcpiDxe/PlatformAcpiDxe.inf
 INF RuleOverride = ACPITABLE Platform/Pine64/Quartz64/AcpiTables/AcpiTables.inf
 
@@ -26,3 +27,8 @@ INF RuleOverride = ACPITABLE Platform/Pine64/Quartz64/AcpiTables/AcpiTables.inf
 #
 INF Platform/Pine64/Quartz64/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.inf
 INF MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
+
+#
+# PINE64 logo (splash screen)
+#
+INF Platform/Pine64/Drivers/LogoDxe/LogoDxe.inf

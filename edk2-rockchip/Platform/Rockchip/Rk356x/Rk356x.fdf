@@ -112,6 +112,8 @@ READ_LOCK_STATUS   = TRUE
   INF MdeModulePkg/Universal/Console/GraphicsConsoleDxe/GraphicsConsoleDxe.inf
   INF MdeModulePkg/Universal/Console/TerminalDxe/TerminalDxe.inf
   INF MdeModulePkg/Universal/SerialDxe/SerialDxe.inf
+  INF Silicon/Rockchip/Rk356x/Drivers/DisplayDxe/DisplayDxe.inf
+  INF EmbeddedPkg/Drivers/ConsolePrefDxe/ConsolePrefDxe.inf
 
   INF UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
   INF ArmPkg/Drivers/ArmGic/ArmGicDxe.inf
@@ -131,6 +133,23 @@ READ_LOCK_STATUS   = TRUE
   # SCMI Driver
   #
   INF ArmPkg/Drivers/ArmScmiDxe/ArmScmiDxe.inf
+
+  #
+  # UEFI application (Shell Embedded Boot Loader)
+  #
+  INF ShellPkg/Application/Shell/Shell.inf
+
+!include $(BOARD_DXE_FV_COMPONENTS)
+
+  #
+  # Bds
+  #
+  INF MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
+  INF MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
+  INF MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
+  INF MdeModulePkg/Universal/DriverHealthManagerDxe/DriverHealthManagerDxe.inf
+  INF MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
+  INF MdeModulePkg/Application/UiApp/UiApp.inf
 
   #
   # USB Support
@@ -157,26 +176,10 @@ READ_LOCK_STATUS   = TRUE
   #INF Silicon/Rockchip/Rk356x/Drivers/DwEmmcDxe/DwEmmcDxe.inf
 
   #
-  # UEFI application (Shell Embedded Boot Loader)
-  #
-  INF ShellPkg/Application/Shell/Shell.inf
-
-!include $(BOARD_DXE_FV_COMPONENTS)
-
-  #
   # RAM Disk Support
   #
   INF MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
 
-  #
-  # Bds
-  #
-  INF MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
-  INF MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
-  INF MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
-  INF MdeModulePkg/Universal/DriverHealthManagerDxe/DriverHealthManagerDxe.inf
-  INF MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
-  INF MdeModulePkg/Application/UiApp/UiApp.inf
 
 [FV.FVMAIN_COMPACT]
 FvAlignment        = 16
