@@ -1,8 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
 cd "$(dirname $0)"
+
+RKUEFIBUILDTYPE=${1}
+shift
 
 export WORKSPACE="$PWD"
 export PACKAGES_PATH=$PWD/edk2:$PWD/edk2-platforms:$PWD/edk2-non-osi:$PWD/edk2-rockchip
@@ -24,7 +27,7 @@ build_uefitools() {
 build_uefi() {
 	memsize=$1
 	echo " => Building UEFI (PcdSystemMemorySize=${memsize})"
-	build -n $(getconf _NPROCESSORS_ONLN) -b DEBUG -a AARCH64 -t GCC5 \
+	build -n $(getconf _NPROCESSORS_ONLN) -b ${RKUEFIBUILDTYPE} -a AARCH64 -t GCC5 \
 	    --pcd gArmTokenSpaceGuid.PcdSystemMemorySize=${memsize} \
 	    -p Platform/Pine64/Quartz64/Quartz64.dsc
 }
@@ -54,8 +57,9 @@ build_fit() {
 	tag=$1
 	echo " => Building FIT (${tag})"
 	./scripts/extractbl31.py rkbin/${BL31}
+	cp -f Build/Quartz64/${RKUEFIBUILDTYPE}_GCC5/FV/RK356X_EFI.fd Build/RK356X_EFI.fd
 	./rkbin/tools/mkimage -f uefi.its -E QUARTZ64_EFI_${tag}.itb
-	rm -f bl31_0x*.bin
+	rm -f bl31_0x*.bin Build/RK356X_EFI.fd
 }
 
 fetch_deps

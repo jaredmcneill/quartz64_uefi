@@ -1,12 +1,16 @@
 .PHONY: all
-all: uefi
+all: uefi_debug
 
-.PHONY: uefi
-uefi:
-	@./build.sh
+.PHONY: uefi_release
+uefi_release:
+	@./build.sh RELEASE
+
+.PHONY: uefi_debug
+uefi_debug:
+	@./build.sh DEBUG
 
 .PHONY: sdcard
-sdcard: uefi
+sdcard: uefi_release
 	rm -f sdcard.img
 	fallocate -l 33M sdcard.img
 	parted -s sdcard.img mklabel gpt

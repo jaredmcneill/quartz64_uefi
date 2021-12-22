@@ -13,7 +13,7 @@
 	images {
 		uboot {
 			description = "UEFI";
-			data = /incbin/("./Build/Quartz64/DEBUG_GCC5/FV/RK356X_EFI.fd");
+			data = /incbin/("./Build/RK356X_EFI.fd");
 			type = "standalone";
 			arch = "arm64";
 			os = "U-Boot";
