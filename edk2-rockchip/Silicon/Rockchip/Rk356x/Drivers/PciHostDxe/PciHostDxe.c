@@ -35,6 +35,7 @@
 #define  SMLH_LTSSM_STATE_LINK_UP       0x11
 
 /* DBI Registers */
+#define PCI_DEVICE_CLASS                0x000A
 #define PCIE_LINK_CAPABILITY            0x007C
 #define PCIE_LINK_STATUS                0x0080
 #define  LINK_STATUS_WIDTH_SHIFT        20
@@ -104,16 +105,12 @@ PciSetupBars (
   IN EFI_PHYSICAL_ADDRESS DbiBase
   )
 {
-  PCI_TYPE01 *Bridge = (PCI_TYPE01 *)DbiBase;
-
   DEBUG ((DEBUG_INFO, "PCIe: SetupBars: Unlock DBI RO regs at 0x%lX\n", DbiBase));
 
   /* Allow writing RO registers through the DBI */
   MmioOr32 (DbiBase + PL_MISC_CONTROL_1_OFF, DBI_RO_WR_EN);
 
-  MmioWrite8 ((UINTN)&Bridge->Hdr.ClassCode[0], PCI_CLASS_BRIDGE);
-  MmioWrite8 ((UINTN)&Bridge->Hdr.ClassCode[1], PCI_CLASS_BRIDGE_P2P);
-  MmioWrite8 ((UINTN)&Bridge->Hdr.ClassCode[2], PCI_IF_BRIDGE_P2P);
+  MmioWrite16 (DbiBase + PCI_DEVICE_CLASS, (PCI_CLASS_BRIDGE << 8) | PCI_CLASS_BRIDGE_P2P);
 
   DEBUG ((DEBUG_INFO, "PCIe: SetupBars: Speed change\n"));
   /* Initiate a speed change to Gen2 or Gen3 after the link is initialized as Gen1 speed. */
@@ -135,8 +132,8 @@ PciSetupLinkSpeed (
   MmioOr32 (DbiBase + PL_MISC_CONTROL_1_OFF, DBI_RO_WR_EN);
 
   /* Select target link speed */
-  MmioAndThenOr32 (DbiBase + PCIE_LINK_CAPABILITY, ~0xFFU, Speed);
-  MmioAndThenOr32 (DbiBase + PCIE_LINK_CTL_2, ~0xFFU, Speed);
+  MmioAndThenOr32 (DbiBase + PCIE_LINK_CAPABILITY, ~0xFU, Speed);
+  MmioAndThenOr32 (DbiBase + PCIE_LINK_CTL_2, ~0xFU, Speed);
 
   /* Disallow writing RO registers through the DBI */
   MmioAnd32 (DbiBase + PL_MISC_CONTROL_1_OFF, ~DBI_RO_WR_EN);
@@ -313,6 +310,14 @@ InitializePciHost (
     GpioPinWrite (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, 1);
   }
 
+  DEBUG ((DEBUG_INFO, "PCIe: Setup iATU\n"));
+  Cfg0Base = SIZE_1MB;
+  Cfg0Size = SIZE_64KB;
+  Cfg1Base = SIZE_2MB;
+  Cfg1Size = 0x10000000UL - SIZE_2MB;
+  PciSetupAtu (DbiBase, 0, IATU_TYPE_CFG0, 0x300000000UL + Cfg0Base, Cfg0Base, Cfg0Size);
+  PciSetupAtu (DbiBase, 1, IATU_TYPE_CFG1, 0x300000000UL + Cfg1Base, Cfg1Base, Cfg1Size);
+
   DEBUG ((DEBUG_INFO, "PCIe: Start LTSSM\n"));
   PciEnableLtssm (ApbBase, FALSE);
   MmioWrite32 (ApbBase + PCIE_CLIENT_GENERAL_DEBUG_INFO, 0);
@@ -320,7 +325,7 @@ InitializePciHost (
 
   /* Wait for link up */
   DEBUG ((DEBUG_INFO, "PCIe: Waiting for link up...\n"));
-  for (Retry = 50; Retry != 0; Retry--) {
+  for (Retry = 20; Retry != 0; Retry--) {
     if (PciIsLinkUp (ApbBase)) {
       break;
     }
@@ -333,14 +338,6 @@ InitializePciHost (
 
   PciGetLinkSpeedWidth (DbiBase, &LinkSpeed, &LinkWidth);
   PciPrintLinkSpeedWidth (LinkSpeed, LinkWidth);
-
-  Cfg0Base = SIZE_1MB;
-  Cfg0Size = SIZE_64KB;
-  Cfg1Base = SIZE_2MB;
-  Cfg1Size = 0x10000000UL - SIZE_2MB;
-
-  PciSetupAtu (DbiBase, 0, IATU_TYPE_CFG0, 0x300000000UL + Cfg0Base, Cfg0Base, Cfg0Size);
-  PciSetupAtu (DbiBase, 1, IATU_TYPE_CFG1, 0x300000000UL + Cfg1Base, Cfg1Base, Cfg1Size);
 
   return EFI_SUCCESS;
 }
