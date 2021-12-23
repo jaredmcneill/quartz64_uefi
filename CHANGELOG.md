@@ -1,3 +1,11 @@
+#### 2021-12-23
+
+* Improved PCIe support.
+* Add basic HDMI display support.
+* Add USB keyboard support.
+* Add NVMe support.
+* Add SATA support.
+
 #### 2021-12-14
 
 * Add PCIe support.
