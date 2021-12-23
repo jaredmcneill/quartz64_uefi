@@ -54,6 +54,7 @@
 #define IATU_REGION_CTRL_INBOUND(n)     (ATU_CAP_BASE + ((n) << 9) + 0x100)
 #define IATU_REGION_CTRL_1_OFF          0x000
 #define  IATU_TYPE_MEM                  0
+#define  IATU_TYPE_IO                   2
 #define  IATU_TYPE_CFG0                 4
 #define  IATU_TYPE_CFG1                 5
 #define IATU_REGION_CTRL_2_OFF          0x004
@@ -280,6 +281,8 @@ InitializePciHost (
   UINT64                   Cfg0Size;
   UINT64                   Cfg1Base;
   UINT64                   Cfg1Size;
+  UINT64                   PciIoBase;
+  UINT64                   PciIoSize;
 
   /* Configure MULTI-PHY */
   CruSetPciePhySource (2, 0);
@@ -314,9 +317,13 @@ InitializePciHost (
   Cfg0Base = SIZE_1MB;
   Cfg0Size = SIZE_64KB;
   Cfg1Base = SIZE_2MB;
-  Cfg1Size = 0x10000000UL - SIZE_2MB;
+  Cfg1Size = 0x10000000UL - (SIZE_2MB + SIZE_64KB);
+  PciIoBase = 0x2FFF0000UL;
+  PciIoSize = SIZE_64KB;
+
   PciSetupAtu (DbiBase, 0, IATU_TYPE_CFG0, 0x300000000UL + Cfg0Base, Cfg0Base, Cfg0Size);
   PciSetupAtu (DbiBase, 1, IATU_TYPE_CFG1, 0x300000000UL + Cfg1Base, Cfg1Base, Cfg1Size);
+  PciSetupAtu (DbiBase, 2, IATU_TYPE_IO,   0x300000000UL + PciIoBase, 0, PciIoSize);
 
   DEBUG ((DEBUG_INFO, "PCIe: Start LTSSM\n"));
   PciEnableLtssm (ApbBase, FALSE);

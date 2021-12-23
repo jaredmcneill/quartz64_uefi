@@ -181,9 +181,16 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
           QWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed, NonCacheable, ReadWrite,
             0x0000000000000000,   // Granularity
             0x0000000310000000,   // Range Minimum
-            0x000000033FFFFFFF,   // Range Maximum
+            0x000000033FFEFFFF,   // Range Maximum
             0x0000000000000000,   // Translation Offset
-            0x0000000030000000,   // Length
+            0x000000002FFF0000,   // Length
+          )
+          QWordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
+            0,                    // Granularity
+            0x0000,               // Range Minimum
+            0xFFFF,               // Range Maximum
+            0x000000033FFF0000,   // Translation Offset
+            0x10000,              // Length
           )
         })
         return (RBUF)

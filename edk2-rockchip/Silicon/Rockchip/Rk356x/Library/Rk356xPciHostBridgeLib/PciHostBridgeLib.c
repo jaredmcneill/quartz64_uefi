@@ -75,18 +75,27 @@ PciHostBridgeGetRootBridges (
 
   RootBridge->Segment     = 0;
 
-  RootBridge->Supports    = 0;
+  RootBridge->Supports    = EFI_PCI_ATTRIBUTE_IDE_PRIMARY_IO |
+                            EFI_PCI_ATTRIBUTE_IDE_SECONDARY_IO |
+                            EFI_PCI_ATTRIBUTE_ISA_IO_16 |
+                            EFI_PCI_ATTRIBUTE_ISA_MOTHERBOARD_IO | \
+                            EFI_PCI_ATTRIBUTE_VGA_MEMORY | \
+                            EFI_PCI_ATTRIBUTE_VGA_IO_16  | \
+                            EFI_PCI_ATTRIBUTE_VGA_PALETTE_IO_16;
   RootBridge->Attributes  = RootBridge->Supports;
 
-  RootBridge->DmaAbove4G  = TRUE;
+  RootBridge->DmaAbove4G            = TRUE;
+  RootBridge->ResourceAssigned      = FALSE;
+  RootBridge->NoExtendedConfigSpace = FALSE;
 
   RootBridge->AllocationAttributes  = EFI_PCI_HOST_BRIDGE_COMBINE_MEM_PMEM |
-                                      EFI_PCI_HOST_BRIDGE_MEM64_DECODE ;
+                                      EFI_PCI_HOST_BRIDGE_MEM64_DECODE;
 
   RootBridge->Bus.Base              = PcdGet32 (PcdPciBusMin);
   RootBridge->Bus.Limit             = PcdGet32 (PcdPciBusMax);
-  RootBridge->Io.Base               = MAX_UINT64;
-  RootBridge->Io.Limit              = 0;
+  RootBridge->Io.Base               = PcdGet64 (PcdPciIoBase);
+  RootBridge->Io.Limit              = PcdGet64 (PcdPciIoBase) + PcdGet64 (PcdPciIoSize) - 1;
+  RootBridge->Io.Translation        = MAX_UINT64 - PcdGet64 (PcdPciIoTranslation) + 1;
   RootBridge->Mem.Base              = PcdGet32 (PcdPciMmio32Base);
   RootBridge->Mem.Limit             = PcdGet32 (PcdPciMmio32Base) + PcdGet32 (PcdPciMmio32Size) - 1;
   RootBridge->MemAbove4G.Base       = PcdGet64 (PcdPciMmio64Base);
@@ -102,8 +111,6 @@ PciHostBridgeGetRootBridges (
 
   ASSERT (FixedPcdGet64 (PcdPciMmio32Translation) == 0);
   ASSERT (FixedPcdGet64 (PcdPciMmio64Translation) == 0);
-
-  RootBridge->NoExtendedConfigSpace = FALSE;
 
   RootBridge->DevicePath = (EFI_DEVICE_PATH_PROTOCOL *)&mEfiPciRootBridgeDevicePath;
 

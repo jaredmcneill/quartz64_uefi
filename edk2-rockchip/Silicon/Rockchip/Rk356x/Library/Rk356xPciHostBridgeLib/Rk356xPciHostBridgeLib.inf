@@ -39,6 +39,9 @@
 [FixedPcd]
   gArmTokenSpaceGuid.PcdPciBusMin
   gArmTokenSpaceGuid.PcdPciBusMax
+  gArmTokenSpaceGuid.PcdPciIoBase
+  gArmTokenSpaceGuid.PcdPciIoSize
+  gEfiMdePkgTokenSpaceGuid.PcdPciIoTranslation
   gArmTokenSpaceGuid.PcdPciMmio32Base
   gArmTokenSpaceGuid.PcdPciMmio32Size
   gEfiMdePkgTokenSpaceGuid.PcdPciMmio32Translation

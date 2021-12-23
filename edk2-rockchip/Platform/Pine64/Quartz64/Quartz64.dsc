@@ -174,6 +174,9 @@
   PciLib|MdePkg/Library/BasePciLibPciExpress/BasePciLibPciExpress.inf
   PciHostBridgeLib|Silicon/Rockchip/Rk356x/Library/Rk356xPciHostBridgeLib/Rk356xPciHostBridgeLib.inf
 
+  # Storage
+  UefiScsiLib|MdePkg/Library/UefiScsiLib/UefiScsiLib.inf
+
 [LibraryClasses.common.SEC]
   PcdLib|MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf
   BaseMemoryLib|MdePkg/Library/BaseMemoryLib/BaseMemoryLib.inf
@@ -434,7 +437,12 @@
   gArmTokenSpaceGuid.PcdPciMmio32Base|0xF4000000
   gArmTokenSpaceGuid.PcdPciMmio32Size|0x02000000
   gArmTokenSpaceGuid.PcdPciMmio64Base|0x0000000310000000
-  gArmTokenSpaceGuid.PcdPciMmio64Size|0x0000000030000000
+  gArmTokenSpaceGuid.PcdPciMmio64Size|0x000000002FFF0000
+  gArmTokenSpaceGuid.PcdPciIoBase|0x0000
+  gArmTokenSpaceGuid.PcdPciIoSize|0x10000
+  gEmbeddedTokenSpaceGuid.PcdPrePiCpuIoSize|34
+
+  gEfiMdePkgTokenSpaceGuid.PcdPciIoTranslation|0x000000033FFF0000
   gRk356xTokenSpaceGuid.PcdPcieResetGpioBank|1
   gRk356xTokenSpaceGuid.PcdPcieResetGpioPin|10
   gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|0
@@ -518,7 +526,7 @@
   MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
 
   ArmPkg/Drivers/ArmGic/ArmGicDxe.inf
-  UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
+  ArmPkg/Drivers/ArmPciCpuIo2Dxe/ArmPciCpuIo2Dxe.inf
   ArmPkg/Drivers/TimerDxe/TimerDxe.inf
   MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
   MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
@@ -585,6 +593,17 @@
   Silicon/Rockchip/Rk356x/Drivers/PciHostDxe/PciHostDxe.inf
   MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
   MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
+  EmbeddedPkg/Drivers/NonCoherentIoMmuDxe/NonCoherentIoMmuDxe.inf
+  MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
+
+  #
+  # AHCI Support
+  #
+  MdeModulePkg/Bus/Pci/SataControllerDxe/SataControllerDxe.inf
+  MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
+  MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
+  MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
+  MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
 
   #
   # RAM Disk Support
