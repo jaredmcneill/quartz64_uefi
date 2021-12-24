@@ -55,21 +55,6 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
       })
     }
 
-    // USB EHCI Host Controller
-    Device (EHC0) {
-        Name (_HID, "PNP0D20")
-        Name (_UID, Zero)
-        Name (_CCA, Zero)
-
-        Method (_CRS, 0x0, Serialized) {
-            Name (RBUF, ResourceTemplate() {
-                Memory32Fixed (ReadWrite, 0xFD800000, 0x40000)
-                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 162 }
-            })
-            Return (RBUF)
-        }
-    } // EHC0
-
     // USB OHCI Host Controller
     Device (OHC0) {
       Name (_HID, "RKCP0DFF")
@@ -84,21 +69,73 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
           })
           Return (RBUF)
       }
+
+      Device (RHUB) {
+        Name (_ADR, 0)
+        Device (PRT1) {
+          Name (_ADR, 1)
+          Name (_UPC, Package() {
+            0xFF,         // Port is connectable
+            0x00,         // Connector type - Type 'A'
+            0x00000000,   // Reserved, must be zero
+            0x00000000    // Reserved, must be zero
+          })
+          Name (_PLD, Package (0x01) {
+            ToPLD (
+              PLD_Revision            = 0x2,
+              PLD_IgnoreColor         = 0x1,
+              PLD_UserVisible         = 0x1,
+              PLD_Panel               = "UNKNOWN",
+              PLD_VerticalPosition    = "UPPER",
+              PLD_HorizontalPosition  = "LEFT",
+              PLD_Shape               = "HORIZONTALRECTANGLE",
+              PLD_Ejectable           = 0x1,
+              PLD_EjectRequired       = 0x1,
+            )
+          })
+        } // PRT1
+      } // RHUB
     } // OHC0
 
     // USB EHCI Host Controller
-    Device (EHC1) {
-      Name (_HID, "PNP0D20")
-      Name (_UID, One)
-      Name (_CCA, Zero)
+    Device (EHC0) {
+        Name (_HID, "PNP0D20")
+        Name (_UID, Zero)
+        Name (_CCA, Zero)
 
-      Method (_CRS, 0x0, Serialized) {
-          Name (RBUF, ResourceTemplate() {
-              Memory32Fixed (ReadWrite, 0xFD880000, 0x40000)
-              Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 165 }
-          })
-          Return (RBUF)
-      }
+        Method (_CRS, 0x0, Serialized) {
+            Name (RBUF, ResourceTemplate() {
+                Memory32Fixed (ReadWrite, 0xFD800000, 0x40000)
+                Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 162 }
+            })
+            Return (RBUF)
+        }
+
+        Device (RHUB) {
+          Name (_ADR, 0)
+          Device (PRT1) {
+            Name (_ADR, 1)
+            Name (_UPC, Package() {
+              0xFF,         // Port is connectable
+              0x00,         // Connector type - Type 'A'
+              0x00000000,   // Reserved, must be zero
+              0x00000000    // Reserved, must be zero
+            })
+            Name (_PLD, Package (0x01) {
+              ToPLD (
+                PLD_Revision            = 0x2,
+                PLD_IgnoreColor         = 0x1,
+                PLD_UserVisible         = 0x1,
+                PLD_Panel               = "UNKNOWN",
+                PLD_VerticalPosition    = "UPPER",
+                PLD_HorizontalPosition  = "LEFT",
+                PLD_Shape               = "HORIZONTALRECTANGLE",
+                PLD_Ejectable           = 0x1,
+                PLD_EjectRequired       = 0x1,
+              )
+            })
+          } // PRT1
+        } // RHUB
     } // EHC0
 
     // USB OHCI Host Controller
@@ -115,7 +152,74 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
           })
           Return (RBUF)
       }
+
+      Device (RHUB) {
+        Name (_ADR, 0)
+        Device (PRT1) {
+          Name (_ADR, 1)
+          Name (_UPC, Package() {
+            0xFF,         // Port is connectable
+            0x00,         // Connector type - Type 'A'
+            0x00000000,   // Reserved, must be zero
+            0x00000000    // Reserved, must be zero
+          })
+          Name (_PLD, Package (0x01) {
+            ToPLD (
+              PLD_Revision            = 0x2,
+              PLD_IgnoreColor         = 0x1,
+              PLD_UserVisible         = 0x1,
+              PLD_Panel               = "UNKNOWN",
+              PLD_VerticalPosition    = "LOWER",
+              PLD_HorizontalPosition  = "LEFT",
+              PLD_Shape               = "HORIZONTALRECTANGLE",
+              PLD_Ejectable           = 0x1,
+              PLD_EjectRequired       = 0x1,
+            )
+          })
+        } // PRT1
+      } // RHUB
     } // OHC1
+
+    // USB EHCI Host Controller
+    Device (EHC1) {
+      Name (_HID, "PNP0D20")
+      Name (_UID, One)
+      Name (_CCA, Zero)
+
+      Method (_CRS, 0x0, Serialized) {
+          Name (RBUF, ResourceTemplate() {
+              Memory32Fixed (ReadWrite, 0xFD880000, 0x40000)
+              Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 165 }
+          })
+          Return (RBUF)
+      }
+
+      Device (RHUB) {
+        Name (_ADR, 0)
+        Device (PRT1) {
+          Name (_ADR, 1)
+          Name (_UPC, Package() {
+            0xFF,         // Port is connectable
+            0x00,         // Connector type - Type 'A'
+            0x00000000,   // Reserved, must be zero
+            0x00000000    // Reserved, must be zero
+          })
+          Name (_PLD, Package (0x01) {
+            ToPLD (
+              PLD_Revision            = 0x2,
+              PLD_IgnoreColor         = 0x1,
+              PLD_UserVisible         = 0x1,
+              PLD_Panel               = "UNKNOWN",
+              PLD_VerticalPosition    = "LOWER",
+              PLD_HorizontalPosition  = "LEFT",
+              PLD_Shape               = "HORIZONTALRECTANGLE",
+              PLD_Ejectable           = 0x1,
+              PLD_EjectRequired       = 0x1,
+            )
+          })
+        } // PRT1
+      } // RHUB
+    } // EHC1
 
     // USB XHCI Host Controller
     Device (XHC0) {
