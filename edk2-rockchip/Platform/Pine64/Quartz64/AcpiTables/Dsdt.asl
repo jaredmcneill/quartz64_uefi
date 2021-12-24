@@ -57,10 +57,17 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
 
     // USB OHCI Host Controller
     Device (OHC0) {
-      Name (_HID, "RKCP0DFF")
+      Name (_HID, "PRP0001")
       Name (_CLS, Package() { 0x0c, 0x03, 0x10 })
       Name (_UID, Zero)
       Name (_CCA, Zero)
+
+      Name (_DSD, Package () {
+        ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+        Package () {
+            Package () { "compatible", "generic-ohci" },
+        }
+      })
 
       Method (_CRS, 0x0, Serialized) {
           Name (RBUF, ResourceTemplate() {
@@ -140,10 +147,17 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
 
     // USB OHCI Host Controller
     Device (OHC1) {
-      Name (_HID, "RKCP0DFF")
+      Name (_HID, "PRP0001")
       Name (_CLS, Package() { 0x0c, 0x03, 0x10 })
       Name (_UID, One)
       Name (_CCA, Zero)
+
+      Name (_DSD, Package () {
+        ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+        Package () {
+            Package () { "compatible", "generic-ohci" },
+        }
+      })
 
       Method (_CRS, 0x0, Serialized) {
           Name (RBUF, ResourceTemplate() {
