@@ -23,12 +23,13 @@
 #include <Protocol/Cpu.h>
 #include <Protocol/GraphicsOutput.h>
 #include <Protocol/DevicePath.h>
+#include <Protocol/EdidActive.h>
+#include <Protocol/EdidDiscovered.h>
 
 extern EFI_GRAPHICS_OUTPUT_PROTOCOL gDisplayProto;
 extern EFI_COMPONENT_NAME_PROTOCOL  gComponentName;
 extern EFI_COMPONENT_NAME2_PROTOCOL gComponentName2;
 extern EFI_DRIVER_BINDING_PROTOCOL  mDriverBinding;
-
 
 typedef struct {
     UINT8 Vic;
@@ -44,5 +45,7 @@ typedef struct {
     BOOLEAN HSyncPol;
     BOOLEAN VSyncPol;
 } HDMI_DISPLAY_TIMING;
+
+extern HDMI_DISPLAY_TIMING mPreferredTimings;
 
 #endif /* _DISPLAY_H_ */

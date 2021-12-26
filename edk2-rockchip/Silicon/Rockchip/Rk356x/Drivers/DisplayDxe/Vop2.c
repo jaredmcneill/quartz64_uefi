@@ -15,21 +15,6 @@
 #include "DwHdmi.h"
 
 STATIC BOOLEAN mVop2Initialized = FALSE;
-
-STATIC HDMI_DISPLAY_TIMING DisplayMode720p = {
-    .Vic = 4,
-    .FrequencyKHz = 74250,
-    .HDisplay = 1280, .HSyncStart = 1390, .HSyncEnd = 1430, .HTotal = 1650, .HSyncPol = TRUE,
-    .VDisplay = 720,  .VSyncStart = 725,  .VSyncEnd = 730,  .VTotal = 750,  .VSyncPol = TRUE,
-};
-
-STATIC HDMI_DISPLAY_TIMING DisplayMode1080p = {
-    .Vic = 16,
-    .FrequencyKHz = 148500,
-    .HDisplay = 1920, .HSyncStart = 2008, .HSyncEnd = 2052, .HTotal = 2200, .HSyncPol = FALSE,
-    .VDisplay = 1080, .VSyncStart = 1084, .VSyncEnd = 1089, .VTotal = 1125, .VSyncPol = FALSE,
-};
-
 STATIC HDMI_DISPLAY_TIMING *mCurrentTimings;
 
 STATIC
@@ -95,16 +80,7 @@ Vop2SetMode (
     UINT32 VSyncLen, VActSt, VActEnd, VBackPorch;
     UINTN Rate;
 
-    CONST UINT32 HRes = PcdGet32 (PcdSetupVideoHorizontalResolution);
-    CONST UINT32 VRes = PcdGet32 (PcdSetupVideoVerticalResolution);
-
-    if (HRes == 1920 && VRes == 1080) {
-        mCurrentTimings = &DisplayMode1080p;
-    } else if (HRes == 1280 && VRes == 720) {
-        mCurrentTimings = &DisplayMode720p;
-    } else {
-        mCurrentTimings = NULL;
-    }
+    mCurrentTimings = &mPreferredTimings;
 
     ASSERT (mCurrentTimings != NULL);
     ASSERT (Mode->Info->HorizontalResolution == mCurrentTimings->HDisplay);
@@ -188,9 +164,6 @@ Vop2SetMode (
                  VOP2_SYS_REG_CFG_DONE_SW_GLOBAL_REGDONE_EN |
                  VOP2_SYS_REG_CFG_DONE_REG_LOAD_GLOBAL0_EN);
  
-    /* Start HDMI TX */
-    DwHdmiEnable (Mode, mCurrentTimings);
-
     /* Dump registers */
     Vop2DebugDump ();
 }

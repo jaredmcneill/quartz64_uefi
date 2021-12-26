@@ -11,13 +11,26 @@
 
 #include <Base.h>
 #include "DisplayDxe.h"
+#include "DwHdmi.h"
 #include "Vop2.h"
+#include <Library/CruLib.h>
 
 #define POS_TO_FB(posX, posY) ((UINT8*)                                 \
                                ((UINTN)This->Mode->FrameBufferBase +    \
                                 (posY) * This->Mode->Info->PixelsPerScanLine * \
                                 RK_BYTES_PER_PIXEL +                    \
                                 (posX) * RK_BYTES_PER_PIXEL))
+
+HDMI_DISPLAY_TIMING mPreferredTimings;
+
+/* Fallback to 720p when DDC fails */
+STATIC HDMI_DISPLAY_TIMING mDefaultTimings = {
+    .Vic = 4,
+    .FrequencyKHz = 74250,
+    .HDisplay = 1280, .HSyncStart = 1390, .HSyncEnd = 1430, .HTotal = 1650, .HSyncPol = TRUE,
+    .VDisplay = 720,  .VSyncStart = 725,  .VSyncEnd = 730,  .VTotal = 750,  .VSyncPol = TRUE,
+};
+
 
 STATIC
 EFI_STATUS
@@ -284,6 +297,9 @@ Status = mCpu->SetMemoryAttributes (mCpu, mFbBase,
 
   Vop2SetMode (This->Mode);
 
+  /* Start HDMI TX */
+  DwHdmiEnable (&mPreferredTimings);
+
   return EFI_SUCCESS;
 }
 
@@ -470,6 +486,19 @@ DriverStart (
     return Status;
   }
 
+  mPreferredTimings = mDefaultTimings;
+  if (DwHdmiDetect (&mPreferredTimings) == FALSE) {
+    DEBUG ((DEBUG_INFO, "No display detected\n"));
+    Status = EFI_NOT_FOUND;
+    goto Done;
+  }
+  
+  DEBUG ((DEBUG_INFO, "Display: Detected %ux%u display\n",
+          mPreferredTimings.HDisplay, mPreferredTimings.VDisplay));
+
+  PcdSet32S (PcdVideoHorizontalResolution, mPreferredTimings.HDisplay);
+  PcdSet32S (PcdVideoVerticalResolution, mPreferredTimings.VDisplay);
+
   gDisplayProto.Mode = AllocateZeroPool (sizeof (EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE));
   if (gDisplayProto.Mode == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
@@ -482,8 +511,8 @@ DriverStart (
     goto Done;
   }
 
-  mGopModeData[0].Width = PcdGet32 (PcdSetupVideoHorizontalResolution);
-  mGopModeData[0].Height = PcdGet32 (PcdSetupVideoVerticalResolution);
+  mGopModeData[0].Width = PcdGet32 (PcdVideoHorizontalResolution);
+  mGopModeData[0].Height = PcdGet32 (PcdVideoVerticalResolution);
 
   // Both set the mode and initialize current mode information.
   gDisplayProto.Mode->MaxMode = ARRAY_SIZE (mGopModeData);

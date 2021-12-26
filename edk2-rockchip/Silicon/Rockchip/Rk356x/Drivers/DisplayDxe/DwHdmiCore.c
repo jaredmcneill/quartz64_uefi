@@ -34,6 +34,7 @@
 
 #define	DDC_ADDR			0x50
 #define	DDC_SEGMENT_ADDR	0x30
+#define SCDC_ADDR			0x54
 
 #define	HDMI_DESIGN_ID		0x0000
 #define	HDMI_REVISION_ID	0x0001
@@ -87,10 +88,11 @@
 #define	HDMI_VP_POL		0x0808
 
 #define	HDMI_FC_INVIDCONF	0x1000
+#define	 HDMI_FC_INVIDCONF_HDCP_KEEPOUT			__BIT(7)
 #define	 HDMI_FC_INVIDCONF_VSYNC_IN_POLARITY	__BIT(6)
 #define	 HDMI_FC_INVIDCONF_HSYNC_IN_POLARITY	__BIT(5)
 #define	 HDMI_FC_INVIDCONF_DE_IN_POLARITY	__BIT(4)
-#define	 HDMI_FC_INVIDCONF_DVI_MODE		__BIT(3)
+#define	 HDMI_FC_INVIDCONF_DVI_MODE_HDMI    __BIT(3)
 #define	 HDMI_FC_INVIDCONF_R_V_BLANK_IN_OSC	__BIT(1)
 #define	 HDMI_FC_INVIDCONF_IN_I_P		__BIT(0)
 #define	HDMI_FC_INHACTIV0	0x1001
@@ -118,10 +120,22 @@
 #define	 HDMI_FC_CH1PREAM_DEFAULT		0x16
 #define	HDMI_FC_CH2PREAM	0x1016
 #define	 HDMI_FC_CH2PREAM_DEFAULT		0x21
+#define	HDMI_FC_AVICONF0	0x1019
+#define	HDMI_FC_AVIVID		0x101c
 #define	HDMI_FC_AUDCONF0	0x1025
 #define	HDMI_FC_AUDCONF1	0x1026
 #define	HDMI_FC_AUDCONF2	0x1027
 #define	HDMI_FC_AUDCONF3	0x1028
+#define	HDMI_FC_VSDIEEEID2	0x1029
+#define	HDMI_FC_VSDSIZE		0x102a
+#define	HDMI_FC_VSDIEEEID1	0x1030
+#define	HDMI_FC_VSDIEEEID0	0x1031
+#define	HDMI_FC_VSDPAYLOAD(n) (0x1032 + (n))
+#define	HDMI_FC_DATAUTO0	0x10b3
+#define	 HDMI_FC_DATAUTO0_VSD_AUTO	__BIT(3)
+#define	HDMI_FC_DATAUTO1	0x10b4
+#define	HDMI_FC_DATAUTO2	0x10b5
+#define HDMI_FC_SCRAMBLER_CTRL	0x10e1
 
 #define	HDMI_PHY_CONF0		0x3000
 #define	 HDMI_PHY_CONF0_PDZ			__BIT(7)
@@ -182,6 +196,9 @@
 #define	HDMI_MC_LOCKONCLOCK	0x4006
 #define	HDMI_MC_HEACPHY_RST	0x4007
 
+#define	HDMI_A_HDCPCFG0		0x5000
+#define	 HDMI_A_HDCPCFG0_HDMIDVI		__BIT(0)
+
 #define	HDMI_I2CM_SLAVE		0x7e00
 #define	HDMI_I2CM_ADDRESS	0x7e01
 #define	HDMI_I2CM_DATAO		0x7e02
@@ -224,40 +241,40 @@
 #define	HDMI_I2CM_SEGPTR	0x7e0a
 #define	HDMI_I2CM_SS_SCL_HCNT_0_ADDR 0x730c
 #define	HDMI_I2CM_SS_SCL_LCNT_0_ADDR 0x730e
+#define HDMI_I2CM_SDA_HOLD	0x7e13
+
+#define	SCDC_SINK_VERSION	0x01
+#define	SCDC_SOURCE_VERSION	0x02
+#define	SCDC_TMDS_CONFIG	0x20
+#define  SCDC_TMDS_CONFIG_SCRAMBLING_ENABLE		__BIT(0)
 
 UINT16 mDwHdmiVersion;
 UINT8 mDwHdmiPhyType;
 BOOLEAN mDwHdmiMonitorAudio;
 
 EFI_STATUS
-DwHdmiDdcRead (
-	IN const void *cmdbuf,
-	IN UINTN cmdlen,
-	OUT void *buf,
+DwHdmiEdidRead (
+	IN UINT8 block,
+	OUT UINT8 *buf,
 	IN UINTN len)
 {
-	UINT8 block, operation, val;
+	UINT8 operation, val;
 	UINT8 *pbuf = buf;
 	int off, n, retry;
 
-	ASSERT (cmdlen > 0);
 	ASSERT (buf != NULL);
 	ASSERT (len > 0);
 	ASSERT (len <= 256);
 
 	DwHdmiWrite (HDMI_I2CM_SOFTRSTZ, 0);
 	DwHdmiWrite (HDMI_IH_I2CM_STAT0, DwHdmiRead (HDMI_IH_I2CM_STAT0));
-#if 0
-	if (sc->sc_scl_hcnt)
-		DwHdmiWrite (HDMI_I2CM_SS_SCL_HCNT_0_ADDR, sc->sc_scl_hcnt);
-	if (sc->sc_scl_lcnt)
-		DwHdmiWrite (HDMI_I2CM_SS_SCL_LCNT_0_ADDR, sc->sc_scl_lcnt);
-#endif
+	DwHdmiWrite (HDMI_I2CM_SDA_HOLD, 0x48);
+	DwHdmiWrite (HDMI_I2CM_SS_SCL_HCNT_0_ADDR, 0x71);
+	DwHdmiWrite (HDMI_I2CM_SS_SCL_LCNT_0_ADDR, 0x76);
 	DwHdmiWrite (HDMI_I2CM_DIV, 0);
 	DwHdmiWrite (HDMI_I2CM_SLAVE, DDC_ADDR);
 	DwHdmiWrite (HDMI_I2CM_SEGADDR, DDC_SEGMENT_ADDR);
 
-	block = *(const UINT8 *)cmdbuf;
 	operation = block ? HDMI_I2CM_OPERATION_RD_EXT : HDMI_I2CM_OPERATION_RD;
 	off = (block & 1) ? 128 : 0;
 
@@ -267,22 +284,106 @@ DwHdmiDdcRead (
 		DwHdmiWrite (HDMI_I2CM_ADDRESS, n + off);
 		DwHdmiWrite (HDMI_I2CM_OPERATION, operation);
 		for (retry = 10000; retry > 0; retry--) {
+			MicroSecondDelay (1000);
 			val = DwHdmiRead (HDMI_IH_I2CM_STAT0);
 			if (val & HDMI_IH_I2CM_STAT0_ERROR) {
+				DEBUG ((DEBUG_WARN, "DwHdmiDdcExec: Error! I2CM_STAT0 = 0x%X\n", val));
 				return EFI_DEVICE_ERROR;
 			}
 			if (val & HDMI_IH_I2CM_STAT0_DONE) {
 				DwHdmiWrite (HDMI_IH_I2CM_STAT0, val);
 				break;
 			}
-			MicroSecondDelay (1);
 		}
 		if (retry == 0) {
-			DEBUG ((DEBUG_WARN, "DwHdmiDdcExec: Timeout waiting for xfer, stat0=0x%#X\n", DwHdmiRead (HDMI_IH_I2CM_STAT0)));
+			DEBUG ((DEBUG_WARN, "DwHdmiDdcExec: Timeout waiting for xfer, stat0=0x%X\n", DwHdmiRead (HDMI_IH_I2CM_STAT0)));
 			return EFI_TIMEOUT;
 		}
 
 		pbuf[n] = DwHdmiRead (HDMI_I2CM_DATAI);
+	}
+
+	return EFI_SUCCESS;
+}
+
+EFI_STATUS
+DwHdmiScdcRead (
+	IN UINT8 Register,
+	OUT UINT8 *Value
+	)
+{
+	int Retry;
+	UINT8 Val;
+
+	ASSERT (Value != NULL);
+
+	DwHdmiWrite (HDMI_I2CM_SOFTRSTZ, 0);
+	DwHdmiWrite (HDMI_IH_I2CM_STAT0, DwHdmiRead (HDMI_IH_I2CM_STAT0));
+	DwHdmiWrite (HDMI_I2CM_SDA_HOLD, 0x48);
+	DwHdmiWrite (HDMI_I2CM_SS_SCL_HCNT_0_ADDR, 0x71);
+	DwHdmiWrite (HDMI_I2CM_SS_SCL_LCNT_0_ADDR, 0x76);
+	DwHdmiWrite (HDMI_I2CM_DIV, 0);
+	DwHdmiWrite (HDMI_I2CM_SLAVE, SCDC_ADDR);
+
+	DwHdmiWrite (HDMI_I2CM_ADDRESS, Register);
+	DwHdmiWrite (HDMI_I2CM_OPERATION, HDMI_I2CM_OPERATION_RD);
+	for (Retry = 10000; Retry > 0; Retry--) {
+		MicroSecondDelay (1000);
+		Val = DwHdmiRead (HDMI_IH_I2CM_STAT0);
+		if (Val & HDMI_IH_I2CM_STAT0_ERROR) {
+			DEBUG ((DEBUG_WARN, "DwHdmiScdcRead: Error! I2CM_STAT0 = 0x%X\n", Val));
+			return EFI_DEVICE_ERROR;
+		}
+		if (Val & HDMI_IH_I2CM_STAT0_DONE) {
+			DwHdmiWrite (HDMI_IH_I2CM_STAT0, Val);
+			break;
+		}
+	}
+	if (Retry == 0) {
+		DEBUG ((DEBUG_WARN, "DwHdmiScdcRead: Timeout waiting for xfer, stat0=0x%X\n", DwHdmiRead (HDMI_IH_I2CM_STAT0)));
+		return EFI_TIMEOUT;
+	}
+
+	*Value = DwHdmiRead (HDMI_I2CM_DATAI);
+
+	return EFI_SUCCESS;
+}
+
+EFI_STATUS
+DwHdmiScdcWrite (
+	IN UINT8 Register,
+	IN UINT8 Value
+	)
+{
+	int Retry;
+	UINT8 Val;
+
+	DwHdmiWrite (HDMI_I2CM_SOFTRSTZ, 0);
+	DwHdmiWrite (HDMI_IH_I2CM_STAT0, DwHdmiRead (HDMI_IH_I2CM_STAT0));
+	DwHdmiWrite (HDMI_I2CM_SDA_HOLD, 0x48);
+	DwHdmiWrite (HDMI_I2CM_SS_SCL_HCNT_0_ADDR, 0x71);
+	DwHdmiWrite (HDMI_I2CM_SS_SCL_LCNT_0_ADDR, 0x76);
+	DwHdmiWrite (HDMI_I2CM_DIV, 0);
+	DwHdmiWrite (HDMI_I2CM_DATAO, Value);
+	DwHdmiWrite (HDMI_I2CM_SLAVE, SCDC_ADDR);
+
+	DwHdmiWrite (HDMI_I2CM_ADDRESS, Register);
+	DwHdmiWrite (HDMI_I2CM_OPERATION, HDMI_I2CM_OPERATION_WR);
+	for (Retry = 10000; Retry > 0; Retry--) {
+		MicroSecondDelay (1000);
+		Val = DwHdmiRead (HDMI_IH_I2CM_STAT0);
+		if (Val & HDMI_IH_I2CM_STAT0_ERROR) {
+			DEBUG ((DEBUG_WARN, "DwHdmiScdcWrite: Error! I2CM_STAT0 = 0x%X\n", Val));
+			return EFI_DEVICE_ERROR;
+		}
+		if (Val & HDMI_IH_I2CM_STAT0_DONE) {
+			DwHdmiWrite (HDMI_IH_I2CM_STAT0, Val);
+			break;
+		}
+	}
+	if (Retry == 0) {
+		DEBUG ((DEBUG_WARN, "DwHdmiScdcWrite: Timeout waiting for xfer, stat0=0x%X\n", DwHdmiRead (HDMI_IH_I2CM_STAT0)));
+		return EFI_TIMEOUT;
 	}
 
 	return EFI_SUCCESS;
@@ -362,6 +463,7 @@ DwHdmiFcInit (
 	HDMI_DISPLAY_TIMING *Timings
 	)
 {
+	BOOLEAN scramble = Timings->FrequencyKHz > 340000;
 	UINT8 val;
 
 	const UINT8 vic = Timings->Vic;
@@ -384,13 +486,34 @@ DwHdmiFcInit (
 	if ((mode->flags & DRM_MODE_FLAG_INTERLACE) != 0)
 		val |= HDMI_FC_INVIDCONF_IN_I_P;
 #endif
-#if 0
-	if (dwhdmi_connector->hdmi_monitor)
-		val |= HDMI_FC_INVIDCONF_DVI_MODE;
-#endif
+
+	if (vic) {
+		val |= HDMI_FC_INVIDCONF_DVI_MODE_HDMI;
+	}
+	if (Timings->FrequencyKHz > 340000) {
+		val |= HDMI_FC_INVIDCONF_HDCP_KEEPOUT;
+	}
+
 	if (DwHdmiCeaModeUsesFractionalVBlank(vic))
 		val |= HDMI_FC_INVIDCONF_R_V_BLANK_IN_OSC;
 	DwHdmiWrite (HDMI_FC_INVIDCONF, val);
+
+	/* Scrambling control */
+	if (scramble) {
+		/* XXX check to see if sink supports scrambling first */
+		DwHdmiScdcRead (SCDC_SINK_VERSION, &val);	// Get sink version
+		DwHdmiScdcWrite (SCDC_SOURCE_VERSION, val);	// Set source version
+
+		DwHdmiScdcRead (SCDC_TMDS_CONFIG, &val);
+		val |= SCDC_TMDS_CONFIG_SCRAMBLING_ENABLE;
+		DwHdmiScdcWrite (SCDC_TMDS_CONFIG, val);
+
+		/* Soft reset TMDS */
+		val = 0xff & ~HDMI_MC_SWRSTZREQ_TMDSSWRST_REQ;
+		DwHdmiWrite (HDMI_MC_SWRSTZREQ, val);
+
+		DwHdmiWrite (HDMI_FC_SCRAMBLER_CTRL, 1);
+	}
 
 	/* Input video mode timings */
 	DwHdmiWrite (HDMI_FC_INHACTIV0, inhactiv & 0xff);
@@ -416,6 +539,40 @@ DwHdmiFcInit (
 	DwHdmiWrite (HDMI_FC_CH0PREAM, HDMI_FC_CH0PREAM_DEFAULT);
 	DwHdmiWrite (HDMI_FC_CH1PREAM, HDMI_FC_CH1PREAM_DEFAULT);
 	DwHdmiWrite (HDMI_FC_CH2PREAM, HDMI_FC_CH2PREAM_DEFAULT);
+
+	/* Setup HDMI mode */
+	if (vic) {
+		DEBUG ((DEBUG_INFO, "HDMI: Setting up HDMI mode for VIC %u\n", vic));
+
+		/* AVI infoframe */
+		DwHdmiWrite (HDMI_FC_AVICONF0, 1 << 6);
+		DwHdmiWrite (HDMI_FC_AVIVID, vic);		
+
+		/* Disable VSD automatic packet scheduling */
+		val = DwHdmiRead (HDMI_FC_DATAUTO0);
+		val &= ~HDMI_FC_DATAUTO0_VSD_AUTO;
+		DwHdmiWrite (HDMI_FC_DATAUTO0, val);
+
+		/* Setup the infoframe itself */
+		DwHdmiWrite (HDMI_FC_VSDSIZE, 9);
+		DwHdmiWrite (HDMI_FC_VSDIEEEID0, 0x03);
+		DwHdmiWrite (HDMI_FC_VSDIEEEID1, 0x0c);
+		DwHdmiWrite (HDMI_FC_VSDIEEEID2, 0x00);
+		DwHdmiWrite (HDMI_FC_VSDPAYLOAD (0), 1 << 5);
+		DwHdmiWrite (HDMI_FC_VSDPAYLOAD (1), vic);
+
+		/* Enable VSD automatic packet scheduling */
+		val = DwHdmiRead (HDMI_FC_DATAUTO0);
+		val |= HDMI_FC_DATAUTO0_VSD_AUTO;
+		DwHdmiWrite (HDMI_FC_DATAUTO0, val);
+		DwHdmiWrite (HDMI_FC_DATAUTO1, 0x01);
+		DwHdmiWrite (HDMI_FC_DATAUTO2, 0x11);
+
+		/* Enable HDMI HDCP */
+		val = DwHdmiRead (HDMI_A_HDCPCFG0);
+		val |= HDMI_A_HDCPCFG0_HDMIDVI;
+		DwHdmiWrite (HDMI_A_HDCPCFG0, val);
+	}
 }
 
 STATIC
@@ -504,45 +661,6 @@ DwHdmiAudioInit (
 	DwHdmiWrite (HDMI_MC_CLKDIS, val);
 }
 
-#if 0
-static int
-dwhdmi_connector_get_modes(struct drm_connector *connector)
-{
-	struct dwhdmi_connector *dwhdmi_connector = to_dwhdmi_connector(connector);
-	struct dwhdmi_softc * const sc = dwhdmi_connector->sc;
-	char edid[EDID_LENGTH * 4];
-	struct edid *pedid = NULL;
-	int error, block;
-
-	memset(edid, 0, sizeof(edid));
-	for (block = 0; block < 4; block++) {
-		error = ddc_read_edid_block(sc->sc_ic,
-		    &edid[block * EDID_LENGTH], EDID_LENGTH, block);
-		if (error != 0)
-			break;
-		if (block == 0) {
-			pedid = (struct edid *)edid;
-			if (edid[0x7e] == 0)
-				break;
-		}
-	}
-
-	if (pedid) {
-		dwhdmi_connector->hdmi_monitor = drm_detect_hdmi_monitor(pedid);
-		dwhdmi_connector->monitor_audio = drm_detect_monitor_audio(pedid);
-	} else {
-		dwhdmi_connector->hdmi_monitor = false;
-		dwhdmi_connector->monitor_audio = false;
-	}
-
-	drm_connector_update_edid_property(connector, pedid);
-	if (pedid == NULL)
-		return 0;
-
-	return drm_add_edid_modes(connector, pedid);
-}
-#endif
-
 VOID
 DwHdmiBridgeEnable (
 	HDMI_DISPLAY_TIMING *Timings
@@ -559,8 +677,9 @@ DwHdmiBridgeEnable (
 	DwHdmiTxInit ();
 	DwHdmiMcInit ();
 
-	if (mDwHdmiMonitorAudio)
+	if (mDwHdmiMonitorAudio) {
 		DwHdmiAudioInit (Timings);
+	}
 }
 
 VOID

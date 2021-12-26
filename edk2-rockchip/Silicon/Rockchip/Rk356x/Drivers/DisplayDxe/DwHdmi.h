@@ -42,7 +42,6 @@ DwHdmiWrite (
 
 VOID
 DwHdmiEnable (
-    IN EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE *Mode,
     IN HDMI_DISPLAY_TIMING *Timings
     );
 
@@ -65,5 +64,28 @@ VOID
 DwHdmiPhyInit (
 	HDMI_DISPLAY_TIMING *Timings
 	);
+
+EFI_STATUS
+DwHdmiEdidRead (
+	IN UINT8 block,
+	OUT UINT8 *buf,
+	IN UINTN len);
+
+EFI_STATUS
+DwHdmiScdcRead (
+	IN UINT8 Register,
+	OUT UINT8 *Value
+	);
+
+EFI_STATUS
+DwHdmiScdcWrite (
+	IN UINT8 Register,
+	IN UINT8 Value
+	);
+
+BOOLEAN
+DwHdmiDetect (
+    OUT HDMI_DISPLAY_TIMING *Timings
+    );
 
 #endif /* _DWHDMI_H_ */

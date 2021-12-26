@@ -28,6 +28,8 @@ typedef struct {
 } CRU_PLL_RATE;
 
 STATIC CRU_PLL_RATE CruPllRates[] = {
+    { .Rate = 594000000, .RefDiv = 1, .FbDiv = 99, .PostDiv1 = 4, .PostDiv2 = 1, .Dsmpd = 1, .Frac = 0 },
+    { .Rate = 297000000, .RefDiv = 1, .FbDiv = 99, .PostDiv1 = 4, .PostDiv2 = 2, .Dsmpd = 1, .Frac = 0 },
     { .Rate = 200000000, .RefDiv = 1, .FbDiv = 100, .PostDiv1 = 3, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
     { .Rate = 148500000, .RefDiv = 1, .FbDiv = 99, .PostDiv1 = 4, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
     { .Rate = 74250000,  .RefDiv = 2, .FbDiv = 99, .PostDiv1 = 4, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
@@ -406,12 +408,9 @@ CruSetHdmiClockRate (
     PllRate = CruFindPllRate (Rate);
     ASSERT (PllRate != NULL);
 
-    PmuCruSetPllRate (PMUCRU_HPLL, PllRate);
-
-#if 0
-    /* XXX Set DCLK0_VOP parent to GPLL (why?) */
-    MmioWrite32 (CRU_CLKSEL_CON (39), (0x3U << (10 + 16)) | (0x2U << 10));
-#endif
+    if (PllRate != NULL) {
+        PmuCruSetPllRate (PMUCRU_HPLL, PllRate);
+    }
 }
 
 VOID

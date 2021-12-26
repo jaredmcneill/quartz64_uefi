@@ -325,27 +325,35 @@ DwHdmiPhyConfigure (
 	 * Following initialization are for 8bit per color case
 	 */
 
-	/*
-	 * PLL/MPLL config
-	 */
-	for (mpll_conf = &mDwHdmiMpllConfig[0]; mpll_conf->PixelClock != 0; mpll_conf++)
-		if (Timings->FrequencyKHz <= mpll_conf->PixelClock)
-			break;
+	if (Timings != NULL) {
+		/*
+		* PLL/MPLL config
+		*/
+		for (mpll_conf = &mDwHdmiMpllConfig[0]; mpll_conf->PixelClock != 0; mpll_conf++)
+			if (Timings->FrequencyKHz <= mpll_conf->PixelClock)
+				break;
 
-	DwHdmiPhyI2cWrite (mpll_conf->Cpce, HDMI_PHY_I2C_CPCE_CTRL);
-	DwHdmiPhyI2cWrite (mpll_conf->Gmp, HDMI_PHY_I2C_GMPCTRL);
-	DwHdmiPhyI2cWrite (mpll_conf->Curr, HDMI_PHY_I2C_CURRCTRL);
+		DwHdmiPhyI2cWrite (mpll_conf->Cpce, HDMI_PHY_I2C_CPCE_CTRL);
+		DwHdmiPhyI2cWrite (mpll_conf->Gmp, HDMI_PHY_I2C_GMPCTRL);
+		DwHdmiPhyI2cWrite (mpll_conf->Curr, HDMI_PHY_I2C_CURRCTRL);
 
-	for (phy_conf = &mDwHdmiPhyConfig[0]; phy_conf->PixelClock != 0; phy_conf++)
-		if (Timings->FrequencyKHz <= phy_conf->PixelClock)
-			break;
+		for (phy_conf = &mDwHdmiPhyConfig[0]; phy_conf->PixelClock != 0; phy_conf++)
+			if (Timings->FrequencyKHz <= phy_conf->PixelClock)
+				break;
 
-	DwHdmiPhyI2cWrite (0x0000, HDMI_PHY_I2C_PLLPHBYCTRL);
-	DwHdmiPhyI2cWrite (MSM_CTRL_FB_CLK, HDMI_PHY_I2C_MSM_CTRL);
+		DwHdmiPhyI2cWrite (0x0000, HDMI_PHY_I2C_PLLPHBYCTRL);
+		DwHdmiPhyI2cWrite (MSM_CTRL_FB_CLK, HDMI_PHY_I2C_MSM_CTRL);
 
-	DwHdmiPhyI2cWrite (phy_conf->Term, HDMI_PHY_I2C_TXTERM);
-	DwHdmiPhyI2cWrite (phy_conf->Sym, HDMI_PHY_I2C_CKSYMTXCTRL);
-	DwHdmiPhyI2cWrite (phy_conf->Vlev, HDMI_PHY_I2C_VLEVCTRL);
+		DwHdmiPhyI2cWrite (phy_conf->Term, HDMI_PHY_I2C_TXTERM);
+		DwHdmiPhyI2cWrite (phy_conf->Sym, HDMI_PHY_I2C_CKSYMTXCTRL);
+		DwHdmiPhyI2cWrite (phy_conf->Vlev, HDMI_PHY_I2C_VLEVCTRL);
+
+		if (Timings->FrequencyKHz > 340000) {
+			DwHdmiScdcRead (0x20, &val);	// SCDC_TMDS_CONFIG
+			val |= BIT1;					// SCDC_TMDS_BIT_CLOCK_RATIO_BY_40
+			DwHdmiScdcWrite (0x20, val);
+		}
+	}
 
 	/* REMOVE CLK TERM */
 	DwHdmiPhyI2cWrite (CKCALCTRL_OVERRIDE, HDMI_PHY_I2C_CKCALCTRL);

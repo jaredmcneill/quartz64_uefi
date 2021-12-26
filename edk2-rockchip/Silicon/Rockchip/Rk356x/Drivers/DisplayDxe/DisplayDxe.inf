@@ -51,6 +51,7 @@
   BmpSupportLib
   UefiRuntimeServicesTableLib
   CruLib
+  GpioLib
 
 [Protocols]
   gEfiLoadedImageProtocolGuid
@@ -59,10 +60,12 @@
   gEfiCpuArchProtocolGuid
   gEfiSimpleFileSystemProtocolGuid
   gEfiSimpleTextInputExProtocolGuid
+  gEfiEdidActiveProtocolGuid                    # PROTOCOL BY_START
+  gEfiEdidDiscoveredProtocolGuid                # PROTOCOL BY_START
 
 [Pcd]
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoHorizontalResolution  ## CONSUMES
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution    ## CONSUMES
+  gEfiMdeModulePkgTokenSpaceGuid.PcdVideoHorizontalResolution
+  gEfiMdeModulePkgTokenSpaceGuid.PcdVideoVerticalResolution
 
 [Guids]
 
