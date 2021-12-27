@@ -1,0 +1,40 @@
+#  Trng.inf
+#
+#  Copyright 2021, Jared McNeill <jmcneill@invisible.ca>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#
+
+[Defines]
+  INF_VERSION                     = 0x0001001A
+  BASE_NAME                       = TsadcDxe
+  FILE_GUID                       = 5892EC17-DE02-449D-A453-F6CF9307365C
+  MODULE_TYPE                     = DXE_DRIVER
+  VERSION_STRING                  = 1.0
+  ENTRY_POINT                     = InitializeTsadc
+
+[Sources.common]
+  Tsadc.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  IoLib
+  TimerLib
+  UefiDriverEntryPoint
+  UefiBootServicesTableLib
+
+[Protocols]
+
+[FixedPcd]
+
+[Guids]
+
+[Depex]
+  TRUE

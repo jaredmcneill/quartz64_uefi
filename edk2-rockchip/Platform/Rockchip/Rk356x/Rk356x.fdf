@@ -192,6 +192,11 @@ READ_LOCK_STATUS   = TRUE
   INF Silicon/Rockchip/Rk356x/Drivers/TrngDxe/TrngDxe.inf
 
   #
+  # TS-ADC Support
+  #
+  INF Silicon/Rockchip/Rk356x/Drivers/TsadcDxe/TsadcDxe.inf
+
+  #
   # RAM Disk Support
   #
   INF MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf

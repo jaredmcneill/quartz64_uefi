@@ -610,6 +610,11 @@
   Silicon/Rockchip/Rk356x/Drivers/TrngDxe/TrngDxe.inf
 
   #
+  # TS-ADC Support
+  #
+  Silicon/Rockchip/Rk356x/Drivers/TsadcDxe/TsadcDxe.inf
+
+  #
   # RAM Disk Support
   #
   MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
