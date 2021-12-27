@@ -15,6 +15,12 @@ CruGetCoreClockRate (
   );
 
 VOID
+CruAssertSoftReset (
+  IN UINT32 Index,
+  IN UINT8 Bit
+  );
+
+VOID
 CruDeassertSoftReset (
   IN UINT32 Index,
   IN UINT8 Bit

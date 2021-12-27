@@ -349,6 +349,15 @@ CruEnableClock (
 }
 
 VOID
+CruAssertSoftReset (
+  IN UINT32 Index,
+  IN UINT8 Bit
+  )
+{
+    MmioWrite32 (CRU_SOFTRST_CON (Index), (1U << (Bit + 16)) | (1U << Bit));
+}
+
+VOID
 CruDeassertSoftReset (
   IN UINT32 Index,
   IN UINT8 Bit
