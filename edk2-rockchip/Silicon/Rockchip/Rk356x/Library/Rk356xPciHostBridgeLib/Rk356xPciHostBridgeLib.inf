@@ -25,16 +25,21 @@
 
 [Sources]
   PciHostBridgeLib.c
+  PciHostBridgeInit.c
 
 [Packages]
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
   ArmPkg/ArmPkg.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
 
 [LibraryClasses]
   DebugLib
   DevicePathLib
   MemoryAllocationLib
+  CruLib
+  GpioLib
+  MultiPhyLib
 
 [FixedPcd]
   gArmTokenSpaceGuid.PcdPciBusMin
@@ -48,3 +53,8 @@
   gArmTokenSpaceGuid.PcdPciMmio64Base
   gArmTokenSpaceGuid.PcdPciMmio64Size
   gEfiMdePkgTokenSpaceGuid.PcdPciMmio64Translation
+  gRk356xTokenSpaceGuid.PcdPcieResetGpioBank
+  gRk356xTokenSpaceGuid.PcdPcieResetGpioPin
+  gRk356xTokenSpaceGuid.PcdPciePowerGpioBank
+  gRk356xTokenSpaceGuid.PcdPciePowerGpioPin
+  gRk356xTokenSpaceGuid.PcdPcieLinkSpeed

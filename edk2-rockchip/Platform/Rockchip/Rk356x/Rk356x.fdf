@@ -166,7 +166,6 @@ READ_LOCK_STATUS   = TRUE
   #
   # PCI Support
   #
-  INF Silicon/Rockchip/Rk356x/Drivers/PciHostDxe/PciHostDxe.inf
   INF MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
   INF MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
   INF EmbeddedPkg/Drivers/NonCoherentIoMmuDxe/NonCoherentIoMmuDxe.inf

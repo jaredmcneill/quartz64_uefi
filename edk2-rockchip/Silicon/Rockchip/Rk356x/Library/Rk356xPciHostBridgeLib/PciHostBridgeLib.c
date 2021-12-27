@@ -17,6 +17,9 @@
 #include <Protocol/PciRootBridgeIo.h>
 #include <Protocol/PciHostBridgeResourceAllocation.h>
 
+#include "PciHostBridgeInit.h"
+
+
 #pragma pack(1)
 typedef struct {
   ACPI_HID_DEVICE_PATH     AcpiDevicePath;
@@ -69,7 +72,14 @@ PciHostBridgeGetRootBridges (
   )
 {
   PCI_ROOT_BRIDGE     *RootBridge;
+  EFI_STATUS          Status;
 
+  Status = InitializePciHost ();
+  if (EFI_ERROR (Status)) {
+    *Count = 0;
+    return NULL;
+  }
+  
   *Count = 1;
   RootBridge = AllocateZeroPool (*Count * sizeof *RootBridge);
 

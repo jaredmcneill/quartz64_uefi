@@ -7,6 +7,7 @@
 
 **/
 
+#include <PiDxe.h>
 #include <Library/BaseLib.h>
 #include <Library/PrintLib.h>
 #include <Library/DebugLib.h>
@@ -17,6 +18,7 @@
 #include <Library/UefiBootServicesTableLib.h>
 #include <IndustryStandard/Pci.h>
 #include <IndustryStandard/Rk356x.h>
+#include "PciHostBridgeInit.h"
 
 /* APB Registers */
 #define PCIE_CLIENT_GENERAL_CON         0x0000
@@ -266,10 +268,8 @@ PciSetupAtu (
 }
 
 EFI_STATUS
-EFIAPI
 InitializePciHost (
-  IN EFI_HANDLE            ImageHandle,
-  IN EFI_SYSTEM_TABLE      *SystemTable
+  VOID
   )
 {
   EFI_PHYSICAL_ADDRESS     ApbBase = PCIE2X1_APB_BASE;

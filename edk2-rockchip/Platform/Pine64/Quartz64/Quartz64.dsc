@@ -590,7 +590,6 @@
   #
   # PCI Support
   #
-  Silicon/Rockchip/Rk356x/Drivers/PciHostDxe/PciHostDxe.inf
   MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
   MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
   EmbeddedPkg/Drivers/NonCoherentIoMmuDxe/NonCoherentIoMmuDxe.inf
