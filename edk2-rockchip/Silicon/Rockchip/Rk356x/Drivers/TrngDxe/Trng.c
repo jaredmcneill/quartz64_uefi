@@ -23,12 +23,15 @@
 #define TRNG_RNG_CTL            (TRNG_BASE + 0x0400)
 #define  RNG_LEN_SHIFT          4
 #define  RNG_LEN_256            (3 << RNG_LEN_SHIFT)
+#define  RING_SEL_SHIFT         2
+#define  RING_SEL_FASTEST       (3 << RING_SEL_SHIFT)
 #define  RNG_ENABLE             BIT1
 #define  RNG_START              BIT0
 #define TRNG_RNG_SAMPLE_COUNT   (TRNG_BASE + 0x0404)
 #define TRNG_RNG_DOUT(n)        (TRNG_BASE + 0x0410 + (n) * 0x4)
 
 #define DEFAULT_RNG_SAMPLE_COUNT    100
+#define RNG_START_RETRY_COUNT       100000
 #define MAX_BYTES_PER_READ          32
 
 STATIC
@@ -40,15 +43,15 @@ TrngStart (
     UINT32 Retry;
 
     MmioWrite32 (TRNG_RNG_SAMPLE_COUNT, DEFAULT_RNG_SAMPLE_COUNT);
-    MmioWrite32 (TRNG_RNG_CTL, (0xFFFFU << 16) | RNG_LEN_256 | RNG_ENABLE | RNG_START);
-    for (Retry = 0; Retry < 10000; Retry++) {
+    MmioWrite32 (TRNG_RNG_CTL, (0xFFFFU << 16) | RNG_LEN_256 | RNG_ENABLE | RING_SEL_FASTEST);
+    MmioWrite32 (TRNG_RNG_CTL, (RNG_START << 16) | RNG_START);
+    for (Retry = 0; Retry < RNG_START_RETRY_COUNT; Retry++) {
         if ((MmioRead32 (TRNG_RNG_CTL) & RNG_START) == 0) {
             break;
         }
-        MicroSecondDelay (100);
     }
-    ASSERT (Retry < 1000);
-    if (Retry == 1000) {
+    ASSERT (Retry < RNG_START_RETRY_COUNT);
+    if (Retry == RNG_START_RETRY_COUNT) {
         return EFI_DEVICE_ERROR;
     }
 
@@ -124,6 +127,7 @@ TrngGetRNG (
 
         for (Index = 0; Index < 8; Index++) {
             Val = MmioRead32 (TRNG_RNG_DOUT (Index));
+            DEBUG ((DEBUG_INFO, "TRNG: TRNG_RNG_DOUT (%u) = 0x%08X\n", Index, Val));
             Count = MIN (RNGValueLength, 4);
             CopyMem (RNGValue, &Val, Count);
             RNGValue += Count;
@@ -161,8 +165,8 @@ TrngInit (
         }
         MicroSecondDelay (100);
     }
-    ASSERT (Retry < 1000);
-    if (Retry == 1000) {
+    ASSERT (Retry < 10000);
+    if (Retry == 10000) {
         return EFI_DEVICE_ERROR;
     }
 
