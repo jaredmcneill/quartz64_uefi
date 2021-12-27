@@ -127,7 +127,6 @@ TrngGetRNG (
 
         for (Index = 0; Index < 8; Index++) {
             Val = MmioRead32 (TRNG_RNG_DOUT (Index));
-            DEBUG ((DEBUG_INFO, "TRNG: TRNG_RNG_DOUT (%u) = 0x%08X\n", Index, Val));
             Count = MIN (RNGValueLength, 4);
             CopyMem (RNGValue, &Val, Count);
             RNGValue += Count;
