@@ -1,3 +1,9 @@
+#### 2021-12-27
+
+* Add TRNG support.
+* Change OHCI hardware ID to PRP0001 with a "generic-ohci" compatible string.
+* Define root hub and ports for OHCI and EHCI controllers in the DSDT to help OSes discover companion controllers.
+
 #### 2021-12-23
 
 * Improved PCIe support.
