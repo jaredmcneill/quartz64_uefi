@@ -22,6 +22,7 @@
 #define VOP_BASE            0xFE040000UL
 #define HDMI_BASE           0xFE0A0000UL
 #define PCIE2X1_APB_BASE    0xFE260000UL
+#define TRNG_BASE           0xFE388000UL
 #define PIPE_PHY(n)         (0xFE820000UL + (n) * 0x10000)
 #define PCIE2X1_S_BASE      0x300000000UL
 #define PCIE2X1_DBI_BASE    0x3C0000000UL

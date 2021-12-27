@@ -605,6 +605,11 @@
   MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
 
   #
+  # TRNG Support
+  #
+  Silicon/Rockchip/Rk356x/Drivers/TrngDxe/TrngDxe.inf
+
+  #
   # RAM Disk Support
   #
   MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf

@@ -1,0 +1,43 @@
+#  Trng.inf
+#
+#  Copyright 2021, Jared McNeill <jmcneill@invisible.ca>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#
+
+[Defines]
+  INF_VERSION                     = 0x0001001A
+  BASE_NAME                       = TrngDxe
+  FILE_GUID                       = 86E0803A-9DC9-4BF3-A80B-C3C589F1A5BB
+  MODULE_TYPE                     = DXE_DRIVER
+  VERSION_STRING                  = 1.0
+  ENTRY_POINT                     = InitializeTrng
+
+[Sources.common]
+  Trng.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  IoLib
+  TimerLib
+  UefiDriverEntryPoint
+  UefiBootServicesTableLib
+
+[Protocols]
+  gEfiRngProtocolGuid   ## BY_START
+
+[FixedPcd]
+
+[Guids]
+  gEfiRngAlgorithmRaw
+
+[Depex]
+  TRUE

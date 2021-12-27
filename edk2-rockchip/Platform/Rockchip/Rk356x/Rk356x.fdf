@@ -187,6 +187,11 @@ READ_LOCK_STATUS   = TRUE
   INF MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
 
   #
+  # TRNG Support
+  #
+  INF Silicon/Rockchip/Rk356x/Drivers/TrngDxe/TrngDxe.inf
+
+  #
   # RAM Disk Support
   #
   INF MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
