@@ -107,6 +107,7 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
       Method (_TMP) {
         Return (\_SB.THRM.TMP0)
       }
+      Name (_CRT, 3882) // 115C
       Name (_PSL, Package() {
         \_SB.CPU0,
         \_SB.CPU1,
@@ -121,6 +122,7 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
       Method (_TMP) {
         Return (\_SB.THRM.TMP1)
       }
+      Name (_CRT, 3882) // 115C
     }
 
     // UART DW APB
