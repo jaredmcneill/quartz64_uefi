@@ -363,10 +363,10 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
       Name (_BBN, One)
 
       Name (_PRT, Package() {
-        Package (4) { 0x0FFFF, 0, Zero, 104 },
-        Package (4) { 0x0FFFF, 1, Zero, 104 },
-        Package (4) { 0x0FFFF, 2, Zero, 104 },
-        Package (4) { 0x0FFFF, 3, Zero, 104 }
+        Package (4) { 0x1FFFF, 0, Zero, 104 },
+        Package (4) { 0x1FFFF, 1, Zero, 104 },
+        Package (4) { 0x1FFFF, 2, Zero, 104 },
+        Package (4) { 0x1FFFF, 3, Zero, 104 }
       })
 
       Method (_CRS, 0, Serialized) {
