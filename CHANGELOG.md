@@ -1,3 +1,9 @@
+#### 2021-12-28
+
+* Add thermal sensor support.
+* PCI legacy INTx routing fixes.
+* New boot logo.
+
 #### 2021-12-27
 
 * Add TRNG support.
