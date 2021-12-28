@@ -32,7 +32,6 @@
   NonDiscoverableDeviceRegistrationLib
   UefiBootServicesTableLib
   UefiDriverEntryPoint
-  CruLib
 
 [FixedPcd]
   gRk356xTokenSpaceGuid.PcdNumUsb2Controller

@@ -12,7 +12,6 @@
 #include <Library/IoLib.h>
 #include <Library/NonDiscoverableDeviceRegistrationLib.h>
 #include <Library/UefiBootServicesTableLib.h>
-#include <Library/CruLib.h>
 
 #include "UsbHcd.h"
 #include "UsbPhy.h"
@@ -355,8 +354,6 @@ InitializeUsbHcd (
                   &gEfiEndOfDxeEventGroupGuid,
                   &EndOfDxeEvent
                   );
-
-  CruGetSdmmcClockRate (0); // XXX
 
   return Status;
 }
