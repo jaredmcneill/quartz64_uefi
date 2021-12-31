@@ -1,0 +1,60 @@
+## @file
+#
+#  ACPI table data and ASL sources required to boot the platform.
+#
+#  Copyright (c) 2021, Jared McNeill <jmcneill@invisible.ca>
+#  Copyright (c) 2020, Linaro Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = Rk356xAcpiTables
+  FILE_GUID                      = 0FBE0D20-3528-4F07-838B-9A711C62654F
+  MODULE_TYPE                    = USER_DEFINED
+  VERSION_STRING                 = 1.0
+
+[Sources]
+  ROC-RK3566-PC/Dsdt.asl
+  Dbg2.aslc
+  Fadt.aslc
+  Gtdt.aslc
+  Madt.aslc
+  Mcfg.aslc
+  Spcr.aslc
+
+[Packages]
+  ArmPlatformPkg/ArmPlatformPkg.dec
+  ArmPkg/ArmPkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Platform/Rockchip/Rk356x/Rk356x.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+
+[FixedPcd]
+  gArmTokenSpaceGuid.PcdGicDistributorBase
+  gArmTokenSpaceGuid.PcdGicRedistributorsBase
+
+  gArmTokenSpaceGuid.PcdArmArchTimerSecIntrNum
+  gArmTokenSpaceGuid.PcdArmArchTimerIntrNum
+  gArmTokenSpaceGuid.PcdArmArchTimerHypIntrNum
+  gArmTokenSpaceGuid.PcdArmArchTimerVirtIntrNum
+
+  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultCreatorId
+  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultCreatorRevision
+  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultOemId
+  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultOemTableId
+  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiDefaultOemRevision
+
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialClockRate
+
+  gRk356xTokenSpaceGuid.PcdUsb2BaseAddr
+  gRk356xTokenSpaceGuid.PcdUsb2Size
+  gRk356xTokenSpaceGuid.PcdNumUsb2Controller
+
+[BuildOptions]
+  GCC:*_*_*_ASL_FLAGS       = -vw3133 -vw3150
