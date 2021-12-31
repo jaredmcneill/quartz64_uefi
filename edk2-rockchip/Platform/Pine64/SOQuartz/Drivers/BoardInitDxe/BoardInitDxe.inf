@@ -1,0 +1,50 @@
+#/** @file
+#
+#  Board init SOQuartz platforms
+#
+#  Copyright (c) 2021 Jared McNeill <jmcneill@invisible.ca>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = BoardInitDxe
+  FILE_GUID                      = 5DCE856E-6A5A-11EC-9536-5743ECCE7DFC
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = BoardInitDriverEntryPoint
+
+[Sources]
+  BoardInitDxe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  ArmPlatformPkg/ArmPlatformPkg.dec
+  ArmPkg/ArmPkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  Platform/Rockchip/Rk356x/Rk356x.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  ArmLib
+  UefiBootServicesTableLib
+  MemoryAllocationLib
+  BaseMemoryLib
+  BaseLib
+  UefiLib
+  UefiDriverEntryPoint
+  DebugLib
+  PrintLib
+  TimeBaseLib
+  CruLib
+  GpioLib
+  MultiPhyLib
+
+[Protocols]
+
+
+[Depex]
+  TRUE

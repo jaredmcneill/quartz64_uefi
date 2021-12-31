@@ -1,0 +1,94 @@
+/** @file
+*  Multiple APIC Description Table (MADT)
+*
+*  Copyright (c) 2021, Jared McNeill <jmcneill@invisible.ca>
+*  Copyright (c) 2012 - 2016, ARM Limited. All rights reserved.
+*  Copyright (c) 2018, Linaro Limited. All rights reserved.
+*
+*  SPDX-License-Identifier: BSD-2-Clause-Patent
+*
+**/
+
+#include <Library/AcpiLib.h>
+#include <Library/ArmLib.h>
+#include <Library/PcdLib.h>
+#include <IndustryStandard/Acpi.h>
+
+#include "AcpiHeader.h"
+
+//
+// Multiple APIC Description Table
+//
+#pragma pack (1)
+
+typedef struct {
+  EFI_ACPI_6_0_MULTIPLE_APIC_DESCRIPTION_TABLE_HEADER   Header;
+  EFI_ACPI_6_0_GIC_STRUCTURE                            GicInterfaces[4];
+  EFI_ACPI_6_0_GIC_DISTRIBUTOR_STRUCTURE                GicDistributor;
+  EFI_ACPI_6_0_GICR_STRUCTURE                           GicRedistributors;
+  EFI_ACPI_6_0_GIC_MSI_FRAME_STRUCTURE                  GicMsiFrame;
+} EFI_ACPI_6_0_MULTIPLE_APIC_DESCRIPTION_TABLE;
+
+#pragma pack ()
+
+EFI_ACPI_6_0_MULTIPLE_APIC_DESCRIPTION_TABLE Madt = {
+  {
+    ACPI_HEADER (
+      EFI_ACPI_6_0_MULTIPLE_APIC_DESCRIPTION_TABLE_SIGNATURE,
+      EFI_ACPI_6_0_MULTIPLE_APIC_DESCRIPTION_TABLE,
+      EFI_ACPI_6_0_MULTIPLE_APIC_DESCRIPTION_TABLE_REVISION
+    ),
+    //
+    // MADT specific fields
+    //
+    0, // LocalApicAddress
+    0, // Flags
+  },
+  {
+    // Format: EFI_ACPI_6_0_GICC_STRUCTURE_INIT(GicId, AcpiCpuUid, Mpidr, Flags,
+    //                                          PmuIrq, GicBase, GicVBase,
+    //                                          GicHBase, GsivId, GicRBase)
+    // Note: The GIC Structure of the primary CPU must be the first entry
+    // (see note in 5.2.12.14 GICC Structure of ACPI v6.0).
+    EFI_ACPI_6_0_GICC_STRUCTURE_INIT( // A55-0
+        0, 0, GET_MPID(0, 0x000), EFI_ACPI_6_0_GIC_ENABLED, 260,
+        0, 0, 0, 25, 0 /* GicRBase */, 0 /* Efficiency */),
+    EFI_ACPI_6_0_GICC_STRUCTURE_INIT( // A55-1
+        0, 1, GET_MPID(0, 0x100), EFI_ACPI_6_0_GIC_ENABLED, 261,
+        0, 0, 0, 25, 0 /* GicRBase */, 0 /* Efficiency */),
+    EFI_ACPI_6_0_GICC_STRUCTURE_INIT( // A55-2
+        0, 2, GET_MPID(0, 0x200), EFI_ACPI_6_0_GIC_ENABLED, 262,
+        0, 0, 0, 25, 0 /* GicRBase */, 0 /* Efficiency */),
+    EFI_ACPI_6_0_GICC_STRUCTURE_INIT( // A55-3
+        0, 3, GET_MPID(0, 0x300), EFI_ACPI_6_0_GIC_ENABLED, 263,
+        0, 0, 0, 25, 0 /* GicRBase */, 0 /* Efficiency */),
+  },
+  // GIC Distributor Entry
+  EFI_ACPI_6_0_GIC_DISTRIBUTOR_INIT (0, FixedPcdGet64 (PcdGicDistributorBase),
+                                     0, EFI_ACPI_6_0_GIC_V3),
+  // GIC Redistributors Entry
+  {
+    EFI_ACPI_6_0_GICR,
+    sizeof (EFI_ACPI_6_0_GICR_STRUCTURE),
+    0,
+    FixedPcdGet64 (PcdGicRedistributorsBase),
+    0xc0000
+  },
+  // GIC MSI Frame
+  {
+    EFI_ACPI_6_0_GIC_MSI_FRAME,
+    sizeof (EFI_ACPI_6_0_GIC_MSI_FRAME_STRUCTURE),
+    EFI_ACPI_RESERVED_WORD,
+    0,
+    FixedPcdGet64 (PcdGicDistributorBase) + 0x10000,
+    EFI_ACPI_6_0_SPI_COUNT_BASE_SELECT,
+    24,
+    296
+  }
+};
+
+//
+// Reference the table being generated to prevent the optimizer
+// from removing the data structure from the executable
+//
+VOID* CONST ReferenceAcpiTable = &Madt;
