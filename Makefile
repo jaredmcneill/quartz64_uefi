@@ -18,7 +18,7 @@ sdcard: uefi_release
 	parted -s sdcard.img unit s mkpart uboot 8MiB 16MiB
 	parted -s sdcard.img unit s mkpart env 16MiB 32MiB
 
-	for size in 4GB 8GB; do						\
+	for size in 2GB 4GB 8GB; do					\
 		cp sdcard.img sdcard_$${size}.img;			\
 		dd if=idblock.bin of=sdcard_$${size}.img 		\
 		    seek=64 conv=notrunc;				\
@@ -29,6 +29,7 @@ sdcard: uefi_release
 
 .PHONY: release
 release: sdcard
+	gzip sdcard_2GB.img
 	gzip sdcard_4GB.img
 	gzip sdcard_8GB.img
 

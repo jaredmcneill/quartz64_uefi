@@ -68,6 +68,8 @@ test -r rkbin/${BL31} || (echo "rkbin/${BL31} not found"; false)
 . edk2/edksetup.sh
 
 build_uefitools
+build_uefi 0x80000000
+build_fit 2GB
 build_uefi 0xF0000000
 build_fit 4GB
 build_uefi 0x200000000
