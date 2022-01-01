@@ -60,7 +60,7 @@ build_fit() {
 	echo " => Building FIT (${tag})"
 	./scripts/extractbl31.py rkbin/${BL31}
 	cp -f Build/${board}/${RKUEFIBUILDTYPE}_GCC5/FV/RK356X_EFI.fd Build/RK356X_EFI.fd
-	./rkbin/tools/mkimage -f uefi.its -E ${board}_EFI_${tag}.itb
+	./rkbin/tools/mkimage -f uefi_${board}.its -E ${board}_EFI_${tag}.itb
 	rm -f bl31_0x*.bin Build/RK356X_EFI.fd
 }
 
