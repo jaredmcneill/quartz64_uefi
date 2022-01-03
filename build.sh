@@ -56,7 +56,7 @@ build_idblock() {
 
 build_fit() {
 	board=$1
-        board_upper=`echo $board | tr '[:lower:]' '[:upper:]'`
+	board_upper=`echo $board | tr '[:lower:]' '[:upper:]'`
 	tag=$2
 	echo " => Building FIT (${tag})"
 	./scripts/extractbl31.py rkbin/${BL31}
