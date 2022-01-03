@@ -39,6 +39,7 @@
   DebugLib
   PrintLib
   TimeBaseLib
+  TimerLib
   CruLib
   GpioLib
   MultiPhyLib

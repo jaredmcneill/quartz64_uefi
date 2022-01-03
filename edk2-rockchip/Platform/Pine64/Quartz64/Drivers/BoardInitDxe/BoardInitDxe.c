@@ -17,6 +17,7 @@
 #include <Library/PcdLib.h>
 #include <Library/PrintLib.h>
 #include <Library/IoLib.h>
+#include <Library/TimerLib.h>
 #include <Library/CruLib.h>
 #include <Library/GpioLib.h>
 #include <Library/MultiPhyLib.h>
@@ -25,6 +26,50 @@
 #include <Protocol/ArmScmi.h>
 #include <Protocol/ArmScmiClockProtocol.h>
 
+#include <IndustryStandard/Rk356x.h>
+#include <IndustryStandard/Rk356xCru.h>
+
+#define GRF_MAC1_CON0           (SYS_GRF + 0x0388)
+#define  CLK_RX_DL_CFG_SHIFT    8
+#define  CLK_TX_DL_CFG_SHIFT    0
+#define GRF_MAC1_CON1           (SYS_GRF + 0x038C)
+#define  PHY_INTF_SEL_SHIFT     4
+#define  PHY_INTF_SEL_MASK      (0x7U << PHY_INTF_SEL_SHIFT)
+#define  PHY_INTF_SEL_RGMII     (1U << PHY_INTF_SEL_SHIFT)
+#define  FLOWCTRL               BIT3
+#define  MAC_SPEED              BIT2
+#define  RXCLK_DLY_ENA          BIT1
+#define  TXCLK_DLY_ENA          BIT0
+
+#define TX_DELAY                0x30
+#define RX_DELAY                0x10
+
+typedef struct {
+  CONST char *Name;
+  UINT8 Group;
+  UINT8 Pin;
+  UINT8 Function;
+  GPIO_PIN_PULL Pull;
+  GPIO_PIN_DRIVE Drive;
+} BOARD_IOMUX_CONFIG;
+
+STATIC CONST BOARD_IOMUX_CONFIG mGmac1IomuxConfig[] = {
+  { "gmac1_mdcm0",        3, GPIO_PIN_PC4, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_mdiom0",       3, GPIO_PIN_PC5, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_txd0m0",       3, GPIO_PIN_PB5, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+  { "gmac1_txd1m0",       3, GPIO_PIN_PB6, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+  { "gmac1_txenm0",       3, GPIO_PIN_PB7, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_rxd0m0",       3, GPIO_PIN_PB1, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_rxd1m0",       3, GPIO_PIN_PB2, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_rxdvcrsm0",    3, GPIO_PIN_PB3, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_rxclkm0",      3, GPIO_PIN_PA7, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_txclkm0",      3, GPIO_PIN_PA6, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_1 },
+  { "gmac1_mclkinoutm0",  3, GPIO_PIN_PC0, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_rxd2m0",       3, GPIO_PIN_PA4, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_rxd3m0",       3, GPIO_PIN_PA5, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_txd2m0",       3, GPIO_PIN_PA2, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+  { "gmac1_txd3m0",       3, GPIO_PIN_PA3, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+};
 
 STATIC
 EFI_STATUS
@@ -153,6 +198,56 @@ BoardInitSetCpuSpeed (
   return EFI_SUCCESS;
 }
 
+STATIC
+VOID
+BoardInitGmac (
+  VOID
+  )
+{
+  UINT32 Index;
+
+  /* Assert reset */
+  CruAssertSoftReset (14, 12);
+
+  /* Configure pins */
+  for (Index = 0; Index < ARRAY_SIZE (mGmac1IomuxConfig); Index++) {
+    CONST BOARD_IOMUX_CONFIG *Mux = &mGmac1IomuxConfig[Index];
+    DEBUG ((DEBUG_INFO, "BOARD: Configuring pin '%a'\n", Mux->Name));
+    GpioPinSetFunction (Mux->Group, Mux->Pin, Mux->Function);
+    GpioPinSetPull (Mux->Group, Mux->Pin, Mux->Pull);
+    if (Mux->Drive != GPIO_PIN_DRIVE_DEFAULT) {
+      GpioPinSetDrive (Mux->Group, Mux->Pin, Mux->Drive);
+    }
+  }
+
+  /* Setup clocks */
+  MmioWrite32 (CRU_CLKSEL_CON (33), 0x00370004);  // Set rmii1_mode to rgmii mode
+                                                  // Set rgmii1_clk_sel to 125M
+                                                  // Set rmii1_extclk_sel to mac1 clock from IO
+
+  /* Configure GMAC1 */
+  MmioWrite32 (GRF_MAC1_CON0,
+               0x7F7F0000U |
+               (TX_DELAY << CLK_TX_DL_CFG_SHIFT) |
+               (RX_DELAY << CLK_RX_DL_CFG_SHIFT));
+  MmioWrite32 (GRF_MAC1_CON1,
+               ((PHY_INTF_SEL_MASK | TXCLK_DLY_ENA | RXCLK_DLY_ENA) << 16) |
+               PHY_INTF_SEL_RGMII |
+               TXCLK_DLY_ENA |
+               RXCLK_DLY_ENA);
+
+  /* Reset PHY */
+  GpioPinSetDirection (0, GPIO_PIN_PC3, GPIO_PIN_OUTPUT);
+  MicroSecondDelay (1000);
+  GpioPinWrite (0, GPIO_PIN_PC3, 0);
+  MicroSecondDelay (20000);
+  GpioPinWrite (0, GPIO_PIN_PC3, 1);
+  MicroSecondDelay (100000);
+
+  /* Deassert reset */
+  CruDeassertSoftReset (14, 12);
+}
+
 
 EFI_STATUS
 EFIAPI
@@ -181,6 +276,9 @@ BoardInitDriverEntryPoint (
   /* Set GPIO4 PB5 (USB_HOST_PWREN) output high to power USB ports */
   GpioPinSetDirection (4, GPIO_PIN_PB5, GPIO_PIN_OUTPUT);
   GpioPinWrite (4, GPIO_PIN_PB5, TRUE);
+
+  /* GMAC setup */
+  BoardInitGmac ();
 
   return EFI_SUCCESS;
 }
