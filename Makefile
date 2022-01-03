@@ -23,7 +23,7 @@ sdcard: uefi_release
 		cp sdcard.img sdcard_Quartz64_$${size}.img;			\
 		dd if=idblock.bin of=sdcard_Quartz64_$${size}.img 		\
 		    seek=64 conv=notrunc;					\
-		dd if=Quartz64_EFI_$${size}.itb of=sdcard_Quartz64_$${size}.img	\
+		dd if=QUARTZ64_EFI_$${size}.itb of=sdcard_Quartz64_$${size}.img	\
 		    seek=20480 conv=notrunc;					\
 	done
 	# SOQuartz modules
@@ -31,7 +31,7 @@ sdcard: uefi_release
 		cp sdcard.img sdcard_SOQuartz_$${size}.img;			\
 		dd if=idblock.bin of=sdcard_SOQuartz_$${size}.img 		\
 		    seek=64 conv=notrunc;					\
-		dd if=SOQuartz_EFI_$${size}.itb of=sdcard_SOQuartz_$${size}.img	\
+		dd if=SOQUARTZ_EFI_$${size}.itb of=sdcard_SOQuartz_$${size}.img	\
 		    seek=20480 conv=notrunc;					\
 	done
 	rm -f sdcard.img
@@ -45,7 +45,7 @@ clean:
 	rm -rf Build
 	rm -f bl31_*.bin
 	rm -f idblock.bin
-	rm -f SOQuartz_EFI_*.itb
-	rm -f Quartz64_EFI_*.itb
+	rm -f QUARTZ64_EFI_*.itb
+	rm -f SOQUARTZ_EFI_*.itb
 	rm -f .uefitools_done
 	rm -f sdcard_*.img
