@@ -1,3 +1,8 @@
+#### 2022-01-03
+
+* Add GMAC and PHY initialization for Quartz64 Model A.
+* More PCI legacy INTx routing fixes.
+
 #### 2021-12-28
 
 * Add thermal sensor support.
