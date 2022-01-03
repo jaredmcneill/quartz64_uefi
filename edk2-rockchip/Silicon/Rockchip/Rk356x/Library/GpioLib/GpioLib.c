@@ -15,11 +15,41 @@
 #include <Library/GpioLib.h>
 #include <IndustryStandard/Rk356x.h>
 
+#define GRF_GPIO_IOMUX_REG(Pin)         (((Pin) / 4) * 4)
+#define GRF_GPIO_IOMUX_SHIFT(Pin)       (((Pin) % 4) * 4)
+#define GRF_GPIO_IOMUX_MASK(Pin)        (0x7U << (GRF_GPIO_IOMUX_SHIFT(Pin) + 16))
+
+#define GRF_GPIO_P_REG(Pin)             (((Pin) / 8) * 4)
+#define GRF_GPIO_P_SHIFT(Pin)           (((Pin) % 8) * 2)
+#define GRF_GPIO_P_MASK(Pin)            (0x3U << (GRF_GPIO_P_SHIFT (Pin) + 16))
+
+#define GRF_GPIO_DS_REG(Pin)            (((Pin) / 2) * 4)
+#define GRF_GPIO_DS_SHIFT(Pin)          (((Pin) % 2) * 8)
+#define GRF_GPIO_DS_MASK(Pin)           (0x3FU << (GRF_GPIO_DS_SHIFT (Pin) + 16))
+
 #define GPIO_SWPORT_DR(Pin)             ((Pin) < 16 ? 0x0000 : 0x0004)
 #define GPIO_SWPORT_DDR(Pin)            ((Pin) < 16 ? 0x0008 : 0x000C)
 
 #define GPIO_WRITE_MASK(Pin)            (1U << (((Pin) % 16) + 16))
 #define GPIO_VALUE_MASK(Pin, Value)     ((UINT32)Value << ((Pin) % 16))
+
+#define GPIO_NGROUPS                    5
+
+typedef struct {
+  EFI_PHYSICAL_ADDRESS  IOMUX;
+  EFI_PHYSICAL_ADDRESS  P;
+  EFI_PHYSICAL_ADDRESS  DS;
+} GPIO_PINMUX_REGS;
+
+STATIC GPIO_PINMUX_REGS mPinmuxReg[GPIO_NGROUPS] = {
+#define REG_BASE(Base, IomuxOff, POff, DsOff)   { .IOMUX = (Base) + (IomuxOff), .P = (Base) + (POff), .DS = (Base) + (POff) }
+  [0] = REG_BASE(PMU_GRF, 0x0000, 0x0020, 0x0070),
+  [1] = REG_BASE(SYS_GRF, 0x0000, 0x0080, 0x0200),
+  [2] = REG_BASE(SYS_GRF, 0x0020, 0x0090, 0x0240),
+  [3] = REG_BASE(SYS_GRF, 0x0040, 0x00A0, 0x0280),
+  [4] = REG_BASE(SYS_GRF, 0x0060, 0x00B0, 0x02C0),  
+#undef REG_BASE
+};
 
 VOID
 GpioPinSetDirection (
@@ -51,4 +81,56 @@ GpioPinRead (
 {
     CONST UINT32 Value = MmioRead32 (GPIO_BASE (Group) + GPIO_SWPORT_DR (Pin));
     return (Value & GPIO_VALUE_MASK (Pin, 1)) != 0;
+}
+
+VOID
+GpioPinSetFunction (
+  IN UINT8 Group,
+  IN UINT8 Pin,
+  IN UINT8 Function
+  )
+{
+  ASSERT (Group < GPIO_NGROUPS);
+
+  CONST EFI_PHYSICAL_ADDRESS Reg = mPinmuxReg[Group].IOMUX + GRF_GPIO_IOMUX_REG (Pin);
+  CONST UINT32 Value = GRF_GPIO_IOMUX_MASK (Pin) | ((UINT32)Function << GRF_GPIO_IOMUX_SHIFT (Pin));
+
+  DEBUG ((DEBUG_INFO, "GPIO: SetFunction %u %02X %04X      0x%lX = 0x%08X\n", Group, Pin, Function, Reg, Value));
+
+  MmioWrite32 (Reg, Value);
+}
+
+VOID
+GpioPinSetPull (
+  IN UINT8 Group,
+  IN UINT8 Pin,
+  IN GPIO_PIN_PULL Pull
+  )
+{
+  ASSERT (Group < GPIO_NGROUPS);
+
+  CONST EFI_PHYSICAL_ADDRESS Reg = mPinmuxReg[Group].P + GRF_GPIO_P_REG (Pin);
+  CONST UINT32 Value = GRF_GPIO_P_MASK (Pin) | ((UINT32)Pull << GRF_GPIO_P_SHIFT (Pin));
+
+  DEBUG ((DEBUG_INFO, "GPIO: SetPull     %u %02X %04X      0x%lX = 0x%08X\n", Group, Pin, Pull, Reg, Value));
+
+  MmioWrite32 (Reg, Value);
+}
+
+VOID
+GpioPinSetDrive (
+  IN UINT8 Group,
+  IN UINT8 Pin,
+  IN GPIO_PIN_DRIVE Drive
+  )
+{
+  ASSERT (Group < GPIO_NGROUPS);
+  ASSERT (Drive != GPIO_PIN_DRIVE_DEFAULT);
+
+  CONST EFI_PHYSICAL_ADDRESS Reg = mPinmuxReg[Group].DS + GRF_GPIO_DS_REG (Pin);
+  CONST UINT32 Value = GRF_GPIO_DS_MASK (Pin) | ((UINT32)Drive << GRF_GPIO_DS_SHIFT (Pin));
+
+  DEBUG ((DEBUG_INFO, "GPIO: SetDrive    %u %02X %04X      0x%lX = 0x%08X\n", Group, Pin, Drive, Reg, Value));
+
+  MmioWrite32 (Reg, Value);
 }

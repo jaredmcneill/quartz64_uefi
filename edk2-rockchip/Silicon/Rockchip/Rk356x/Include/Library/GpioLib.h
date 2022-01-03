@@ -47,6 +47,22 @@ typedef enum {
   GPIO_PIN_OUTPUT = 1
 } GPIO_PIN_DIRECTION;
 
+typedef enum {
+  GPIO_PIN_PULL_NONE  = 0,
+  GPIO_PIN_PULL_UP    = 1,
+  GPIO_PIN_PULL_DOWN  = 2
+} GPIO_PIN_PULL;
+
+typedef enum {
+  GPIO_PIN_DRIVE_DEFAULT = 0xFF,
+  GPIO_PIN_DRIVE_DISABLE = 0x0,
+  GPIO_PIN_DRIVE_0       = 0x1,
+  GPIO_PIN_DRIVE_1       = 0x3,
+  GPIO_PIN_DRIVE_2       = 0x7,
+  GPIO_PIN_DRIVE_4       = 0xf,
+  GPIO_PIN_DRIVE_5       = 0x1f
+} GPIO_PIN_DRIVE;
+
 VOID
 GpioPinSetDirection (
   IN UINT8 Group,
@@ -65,6 +81,27 @@ BOOLEAN
 GpioPinRead (
   IN UINT8 Group,
   IN UINT8 Pin
+  );
+
+VOID
+GpioPinSetFunction (
+  IN UINT8 Group,
+  IN UINT8 Pin,
+  IN UINT8 Function
+  );
+
+VOID
+GpioPinSetPull (
+  IN UINT8 Group,
+  IN UINT8 Pin,
+  IN GPIO_PIN_PULL Pull
+  );
+
+VOID
+GpioPinSetDrive (
+  IN UINT8 Group,
+  IN UINT8 Pin,
+  IN GPIO_PIN_DRIVE Drive
   );
 
 #endif /* GPIOLIB_H__ */
