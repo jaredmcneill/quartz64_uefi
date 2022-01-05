@@ -25,11 +25,12 @@ build_uefitools() {
 }
 
 build_uefi() {
-	memsize=$1
+	board=$1
+	memsize=$2
 	echo " => Building UEFI (PcdSystemMemorySize=${memsize})"
 	build -n $(getconf _NPROCESSORS_ONLN) -b ${RKUEFIBUILDTYPE} -a AARCH64 -t GCC5 \
 	    --pcd gArmTokenSpaceGuid.PcdSystemMemorySize=${memsize} \
-	    -p Platform/Pine64/Quartz64/Quartz64.dsc
+	    -p Platform/Pine64/${board}/${board}.dsc
 }
 
 build_idblock() {
@@ -54,11 +55,13 @@ build_idblock() {
 }
 
 build_fit() {
-	tag=$1
+	board=$1
+	board_upper=`echo $board | tr '[:lower:]' '[:upper:]'`
+	tag=$2
 	echo " => Building FIT (${tag})"
 	./scripts/extractbl31.py rkbin/${BL31}
-	cp -f Build/Quartz64/${RKUEFIBUILDTYPE}_GCC5/FV/RK356X_EFI.fd Build/RK356X_EFI.fd
-	./rkbin/tools/mkimage -f uefi.its -E QUARTZ64_EFI_${tag}.itb
+	cp -f Build/${board}/${RKUEFIBUILDTYPE}_GCC5/FV/RK356X_EFI.fd Build/RK356X_EFI.fd
+	./rkbin/tools/mkimage -f uefi_${board}.its -E ${board_upper}_EFI_${tag}.itb
 	rm -f bl31_0x*.bin Build/RK356X_EFI.fd
 }
 
@@ -68,12 +71,22 @@ test -r rkbin/${BL31} || (echo "rkbin/${BL31} not found"; false)
 . edk2/edksetup.sh
 
 build_uefitools
-build_uefi 0xF0000000
-build_fit 4GB
-build_uefi 0x200000000
-build_fit 8GB
+
+# Quartz64 boards
+build_uefi Quartz64 0xF0000000
+build_fit Quartz64 4GB
+build_uefi Quartz64 0x200000000
+build_fit Quartz64 8GB
+# SOQuartz modules
+build_uefi SOQuartz 0x80000000
+build_fit SOQuartz 2GB
+build_uefi SOQuartz 0xF0000000
+build_fit SOQuartz 4GB
+build_uefi SOQuartz 0x200000000
+build_fit SOQuartz 8GB
+
 build_idblock
 
 echo
-ls -l `pwd`/idblock.bin `pwd`/QUARTZ64_EFI_*.itb
+ls -l `pwd`/idblock.bin `pwd`/*_EFI_*.itb
 echo

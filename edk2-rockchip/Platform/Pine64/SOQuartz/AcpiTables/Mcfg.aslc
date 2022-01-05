@@ -1,0 +1,40 @@
+/** @file
+*  PCI Express Memory-mapped Configuration Space base address description table (MCFG)
+*
+*  Copyright (c) 2021, Jared McNeill <jmcneill@invisible.ca>
+*
+*  SPDX-License-Identifier: BSD-2-Clause-Patent
+*
+**/
+
+#include <IndustryStandard/Acpi.h>
+#include <IndustryStandard/MemoryMappedConfigurationSpaceAccessTable.h>
+#include <IndustryStandard/Rk356x.h>
+#include "AcpiHeader.h"
+
+#pragma pack(push, 1)
+
+typedef struct {
+  EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_BASE_ADDRESS_TABLE_HEADER Header;
+  EFI_ACPI_MEMORY_MAPPED_ENHANCED_CONFIGURATION_SPACE_BASE_ADDRESS_ALLOCATION_STRUCTURE Entry;
+} EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_SPACE_ACCESS_DESCRIPTION_TABLE;
+
+EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_SPACE_ACCESS_DESCRIPTION_TABLE Mcfg = {
+    {
+        ACPI_HEADER (
+            EFI_ACPI_6_4_PCI_EXPRESS_MEMORY_MAPPED_CONFIGURATION_SPACE_BASE_ADDRESS_DESCRIPTION_TABLE_SIGNATURE,
+            EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_SPACE_ACCESS_DESCRIPTION_TABLE,
+            EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_SPACE_ACCESS_TABLE_REVISION
+            ),
+    }, {
+        PCIE2X1_S_BASE + 0x8000,
+        0,  // PciSegmentGroupNumber
+        1,  // PciBusMin
+        1,  // PciBusMax
+        0   // Reserved
+    }
+};
+
+#pragma pack(pop)
+
+VOID* CONST ReferenceAcpiTable = &Mcfg;
