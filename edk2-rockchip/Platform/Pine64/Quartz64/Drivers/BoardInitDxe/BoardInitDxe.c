@@ -21,13 +21,21 @@
 #include <Library/CruLib.h>
 #include <Library/GpioLib.h>
 #include <Library/MultiPhyLib.h>
+#include <Library/OtpLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/UefiBootServicesTableLib.h>
+#include <Library/BaseMemoryLib.h>
+#include <Library/BaseCryptLib.h>
 #include <Protocol/ArmScmi.h>
 #include <Protocol/ArmScmiClockProtocol.h>
 
 #include <IndustryStandard/Rk356x.h>
 #include <IndustryStandard/Rk356xCru.h>
+
+#include "EthernetPhy.h"
+
+#define GMAC1_MAC_ADDRESS0_LOW  (GMAC1_BASE + 0x0304)
+#define GMAC1_MAC_ADDRESS0_HIGH (GMAC1_BASE + 0x0300)
 
 #define GRF_MAC1_CON0           (SYS_GRF + 0x0388)
 #define  CLK_RX_DL_CFG_SHIFT    8
@@ -204,6 +212,9 @@ BoardInitGmac (
   VOID
   )
 {
+  UINT8 OtpData[32];
+  UINT8 Hash[SHA256_DIGEST_SIZE];
+  UINT32 MacLo, MacHi;
   UINT32 Index;
 
   /* Assert reset */
@@ -246,6 +257,22 @@ BoardInitGmac (
 
   /* Deassert reset */
   CruDeassertSoftReset (14, 12);
+
+  /* Generate a MAC address from the first 32 bytes in the OTP and write it to GMAC */
+  OtpRead (0x00, sizeof (OtpData), OtpData);
+  Sha256HashAll (OtpData, sizeof (OtpData), Hash);
+  Hash[0] &= 0xFE;
+  Hash[0] |= 0x02;
+  DEBUG ((DEBUG_INFO, "BOARD: MAC address %02X:%02X:%02X:%02X:%02X:%02X\n",
+          Hash[0], Hash[1], Hash[2],
+          Hash[3], Hash[4], Hash[5]));
+  MacLo = Hash[3] | (Hash[2] << 8) | (Hash[1] << 16) | (Hash[0] << 24);
+  MacHi = Hash[5] | (Hash[4] << 8);
+  MmioWrite32 (GMAC1_MAC_ADDRESS0_LOW, MacLo);
+  MmioWrite32 (GMAC1_MAC_ADDRESS0_HIGH, MacHi);
+
+  /* Initialize Ethernet PHY */
+  EthernetPhyInit (GMAC1_BASE);
 }
 
 
@@ -256,8 +283,7 @@ BoardInitDriverEntryPoint (
   IN EFI_SYSTEM_TABLE  *SystemTable
   )
 {
-
-  DEBUG ((DEBUG_INFO, "BoardInitDriverEntryPoint() called\n"));
+  DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() called\n"));
 
   /* Set GPIO0 PD3 (WORK_LED) output high to enable LED */
   GpioPinSetDirection (0, GPIO_PIN_PD3, GPIO_PIN_OUTPUT);

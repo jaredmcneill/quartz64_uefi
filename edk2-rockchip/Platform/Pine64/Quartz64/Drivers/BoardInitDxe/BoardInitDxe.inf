@@ -18,10 +18,12 @@
 
 [Sources]
   BoardInitDxe.c
+  EthernetPhy.c
 
 [Packages]
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
+  CryptoPkg/CryptoPkg.dec
   ArmPlatformPkg/ArmPlatformPkg.dec
   ArmPkg/ArmPkg.dec
   EmbeddedPkg/EmbeddedPkg.dec
@@ -33,6 +35,7 @@
   UefiBootServicesTableLib
   MemoryAllocationLib
   BaseMemoryLib
+  BaseCryptLib
   BaseLib
   UefiLib
   UefiDriverEntryPoint
@@ -43,6 +46,7 @@
   CruLib
   GpioLib
   MultiPhyLib
+  OtpLib
 
 [Protocols]
 
