@@ -11,8 +11,8 @@ export WORKSPACE="$PWD"
 export PACKAGES_PATH=$PWD/edk2:$PWD/edk2-platforms:$PWD/edk2-non-osi:$PWD/edk2-rockchip
 export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
 
-BL31=bin/rk35/rk3568_bl31_v1.24.elf
-DDR=bin/rk35/rk3566_ddr_1056MHz_v1.08.bin
+BL31=$(grep '^PATH=.*_bl31_' rkbin/RKTRUST/RK3568TRUST.ini | cut -d = -f 2-)
+DDR=$(grep '^Path1=.*_ddr_' rkbin/RKBOOT/RK3566MINIALL.ini | cut -d = -f 2-)
 
 fetch_deps() {
 	git submodule update --init --recursive

@@ -36,6 +36,18 @@
 			};
 		};
 		atf-2 {
+				description = "ARM Trusted Firmware";
+				data = /incbin/("./bl31_0x00068000.bin");
+				type = "firmware";
+				arch = "arm64";
+				os = "arm-trusted-firmware";
+				compression = "none";
+				load = <0x00068000>;
+				hash {
+						algo = "sha256";
+				};
+		};
+		atf-3 {
 			description = "ARM Trusted Firmware";
 			data = /incbin/("./bl31_0xfdcd0000.bin");
 			type = "firmware";
@@ -47,7 +59,7 @@
 				algo = "sha256";
 			};
 		};
-		atf-3 {
+		atf-4 {
 			description = "ARM Trusted Firmware";
 			data = /incbin/("./bl31_0xfdcc9000.bin");
 			type = "firmware";
@@ -59,9 +71,21 @@
 				algo = "sha256";
 			};
 		};
+		atf-5 {
+				description = "ARM Trusted Firmware";
+				data = /incbin/("./bl31_0x00066000.bin");
+				type = "firmware";
+				arch = "arm64";
+				os = "arm-trusted-firmware";
+				compression = "none";
+				load = <0x00066000>;
+				hash {
+						algo = "sha256";
+				};
+		};
 		optee {
 			description = "OP-TEE";
-			data = /incbin/("./rkbin/bin/rk35/rk3568_bl32_v1.05.bin");
+			data = /incbin/("./rkbin/bin/rk35/rk3568_bl32_v2.01.bin");
 			type = "firmware";
 			arch = "arm64";
 			os = "op-tee";
@@ -90,7 +114,7 @@
 			description = "rk3566-soquartz";
 			rollback-index = <0x0>;
 			firmware = "atf-1";
-			loadables = "uboot", "atf-2", "atf-3", "optee";
+			loadables = "uboot", "atf-2", "atf-3", "atf-4", "atf-5", "optee";
 			
 			fdt = "fdt";
 			signature {
