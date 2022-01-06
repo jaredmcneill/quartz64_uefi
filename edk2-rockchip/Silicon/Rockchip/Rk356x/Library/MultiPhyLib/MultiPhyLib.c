@@ -158,6 +158,11 @@ MultiPhySetModeUsb3 (
 
     /* Clock setup */
     Rate = CruGetPciePhyClockRate (Index);
+    if (Rate != 24000000 && Rate != 25000000 && Rate != 100000000) {
+        CruSetPciePhySource (Index, 0);
+        Rate = CruGetPciePhyClockRate (Index);
+    }
+
     DEBUG ((DEBUG_INFO, "MultiPhySetModeUsb3(%u, ...): Rate = %lu Hz\n", Index, Rate));
     if (Rate == 24000000) {
         PhyClkSel = PHY_CLK_SEL_24M;
