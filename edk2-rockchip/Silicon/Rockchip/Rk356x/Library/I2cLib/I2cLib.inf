@@ -1,0 +1,37 @@
+#/** @file
+#
+#  RK3566/RK3568 I2C Library.
+#
+#  Copyright (c) 2022, Jared McNeill <jmcneill@invisible.ca>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = I2cLib
+  FILE_GUID                      = 56E9CC9D-D48B-41BA-9605-8722F715D381
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = I2cLib
+
+[Sources]
+  I2cLib.c
+
+[Packages]
+  ArmPkg/ArmPkg.dec
+  MdePkg/MdePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  IoLib
+  TimerLib
+
+[FixedPcd]
+
+[Guids]
