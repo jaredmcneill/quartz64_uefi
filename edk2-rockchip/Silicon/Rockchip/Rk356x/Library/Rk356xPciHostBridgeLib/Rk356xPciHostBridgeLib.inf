@@ -58,3 +58,4 @@
   gRk356xTokenSpaceGuid.PcdPciePowerGpioBank
   gRk356xTokenSpaceGuid.PcdPciePowerGpioPin
   gRk356xTokenSpaceGuid.PcdPcieLinkSpeed
+  gRk356xTokenSpaceGuid.PcdPcieNumLanes

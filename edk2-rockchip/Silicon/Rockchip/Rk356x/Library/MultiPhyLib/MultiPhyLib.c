@@ -83,7 +83,7 @@ MultiPhySetModePcie (
     ASSERT (Index == 2);
 
     /* Set SSC down-spread spectrum */
-    MmioAndThenOr32 (BaseAddr + MULTIPHY_REGISTER (32), ~0x30, 0x10);
+    MmioAndThenOr32 (BaseAddr + MULTIPHY_REGISTER (32), ~0xF0, 0x10);
 
     /* Enable PCIe mode, 32-bit data bus, 2.5 Gbps */
     GrfUpdateRegister (PhyGrfBaseAddr + PIPE_PHY_GRF_PIPE_CON0, 0xFFFF,
@@ -104,10 +104,11 @@ MultiPhySetModePcie (
     } else if (Rate == 100000000) {
         PhyClkSel = PHY_CLK_SEL_100M;
 
-        MmioAndThenOr32 (BaseAddr + MULTIPHY_REGISTER (12), ~0x07, 0x46);
-        MmioAndThenOr32 (BaseAddr + MULTIPHY_REGISTER (5), ~0xc0, 0x40);
-        MmioAndThenOr32 (BaseAddr + MULTIPHY_REGISTER (18), ~0x7f, 0x19);
-        MmioAndThenOr32 (BaseAddr + MULTIPHY_REGISTER (11), ~0xf0, 0x70);
+        MmioAndThenOr32 (BaseAddr + MULTIPHY_REGISTER (33), ~0x1C, 2 << 2);
+        MmioWrite32 (BaseAddr + MULTIPHY_REGISTER (12), 4);
+        MmioAndThenOr32 (BaseAddr + MULTIPHY_REGISTER (6), ~0xC0, 1 << 6);
+        MmioWrite32 (BaseAddr + MULTIPHY_REGISTER (18), 0x32);
+        MmioWrite32 (BaseAddr + MULTIPHY_REGISTER (11), 0xF0);
     } else {
         ASSERT (FALSE);
         return EFI_DEVICE_ERROR;
@@ -196,6 +197,9 @@ MultiPhySetMode (
     EFI_STATUS Status;
 
     ASSERT (Index <= 2);
+
+    /* Assert reset */
+    CruAssertSoftReset (SOFTRST_INDEX, SOFTRST_BIT (Index));
 
     switch (Mode) {
     case MULTIPHY_MODE_USB3:

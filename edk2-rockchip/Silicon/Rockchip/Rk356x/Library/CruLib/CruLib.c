@@ -28,6 +28,7 @@ typedef struct {
 } CRU_PLL_RATE;
 
 STATIC CRU_PLL_RATE CruPllRates[] = {
+    { .Rate = 200000000, .RefDiv = 1, .FbDiv = 100, .PostDiv1 = 3, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
     { .Rate = 148500000, .RefDiv = 1, .FbDiv = 99, .PostDiv1 = 4, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
     { .Rate = 74250000,  .RefDiv = 2, .FbDiv = 99, .PostDiv1 = 4, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
     { .Rate = 0 }
@@ -139,6 +140,25 @@ PmuCruSetPllRate (
     MmioWrite32 (PMUCRU_MODE_CON00,
                  (PMUCRU_MODE_CON00_CLK_PLL_MODE_MASK (PllNumber) << 16) |
                  (1U << PMUCRU_MODE_CON00_CLK_PLL_MODE_SHIFT (PllNumber)));
+}
+
+STATIC
+CRU_PLL_RATE *
+CruFindPllRate (
+  IN UINTN Rate
+  )
+{
+    UINT32 Index;
+    CRU_PLL_RATE *PllRate = NULL;
+
+    for (Index = 0; CruPllRates[Index].Rate != 0; Index++) {
+        if (CruPllRates[Index].Rate == Rate) {
+            PllRate = &CruPllRates[Index];
+            break;
+        }
+    }
+
+    return PllRate;
 }
 
 UINTN
@@ -291,12 +311,42 @@ CruGetPciePhyClockRate (
         Rate = CRU_CLKREF_RATE;
     } else {
         Div = (Val & PMUCRU_PMUCLKSEL_CON09_PCIEPHY_DIV_MASK (Index)) >> PMUCRU_PMUCLKSEL_CON09_PCIEPHY_DIV_SHIFT (Index);
-        Rate = PmuCruGetPllRate (PMUCRU_PPLL) / (Div + 1);
+        Rate = PmuCruGetPllRate (PMUCRU_PPLL) / 2 / (Div + 1);
     }
 
     DEBUG ((DEBUG_INFO, "CruGetPciePhyClockRate(): Index = %u, Sel = %u, Rate = %lu Hz\n", Index, Sel, Rate));
 
     return Rate;
+}
+
+
+VOID
+CruSetPciePhyClockRate (
+  IN UINT8 Index,
+  IN UINTN Rate
+  )
+{
+    CRU_PLL_RATE *PllRate;
+    UINT32 Mask;
+    UINT32 Value;
+
+    DEBUG ((DEBUG_INFO, "CruSetPpllRate(): Rate = %lu Hz\n", Rate));
+    if (Rate == 100000000) {
+        PllRate = CruFindPllRate (Rate * 2);
+        ASSERT (PllRate != NULL);
+
+        PmuCruSetPllRate (PMUCRU_PPLL, PllRate);
+
+        Mask = PMUCRU_PMUCLKSEL_CON09_PCIEPHY_DIV_MASK (Index) << 16;
+        Value = 0U << PMUCRU_PMUCLKSEL_CON09_PCIEPHY_DIV_SHIFT (Index);
+        MmioWrite32 (PMUCRU_PMUCLKSEL_CON (9), Mask | Value);
+
+        CruSetPciePhySource (Index, 1);
+    } else if (Rate == 24000000) {
+        CruSetPciePhySource (Index, 0);
+    } else {
+        ASSERT (FALSE);
+    }
 }
 
 UINTN
@@ -318,17 +368,11 @@ CruSetHdmiClockRate (
   IN UINTN Rate
   )
 {
-    UINT32 Index;
-    CRU_PLL_RATE *PllRate = NULL;
+    CRU_PLL_RATE *PllRate;
 
     DEBUG ((DEBUG_INFO, "CruSetHdmiClockRate(): Rate = %lu Hz\n", Rate));
 
-    for (Index = 0; CruPllRates[Index].Rate != 0; Index++) {
-        if (CruPllRates[Index].Rate == Rate) {
-            PllRate = &CruPllRates[Index];
-            break;
-        }
-    }
+    PllRate = CruFindPllRate (Rate);
     ASSERT (PllRate != NULL);
 
     PmuCruSetPllRate (PMUCRU_HPLL, PllRate);

@@ -49,6 +49,12 @@ CruSetPciePhySource (
   IN UINT8 Source
   );
 
+VOID
+CruSetPciePhyClockRate (
+  IN UINT8 Index,
+  IN UINTN Rate
+  );
+
 UINTN
 CruGetPciePhyClockRate (
   IN UINT8 Index

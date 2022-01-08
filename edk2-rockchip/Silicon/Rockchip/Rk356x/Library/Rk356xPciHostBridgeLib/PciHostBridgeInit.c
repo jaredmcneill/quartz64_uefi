@@ -27,6 +27,7 @@
 #define  DEVICE_TYPE_RC                 (4 << DEVICE_TYPE_SHIFT)
 #define  LINK_REQ_RST_GRT               BIT3
 #define  LTSSM_ENABLE                   BIT2
+#define PCIE_CLIENT_INTR_MASK_LEGACY    0x001C
 #define PCIE_CLIENT_GENERAL_DEBUG_INFO  0x0104
 #define PCIE_CLIENT_HOT_RESET_CTRL      0x0180
 #define  APP_LSSTM_ENABLE_ENHANCE       BIT4
@@ -45,8 +46,15 @@
 #define  LINK_STATUS_SPEED_SHIFT        16
 #define  LINK_STATUS_SPEED_MASK         (0xFU << LINK_STATUS_SPEED_SHIFT)
 #define PCIE_LINK_CTL_2                 0x00A0
+#define PL_PORT_LINK_CTRL_OFF           0x0710
+#define  LINK_CAPABLE_SHIFT             16
+#define  LINK_CAPABLE_MASK              (0x3FU << LINK_CAPABLE_SHIFT)
+#define  FAST_LINK_MODE                 BIT7
+#define  DLL_LINK_EN                    BIT5
 #define PL_GEN2_CTRL_OFF                0x080C
 #define  DIRECT_SPEED_CHANGE            BIT17
+#define  NUM_OF_LANES_SHIFT             8
+#define  NUM_OF_LANES_MASK              (0x1FU << NUM_OF_LANES_SHIFT)
 #define PL_MISC_CONTROL_1_OFF           0x08BC
 #define  DBI_RO_WR_EN                   BIT0
 
@@ -73,6 +81,7 @@
 #define PCIE_RESET_GPIO_BANK            FixedPcdGet32 (PcdPcieResetGpioBank)
 #define PCIE_RESET_GPIO_PIN             FixedPcdGet32 (PcdPcieResetGpioPin)
 #define PCIE_LINK_SPEED                 FixedPcdGet32 (PcdPcieLinkSpeed)
+#define PCIE_NUM_LANES                  FixedPcdGet32 (PcdPcieNumLanes)
 
 STATIC
 VOID
@@ -96,8 +105,9 @@ PciSetRcMode (
   IN EFI_PHYSICAL_ADDRESS ApbBase
   )
 {
-  MmioOr32 (ApbBase + PCIE_CLIENT_HOT_RESET_CTRL,
-            (APP_LSSTM_ENABLE_ENHANCE << 16) | APP_LSSTM_ENABLE_ENHANCE);
+  MmioWrite32 (ApbBase + PCIE_CLIENT_INTR_MASK_LEGACY, 0xFFFF0000);
+  MmioWrite32 (ApbBase + PCIE_CLIENT_HOT_RESET_CTRL,
+               (APP_LSSTM_ENABLE_ENHANCE << 16) | APP_LSSTM_ENABLE_ENHANCE);
   MmioWrite32 (ApbBase + PCIE_CLIENT_GENERAL_CON,
                (DEVICE_TYPE_MASK << 16) | DEVICE_TYPE_RC);
 }
@@ -108,20 +118,18 @@ PciSetupBars (
   IN EFI_PHYSICAL_ADDRESS DbiBase
   )
 {
-  DEBUG ((DEBUG_INFO, "PCIe: SetupBars: Unlock DBI RO regs at 0x%lX\n", DbiBase));
-
-  /* Allow writing RO registers through the DBI */
-  MmioOr32 (DbiBase + PL_MISC_CONTROL_1_OFF, DBI_RO_WR_EN);
-
   MmioWrite16 (DbiBase + PCI_DEVICE_CLASS, (PCI_CLASS_BRIDGE << 8) | PCI_CLASS_BRIDGE_P2P);
+}
 
+STATIC
+VOID
+PciDirectSpeedChange (
+  IN EFI_PHYSICAL_ADDRESS DbiBase
+  )
+{
   DEBUG ((DEBUG_INFO, "PCIe: SetupBars: Speed change\n"));
   /* Initiate a speed change to Gen2 or Gen3 after the link is initialized as Gen1 speed. */
   MmioOr32 (DbiBase + PL_GEN2_CTRL_OFF, DIRECT_SPEED_CHANGE);
-
-  DEBUG ((DEBUG_INFO, "PCIe: SetupBars: Lock DBI RO regs\n"));
-  /* Disallow writing RO registers through the DBI */
-  MmioAnd32 (DbiBase + PL_MISC_CONTROL_1_OFF, ~DBI_RO_WR_EN);
 }
 
 STATIC
@@ -131,15 +139,18 @@ PciSetupLinkSpeed (
   IN UINT32 Speed
   )
 {
-  /* Allow writing RO registers through the DBI */
-  MmioOr32 (DbiBase + PL_MISC_CONTROL_1_OFF, DBI_RO_WR_EN);
-
   /* Select target link speed */
-  MmioAndThenOr32 (DbiBase + PCIE_LINK_CAPABILITY, ~0xFU, Speed);
   MmioAndThenOr32 (DbiBase + PCIE_LINK_CTL_2, ~0xFU, Speed);
+  MmioAndThenOr32 (DbiBase + PCIE_LINK_CAPABILITY, ~0xFU, Speed);
 
-  /* Disallow writing RO registers through the DBI */
-  MmioAnd32 (DbiBase + PL_MISC_CONTROL_1_OFF, ~DBI_RO_WR_EN);
+  /* Disable fast link mode, select number of lanes, and enable link initialization */
+  MmioAndThenOr32 (DbiBase + PL_PORT_LINK_CTRL_OFF,
+                   ~(LINK_CAPABLE_MASK | FAST_LINK_MODE),
+                   DLL_LINK_EN | (((PCIE_NUM_LANES * 2) - 1) << LINK_CAPABLE_SHIFT));
+
+  /* Select link width */
+  MmioAndThenOr32 (DbiBase + PL_GEN2_CTRL_OFF, ~NUM_OF_LANES_MASK,
+                   PCIE_NUM_LANES << NUM_OF_LANES_SHIFT);
 }
 
 STATIC
@@ -204,6 +215,7 @@ PciEnableLtssm (
   if (Enable) {
     Val |= LTSSM_ENABLE;
   }
+
   MmioWrite32 (ApbBase + PCIE_CLIENT_GENERAL_CON, Val);
 }
 
@@ -284,34 +296,33 @@ InitializePciHost (
   UINT64                   PciIoBase;
   UINT64                   PciIoSize;
 
-  /* Configure MULTI-PHY */
-  CruSetPciePhySource (2, 0);
-  MultiPhySetMode (2, MULTIPHY_MODE_PCIE);
+  ASSERT (PCIE_RESET_GPIO_BANK != 0xFFFFFFFFU);
+  ASSERT (PCIE_RESET_GPIO_PIN != 0xFFFFFFFFU);
 
   /* Power PCIe */
   if (PCIE_POWER_GPIO_BANK != 0xFFFFFFFFU) {
+    GpioPinSetPull (PCIE_POWER_GPIO_BANK, PCIE_POWER_GPIO_PIN, GPIO_PIN_PULL_NONE);
     GpioPinSetDirection (PCIE_POWER_GPIO_BANK, PCIE_POWER_GPIO_PIN, GPIO_PIN_OUTPUT);
     GpioPinWrite (PCIE_POWER_GPIO_BANK, PCIE_POWER_GPIO_PIN, TRUE);
     gBS->Stall (100000);
   }
 
+  /* Configure MULTI-PHY */
+  CruSetPciePhyClockRate (2, 100000000);
+  // CruSetPciePhyClockRate (2, 24000000);
+  MultiPhySetMode (2, MULTIPHY_MODE_PCIE);
+
   DEBUG ((DEBUG_INFO, "PCIe: Setup clocks\n"));
   PciSetupClocks ();
+
   DEBUG ((DEBUG_INFO, "PCIe: Switching to RC mode\n"));
   PciSetRcMode (ApbBase);
+
+  /* Allow writing RO registers through the DBI */
+  MmioOr32 (DbiBase + PL_MISC_CONTROL_1_OFF, DBI_RO_WR_EN);
+
   DEBUG ((DEBUG_INFO, "PCIe: Setup BARs\n"));
   PciSetupBars (DbiBase);
-  DEBUG ((DEBUG_INFO, "PCIe: Set link speed\n"));
-  PciSetupLinkSpeed (DbiBase, PCIE_LINK_SPEED);
-
-  DEBUG ((DEBUG_INFO, "PCIe: Reset\n"));
-  if (PCIE_RESET_GPIO_BANK != 0xFFFFFFFFU) {
-    ASSERT (PCIE_RESET_GPIO_PIN != 0xFFFFFFFFU);
-    GpioPinSetDirection (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, GPIO_PIN_OUTPUT);
-    GpioPinWrite (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, 0);
-    gBS->Stall (1000000);
-    GpioPinWrite (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, 1);
-  }
 
   DEBUG ((DEBUG_INFO, "PCIe: Setup iATU\n"));
   Cfg0Base = SIZE_1MB;
@@ -325,10 +336,25 @@ InitializePciHost (
   PciSetupAtu (DbiBase, 1, IATU_TYPE_CFG1, 0x300000000UL + Cfg1Base, Cfg1Base, Cfg1Size);
   PciSetupAtu (DbiBase, 2, IATU_TYPE_IO,   0x300000000UL + PciIoBase, 0, PciIoSize);
 
+  DEBUG ((DEBUG_INFO, "PCIe: Set link speed\n"));
+  PciSetupLinkSpeed (DbiBase, PCIE_LINK_SPEED);
+  PciDirectSpeedChange (DbiBase);
+
+  /* Disallow writing RO registers through the DBI */
+  MmioAnd32 (DbiBase + PL_MISC_CONTROL_1_OFF, ~DBI_RO_WR_EN);
+
+  DEBUG ((DEBUG_INFO, "PCIe: Assert reset\n"));
+  GpioPinSetPull (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, GPIO_PIN_PULL_NONE);
+  GpioPinSetDirection (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, GPIO_PIN_OUTPUT);
+  GpioPinWrite (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, 0);
+
   DEBUG ((DEBUG_INFO, "PCIe: Start LTSSM\n"));
-  PciEnableLtssm (ApbBase, FALSE);
-  MmioWrite32 (ApbBase + PCIE_CLIENT_GENERAL_DEBUG_INFO, 0);
+
   PciEnableLtssm (ApbBase, TRUE);
+
+  gBS->Stall (100000);
+  DEBUG ((DEBUG_INFO, "PCIe: Deassert reset\n"));
+  GpioPinWrite (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, 1);
 
   /* Wait for link up */
   DEBUG ((DEBUG_INFO, "PCIe: Waiting for link up...\n"));

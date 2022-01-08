@@ -36,4 +36,5 @@
   gRk356xTokenSpaceGuid.PcdPcieResetGpioPin|0xFFFFFFFF|UINT32|0x0000000B
   gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|0xFFFFFFFF|UINT32|0x0000000C
   gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|0xFFFFFFFF|UINT32|0x0000000D
-  gRk356xTokenSpaceGuid.PcdPcieLinkSpeed|0x3|UINT32|0x0000000E
+  gRk356xTokenSpaceGuid.PcdPcieLinkSpeed|0x2|UINT32|0x0000000E
+  gRk356xTokenSpaceGuid.PcdPcieNumLanes|0x1|UINT32|0x0000000F
