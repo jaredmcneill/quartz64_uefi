@@ -20,6 +20,7 @@
 #include <Library/TimerLib.h>
 #include <Library/CruLib.h>
 #include <Library/GpioLib.h>
+#include <Library/I2cLib.h>
 #include <Library/MultiPhyLib.h>
 #include <Library/OtpLib.h>
 #include <Library/MemoryAllocationLib.h>
@@ -34,6 +35,9 @@
 
 #include "EthernetPhy.h"
 
+/*
+ * GMAC registers
+ */
 #define GMAC1_MAC_ADDRESS0_LOW  (GMAC1_BASE + 0x0304)
 #define GMAC1_MAC_ADDRESS0_HIGH (GMAC1_BASE + 0x0300)
 
@@ -51,6 +55,15 @@
 
 #define TX_DELAY                0x30
 #define RX_DELAY                0x10
+
+/*
+ * PMIC registers
+*/
+#define PMIC_I2C_ADDR           0x20
+
+#define PMIC_CHIP_NAME          0xed
+#define PMIC_CHIP_VER           0xee
+
 
 typedef struct {
   CONST char *Name;
@@ -275,6 +288,57 @@ BoardInitGmac (
   EthernetPhyInit (GMAC1_BASE);
 }
 
+STATIC
+EFI_STATUS
+PmicRead (
+  IN UINT8 Register,
+  OUT UINT8 *Value
+  )
+{
+  return I2cRead (I2C0_BASE, PMIC_I2C_ADDR,
+                  &Register, sizeof (Register),
+                  Value, sizeof (*Value));
+}
+
+STATIC
+VOID
+BoardInitPmic (
+  VOID
+  )
+{
+  EFI_STATUS Status;
+  UINT16 ChipName;
+  UINT8 ChipVer;
+  UINT8 Value;
+
+  DEBUG ((DEBUG_INFO, "BOARD: PMIC init\n"));
+
+  GpioPinSetPull (0, GPIO_PIN_PB1, GPIO_PIN_PULL_NONE);
+  GpioPinSetInput (0, GPIO_PIN_PB1, GPIO_PIN_INPUT_SCHMITT);
+  GpioPinSetFunction (0, GPIO_PIN_PB1, 1);
+  GpioPinSetPull (0, GPIO_PIN_PB2, GPIO_PIN_PULL_NONE);
+  GpioPinSetInput (0, GPIO_PIN_PB2, GPIO_PIN_INPUT_SCHMITT);
+  GpioPinSetFunction (0, GPIO_PIN_PB2, 1);
+
+  Status = PmicRead (PMIC_CHIP_NAME, &Value);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_WARN, "Failed to read PMIC chip name! %r\n", Status));
+    ASSERT (FALSE);
+  }
+  ChipName = (UINT16)Value << 4;
+
+  Status = PmicRead (PMIC_CHIP_VER, &Value);
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_WARN, "Failed to read PMIC chip version! %r\n", Status));
+    ASSERT (FALSE);
+  }
+  ChipName |= (Value >> 4) & 0xF;
+  ChipVer = Value & 0xF;
+
+  DEBUG ((DEBUG_INFO, "PMIC: Detected RK%03X ver 0x%X\n", ChipName, ChipVer));
+  ASSERT (ChipName == 0x817);
+}
+
 
 EFI_STATUS
 EFIAPI
@@ -284,6 +348,8 @@ BoardInitDriverEntryPoint (
   )
 {
   DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() called\n"));
+
+  BoardInitPmic ();
 
   /* Set GPIO0 PD3 (WORK_LED) output high to enable LED */
   GpioPinSetDirection (0, GPIO_PIN_PD3, GPIO_PIN_OUTPUT);

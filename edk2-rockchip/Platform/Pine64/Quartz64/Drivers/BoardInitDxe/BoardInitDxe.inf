@@ -45,6 +45,7 @@
   TimerLib
   CruLib
   GpioLib
+  I2cLib
   MultiPhyLib
   OtpLib
 
