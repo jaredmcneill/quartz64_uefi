@@ -27,6 +27,10 @@
 #define GRF_GPIO_DS_SHIFT(Pin)          (((Pin) % 2) * 8)
 #define GRF_GPIO_DS_MASK(Pin)           (0x3FU << (GRF_GPIO_DS_SHIFT (Pin) + 16))
 
+#define GRF_GPIO_IE_REG(Pin)            (((Pin) / 8) * 4)
+#define GRF_GPIO_IE_SHIFT(Pin)          (((Pin) % 8) * 2)
+#define GRF_GPIO_IE_MASK(Pin)           (0x3U << (GRF_GPIO_IE_SHIFT (Pin) + 16))
+
 #define GPIO_SWPORT_DR(Pin)             ((Pin) < 16 ? 0x0000 : 0x0004)
 #define GPIO_SWPORT_DDR(Pin)            ((Pin) < 16 ? 0x0008 : 0x000C)
 
@@ -38,16 +42,17 @@
 typedef struct {
   EFI_PHYSICAL_ADDRESS  IOMUX;
   EFI_PHYSICAL_ADDRESS  P;
+  EFI_PHYSICAL_ADDRESS  IE;
   EFI_PHYSICAL_ADDRESS  DS;
 } GPIO_PINMUX_REGS;
 
 STATIC GPIO_PINMUX_REGS mPinmuxReg[GPIO_NGROUPS] = {
-#define REG_BASE(Base, IomuxOff, POff, DsOff)   { .IOMUX = (Base) + (IomuxOff), .P = (Base) + (POff), .DS = (Base) + (POff) }
-  [0] = REG_BASE(PMU_GRF, 0x0000, 0x0020, 0x0070),
-  [1] = REG_BASE(SYS_GRF, 0x0000, 0x0080, 0x0200),
-  [2] = REG_BASE(SYS_GRF, 0x0020, 0x0090, 0x0240),
-  [3] = REG_BASE(SYS_GRF, 0x0040, 0x00A0, 0x0280),
-  [4] = REG_BASE(SYS_GRF, 0x0060, 0x00B0, 0x02C0),  
+#define REG_BASE(Base, IomuxOff, POff, IeOff, DsOff)   { .IOMUX = (Base) + (IomuxOff), .P = (Base) + (POff), .IE = (Base) + (IeOff), .DS = (Base) + (POff) }
+  [0] = REG_BASE(PMU_GRF, 0x0000, 0x0020, 0x0030, 0x0070),
+  [1] = REG_BASE(SYS_GRF, 0x0000, 0x0080, 0x00C0, 0x0200),
+  [2] = REG_BASE(SYS_GRF, 0x0020, 0x0090, 0x00D0, 0x0240),
+  [3] = REG_BASE(SYS_GRF, 0x0040, 0x00A0, 0x00E0, 0x0280),
+  [4] = REG_BASE(SYS_GRF, 0x0060, 0x00B0, 0x00F0, 0x02C0),
 #undef REG_BASE
 };
 
@@ -131,6 +136,24 @@ GpioPinSetDrive (
   CONST UINT32 Value = GRF_GPIO_DS_MASK (Pin) | ((UINT32)Drive << GRF_GPIO_DS_SHIFT (Pin));
 
   DEBUG ((DEBUG_INFO, "GPIO: SetDrive    %u %02X %04X      0x%lX = 0x%08X\n", Group, Pin, Drive, Reg, Value));
+
+  MmioWrite32 (Reg, Value);
+}
+
+VOID
+GpioPinSetInput (
+  IN UINT8 Group,
+  IN UINT8 Pin,
+  IN GPIO_PIN_INPUT_ENABLE InputEnable
+  )
+{
+  ASSERT (Group < GPIO_NGROUPS);
+  ASSERT (InputEnable != GPIO_PIN_INPUT_DEFAULT);
+
+  CONST EFI_PHYSICAL_ADDRESS Reg = mPinmuxReg[Group].IE + GRF_GPIO_IE_REG (Pin);
+  CONST UINT32 Value = GRF_GPIO_IE_MASK (Pin) | ((UINT32)InputEnable << GRF_GPIO_IE_SHIFT (Pin));
+
+  DEBUG ((DEBUG_INFO, "GPIO: SetInput    %u %02X %04X      0x%lX = 0x%08X\n", Group, Pin, InputEnable, Reg, Value));
 
   MmioWrite32 (Reg, Value);
 }

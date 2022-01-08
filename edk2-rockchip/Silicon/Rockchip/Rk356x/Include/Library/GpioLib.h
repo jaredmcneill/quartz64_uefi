@@ -63,6 +63,13 @@ typedef enum {
   GPIO_PIN_DRIVE_5       = 0x1f
 } GPIO_PIN_DRIVE;
 
+typedef enum {
+  GPIO_PIN_INPUT_DEFAULT      = 0xFF,
+  GPIO_PIN_INPUT_DISABLE      = 0x0,
+  GPIO_PIN_INPUT_NON_SCHMITT  = 0x1,
+  GPIO_PIN_INPUT_SCHMITT      = 0x2
+} GPIO_PIN_INPUT_ENABLE;
+
 VOID
 GpioPinSetDirection (
   IN UINT8 Group,
@@ -102,6 +109,13 @@ GpioPinSetDrive (
   IN UINT8 Group,
   IN UINT8 Pin,
   IN GPIO_PIN_DRIVE Drive
+  );
+
+VOID
+GpioPinSetInput (
+  IN UINT8 Group,
+  IN UINT8 Pin,
+  IN GPIO_PIN_INPUT_ENABLE InputEnable
   );
 
 #endif /* GPIOLIB_H__ */
