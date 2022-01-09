@@ -30,39 +30,21 @@ jobs:
           body_path: CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ github.token }}
-      - name: upload sdcard_4GB artifact
+      - name: upload sdcard_Quartz64_4GB artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./sdcard_4GB.img.gz
-          asset_name: sdcard_4GB.img.gz
+          asset_path: ./sdcard_Quartz64_4GB.img.gz
+          asset_name: sdcard_Quartz64_4GB.img.gz
           asset_content_type: application/gzip
-      - name: upload sdcard_8GB artifact
+      - name: upload sdcard_Quartz64_8GB artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./sdcard_8GB.img.gz
-          asset_name: sdcard_8GB.img.gz
+          asset_path: ./sdcard_Quartz64_8GB.img.gz
+          asset_name: sdcard_Quartz64_8GB.img.gz
           asset_content_type: application/gzip
-      - name: upload QUARTZ64_EFI_4GB artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./QUARTZ64_EFI_4GB.itb
-          asset_name: QUARTZ64_EFI_4GB.itb
-          asset_content_type: application/octet-stream
-      - name: upload QUARTZ64_EFI_8GB artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./QUARTZ64_EFI_8GB.itb
-          asset_name: QUARTZ64_EFI_8GB.itb
-          asset_content_type: application/octet-stream
