@@ -392,6 +392,33 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
       })
     }
 
+    // Mobile Storage Host Controller
+    Device (MSH0) {
+      Name (_HID, "PRP0001")
+      Name (_UID, 0)
+      Name (_CCA, Zero)
+
+      Name (_DSD, Package () {
+        ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+        Package () {
+            Package () { "compatible", Package () { "rockchip,rk3568-dw-mshc", "rockchip,rk3288-dw-mshc" } },
+            Package () { "fifo-depth", 0x100 },
+            Package () { "max-frequency", 50000000 },
+            Package () { "bus-width", 4 },
+            Package () { "cap-sd-highspeed", 1 },
+            Package () { "disable-wp", 1 },
+        }
+      })
+
+      Method (_CRS, 0x0, Serialized) {
+          Name (RBUF, ResourceTemplate() {
+              Memory32Fixed (ReadWrite, 0xFE2B0000, 0x4000)
+              Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 130 }
+          })
+          Return (RBUF)
+      }
+    }
+
     // PCIe
     Device (PCI0) {
       Name (_HID, "PNP0A08")

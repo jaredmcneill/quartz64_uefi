@@ -92,6 +92,17 @@ STATIC CONST BOARD_IOMUX_CONFIG mGmac1IomuxConfig[] = {
   { "gmac1_txd3m0",       3, GPIO_PIN_PA3, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
 };
 
+STATIC CONST BOARD_IOMUX_CONFIG mSdmmc0IomuxConfig[] = {
+  { "sdmmc0_d0",          1, GPIO_PIN_PD5, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
+  { "sdmmc0_d1",          1, GPIO_PIN_PD6, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
+  { "sdmmc0_d2",          1, GPIO_PIN_PD7, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
+  { "sdmmc0_d3",          2, GPIO_PIN_PA0, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
+  { "sdmmc0_cmd",         2, GPIO_PIN_PA1, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
+  { "sdmmc0_clk",         2, GPIO_PIN_PA2, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
+  { "sdmmc0_det",         0, GPIO_PIN_PA4, 1, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "sdmmc0_pwren",       0, GPIO_PIN_PA5, 0, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+};
+
 STATIC
 EFI_STATUS
 BoardInitSetCpuSpeed (
@@ -339,6 +350,37 @@ BoardInitPmic (
   ASSERT (ChipName == 0x817);
 }
 
+STATIC VOID
+BoardInitSdCard (
+  VOID
+  )
+{
+  UINT32 Index;
+
+  DEBUG ((DEBUG_INFO, "BOARD: SD card init\n"));
+
+  CruSetSdmmcClockRate (0, 100000000UL);
+
+  /* Configure pins */
+  for (Index = 0; Index < ARRAY_SIZE (mSdmmc0IomuxConfig); Index++) {
+    CONST BOARD_IOMUX_CONFIG *Mux = &mSdmmc0IomuxConfig[Index];
+    DEBUG ((DEBUG_INFO, "BOARD: Configuring pin '%a'\n", Mux->Name));
+    GpioPinSetFunction (Mux->Group, Mux->Pin, Mux->Function);
+    GpioPinSetPull (Mux->Group, Mux->Pin, Mux->Pull);
+    if (Mux->Drive != GPIO_PIN_DRIVE_DEFAULT) {
+      GpioPinSetDrive (Mux->Group, Mux->Pin, Mux->Drive);
+    }
+  }
+
+  /*
+   * This board has the PWREN signal from SDMMC0 inverted. Configure the
+   * pin as GPIO and drive it low since there is no way with the device tree
+   * bindings to tell the driver about this quirk.
+   */
+  GpioPinSetDirection (0, GPIO_PIN_PA5, GPIO_PIN_OUTPUT);
+  GpioPinWrite (0, GPIO_PIN_PA5, FALSE);
+}
+
 
 EFI_STATUS
 EFIAPI
@@ -371,6 +413,9 @@ BoardInitDriverEntryPoint (
 
   /* GMAC setup */
   BoardInitGmac ();
+
+  /* SD card setup */
+  BoardInitSdCard ();
 
   return EFI_SUCCESS;
 }
