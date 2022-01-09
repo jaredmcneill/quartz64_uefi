@@ -47,7 +47,7 @@ typedef struct {
 } GPIO_PINMUX_REGS;
 
 STATIC GPIO_PINMUX_REGS mPinmuxReg[GPIO_NGROUPS] = {
-#define REG_BASE(Base, IomuxOff, POff, IeOff, DsOff)   { .IOMUX = (Base) + (IomuxOff), .P = (Base) + (POff), .IE = (Base) + (IeOff), .DS = (Base) + (POff) }
+#define REG_BASE(Base, IomuxOff, POff, IeOff, DsOff)   { .IOMUX = (Base) + (IomuxOff), .P = (Base) + (POff), .IE = (Base) + (IeOff), .DS = (Base) + (DsOff) }
   [0] = REG_BASE(PMU_GRF, 0x0000, 0x0020, 0x0030, 0x0070),
   [1] = REG_BASE(SYS_GRF, 0x0000, 0x0080, 0x00C0, 0x0200),
   [2] = REG_BASE(SYS_GRF, 0x0020, 0x0090, 0x00D0, 0x0240),
