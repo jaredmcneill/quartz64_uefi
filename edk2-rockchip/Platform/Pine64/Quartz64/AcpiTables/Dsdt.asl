@@ -359,7 +359,7 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
     // Gigabit Media Access Controller (GMAC)
     Device (MAC1) {
       Name (_HID, "PRP0001")
-      Name (_UID, One)
+      Name (_UID, 2)
       Name (_CCA, Zero)
 
       Name (_DSD, Package () {
@@ -395,7 +395,7 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
     // Mobile Storage Host Controller
     Device (MSH0) {
       Name (_HID, "PRP0001")
-      Name (_UID, 0)
+      Name (_UID, 3)
       Name (_CCA, Zero)
 
       Name (_DSD, Package () {
