@@ -11,9 +11,6 @@ export WORKSPACE="$PWD"
 export PACKAGES_PATH=$PWD/edk2:$PWD/edk2-platforms:$PWD/edk2-non-osi:$PWD/edk2-rockchip
 export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
 
-BL31=$(grep '^PATH=.*_bl31_' rkbin/RKTRUST/RK3568TRUST.ini | cut -d = -f 2-)
-DDR=$(grep '^Path1=.*_ddr_' rkbin/RKBOOT/RK3566MINIALL.ini | cut -d = -f 2-)
-
 fetch_deps() {
 	git submodule update --init --recursive
 }
@@ -66,6 +63,9 @@ build_fit() {
 }
 
 fetch_deps
+
+BL31=$(grep '^PATH=.*_bl31_' rkbin/RKTRUST/RK3568TRUST.ini | cut -d = -f 2-)
+DDR=$(grep '^Path1=.*_ddr_' rkbin/RKBOOT/RK3566MINIALL.ini | cut -d = -f 2-)
 
 test -r rkbin/${BL31} || (echo "rkbin/${BL31} not found"; false)
 . edk2/edksetup.sh
