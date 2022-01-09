@@ -38,6 +38,7 @@ sdcard: uefi_release
 
 .PHONY: release
 release: sdcard
+	rm -f sdcard_*_?GB.img.gz
 	gzip sdcard_*_?GB.img
 
 .PHONY: clean
