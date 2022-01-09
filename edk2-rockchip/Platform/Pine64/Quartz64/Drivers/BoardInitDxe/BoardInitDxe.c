@@ -64,6 +64,20 @@
 #define PMIC_CHIP_NAME          0xed
 #define PMIC_CHIP_VER           0xee
 
+/*
+ * CPU_GRF registers
+*/
+#define GRF_CPU_COREPVTPLL_CON0               (CPU_GRF + 0x0010)
+#define  CORE_PVTPLL_RING_LENGTH_SEL_SHIFT    3
+#define  CORE_PVTPLL_RING_LENGTH_SEL_MASK     (0x1FU << CORE_PVTPLL_RING_LENGTH_SEL_SHIFT)
+#define  CORE_PVTPLL_OSC_EN                   BIT1
+#define  CORE_PVTPLL_START                    BIT0
+
+/*
+ * PMU registers
+ */
+#define PMU_NOC_AUTO_CON0                     (PMU_BASE + 0x0070)
+#define PMU_NOC_AUTO_CON1                     (PMU_BASE + 0x0074)
 
 typedef struct {
   CONST char *Name;
@@ -400,8 +414,14 @@ BoardInitDriverEntryPoint (
   /* Update CPU speed */
   BoardInitSetCpuSpeed ();
 
+  /* Enable automatic clock gating */
+  MmioWrite32 (PMU_NOC_AUTO_CON0, 0xFFFFFFFFU);
+  MmioWrite32 (PMU_NOC_AUTO_CON1, 0x000F000FU);
+
   /* Set core_pvtpll ring length */
-  MmioWrite32 (0xFDC30010U, 0x00ff002b);
+  MmioWrite32 (GRF_CPU_COREPVTPLL_CON0,
+               ((CORE_PVTPLL_RING_LENGTH_SEL_MASK | CORE_PVTPLL_OSC_EN | CORE_PVTPLL_START) << 16) |
+               (5U << CORE_PVTPLL_RING_LENGTH_SEL_SHIFT) | CORE_PVTPLL_OSC_EN | CORE_PVTPLL_START);
 
   /* Configure MULTI-PHY 0 and 1 for USB3 mode */
   MultiPhySetMode (0, MULTIPHY_MODE_USB3);
