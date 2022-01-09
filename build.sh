@@ -22,12 +22,13 @@ build_uefitools() {
 }
 
 build_uefi() {
-	board=$1
-	memsize=$2
+	vendor=$1
+	board=$2
+	memsize=$3
 	echo " => Building UEFI (PcdSystemMemorySize=${memsize})"
 	build -n $(getconf _NPROCESSORS_ONLN) -b ${RKUEFIBUILDTYPE} -a AARCH64 -t GCC5 \
 	    --pcd gArmTokenSpaceGuid.PcdSystemMemorySize=${memsize} \
-	    -p Platform/Pine64/${board}/${board}.dsc
+	    -p Platform/${vendor}/${board}/${board}.dsc
 }
 
 build_idblock() {
@@ -73,17 +74,20 @@ test -r rkbin/${BL31} || (echo "rkbin/${BL31} not found"; false)
 build_uefitools
 
 # Quartz64 boards
-build_uefi Quartz64 0xF0000000
+build_uefi Pine64 Quartz64 0xF0000000
 build_fit Quartz64 4GB
-build_uefi Quartz64 0x200000000
+build_uefi Pine64 Quartz64 0x200000000
 build_fit Quartz64 8GB
 # SOQuartz modules
-build_uefi SOQuartz 0x80000000
+build_uefi Pine64 SOQuartz 0x80000000
 build_fit SOQuartz 2GB
-build_uefi SOQuartz 0xF0000000
+build_uefi Pine64 SOQuartz 0xF0000000
 build_fit SOQuartz 4GB
-build_uefi SOQuartz 0x200000000
+build_uefi Pine64 SOQuartz 0x200000000
 build_fit SOQuartz 8GB
+# ROC-RK3566-PC boards
+build_uefi Firefly ROC-RK3566-PC 0xF0000000
+build_fit ROC-RK3566-PC 4GB
 
 build_idblock
 

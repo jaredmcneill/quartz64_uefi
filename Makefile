@@ -34,6 +34,14 @@ sdcard: uefi_release
 		dd if=SOQUARTZ_EFI_$${size}.itb of=sdcard_SOQuartz_$${size}.img	\
 		    seek=20480 conv=notrunc;					\
 	done
+	# ROC-RK3566-PC boards
+	for size in 4GB; do							\
+		cp sdcard.img sdcard_ROC-RK3566-PC_$${size}.img;		\
+		dd if=idblock.bin of=sdcard_ROC-RK3566-PC_$${size}.img 		\
+		    seek=64 conv=notrunc;					\
+		dd if=ROC-RK3566-PC_EFI_$${size}.itb of=sdcard_ROC-RK3566-PC_$${size}.img \
+		    seek=20480 conv=notrunc;					\
+	done
 	rm -f sdcard.img
 
 .PHONY: release
@@ -48,5 +56,6 @@ clean:
 	rm -f idblock.bin
 	rm -f QUARTZ64_EFI_*.itb
 	rm -f SOQUARTZ_EFI_*.itb
+	rm -f ROC-RK3566-PC_EFI_*.itb
 	rm -f .uefitools_done
 	rm -f sdcard_*.img
