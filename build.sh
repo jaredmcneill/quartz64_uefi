@@ -22,10 +22,11 @@ build_uefitools() {
 }
 
 build_uefi() {
-	board=$1
+	vendor=$1
+	board=$2
 	echo " => Building UEFI"
 	build -n $(getconf _NPROCESSORS_ONLN) -b ${RKUEFIBUILDTYPE} -a AARCH64 -t GCC5 \
-	    -p Platform/Pine64/${board}/${board}.dsc
+	    -p Platform/${vendor}/${board}/${board}.dsc
 }
 
 build_idblock() {
@@ -70,11 +71,14 @@ test -r rkbin/${BL31} || (echo "rkbin/${BL31} not found"; false)
 build_uefitools
 
 # Quartz64 boards
-build_uefi Quartz64
+build_uefi Pine64 Quartz64
 build_fit Quartz64
 # SOQuartz modules
-build_uefi SOQuartz
+build_uefi Pine64 SOQuartz
 build_fit SOQuartz
+# ROC-RK356x-PC boards
+build_uefi Firefly ROC-RK3566-PC
+build_fit ROC-RK3566-PC
 
 build_idblock
 
