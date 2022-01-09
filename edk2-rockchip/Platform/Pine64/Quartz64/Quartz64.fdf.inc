@@ -12,7 +12,7 @@ INF Platform/Pine64/Quartz64/Drivers/BoardInitDxe/BoardInitDxe.inf
 #
 # Devicetree support
 #
-INF Platform/Pine64/Quartz64/Drivers/FdtDxe/FdtDxe.inf
+#INF Platform/Pine64/Quartz64/Drivers/FdtDxe/FdtDxe.inf
 
 #
 # ACPI Support

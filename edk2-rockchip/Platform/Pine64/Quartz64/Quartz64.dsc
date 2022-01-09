@@ -573,7 +573,7 @@
   #
   # Devicetree support
   #
-  Platform/Pine64/Quartz64/Drivers/FdtDxe/FdtDxe.inf
+  #Platform/Pine64/Quartz64/Drivers/FdtDxe/FdtDxe.inf
 
   #
   # ACPI Support
