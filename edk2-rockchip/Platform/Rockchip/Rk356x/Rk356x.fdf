@@ -172,10 +172,17 @@ READ_LOCK_STATUS   = TRUE
   INF MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
 
   #
-  # eMMC
+  # SD
   #
   INF EmbeddedPkg/Universal/MmcDxe/MmcDxe.inf
   INF Silicon/Rockchip/Rk356x/Drivers/MshcDxe/MshcDxe.inf
+
+  #
+  # eMMC
+  #
+  INF MdeModulePkg/Bus/Pci/SdMmcPciHcDxe/SdMmcPciHcDxe.inf
+  INF MdeModulePkg/Bus/Sd/EmmcDxe/EmmcDxe.inf
+  INF Silicon/Rockchip/Rk356x/Drivers/EmmcDxe/EmmcDxe.inf
 
   #
   # AHCI Support

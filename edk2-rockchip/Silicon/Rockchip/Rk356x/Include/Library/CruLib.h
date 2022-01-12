@@ -44,6 +44,11 @@ CruSetSdmmcClockRate (
   );
 
 VOID
+CruSetEmmcClockRate (
+  IN UINTN Rate
+  );
+
+VOID
 CruSetPciePhySource (
   IN UINT8 Index,
   IN UINT8 Source

@@ -279,6 +279,37 @@ CruSetSdmmcClockRate (
 }
 
 VOID
+CruSetEmmcClockRate (
+  IN UINTN Rate
+  )
+{
+    UINT32 Val;
+    UINT32 Sel;
+
+    if (Rate >= 200000000U) {
+      Sel = 1;
+    } else if (Rate >= 150000000U) {
+      Sel = 2;
+    } else if (Rate >= 100000000U) {
+      Sel = 3;
+    } else if (Rate >= 50000000U) {
+      Sel = 4;
+    } else if (Rate >= 24000000U) {
+      Sel = 0;
+    } else {
+      Sel = 5;
+    }
+
+    Val = CRU_CLKSEL_CON28_BCLK_EMMC_SEL_MASK << 16;
+    Val |= 0 << CRU_CLKSEL_CON28_BCLK_EMMC_SEL_SHIFT;
+    Val |= CRU_CLKSEL_CON28_CCLK_EMMC_SEL_MASK << 16;
+    Val |= Sel << CRU_CLKSEL_CON28_CCLK_EMMC_SEL_SHIFT;
+    MmioWrite32 (CRU_CLKSEL_CON (28), Val);
+
+    DEBUG ((DEBUG_INFO, "CruSetEmmcClockRate(%lu): CRU_CLKSEL_CON28 = %08X (wrote %08X)\n", Rate, MmioRead32 (CRU_CLKSEL_CON (28)), Val));
+}
+
+VOID
 CruSetPciePhySource (
   IN UINT8 Index,
   IN UINT8 Source

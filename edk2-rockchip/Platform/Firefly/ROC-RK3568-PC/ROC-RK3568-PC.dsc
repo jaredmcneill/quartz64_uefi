@@ -563,10 +563,17 @@
   Silicon/Rockchip/Rk356x/Drivers/UsbHcdInitDxe/UsbHcd.inf
 
   #
-  # eMMC
+  # SD
   #
   EmbeddedPkg/Universal/MmcDxe/MmcDxe.inf
   Silicon/Rockchip/Rk356x/Drivers/MshcDxe/MshcDxe.inf
+
+  #
+  # eMMC
+  #
+  MdeModulePkg/Bus/Pci/SdMmcPciHcDxe/SdMmcPciHcDxe.inf
+  MdeModulePkg/Bus/Sd/EmmcDxe/EmmcDxe.inf
+  Silicon/Rockchip/Rk356x/Drivers/EmmcDxe/EmmcDxe.inf
 
   #
   # Devicetree support
