@@ -11,15 +11,14 @@
 
 [Defines]
   INF_VERSION                    = 0x0001001A
-  BASE_NAME                      = Quartz64AcpiTables
+  BASE_NAME                      = Rk356xAcpiTables
   FILE_GUID                      = 0FBE0D20-3528-4F07-838B-9A711C62654F
   MODULE_TYPE                    = USER_DEFINED
   VERSION_STRING                 = 1.0
 
 [Sources]
-  AcpiHeader.h
+  Quartz64/Dsdt.asl
   Dbg2.aslc
-  Dsdt.asl
   Fadt.aslc
   Gtdt.aslc
   Madt.aslc

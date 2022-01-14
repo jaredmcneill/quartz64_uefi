@@ -16,13 +16,11 @@
 
 #include <IndustryStandard/Acpi.h>
 
-#define EFI_ACPI_OEM_ID                       {'P','I','N','E','6','4'}
-#define EFI_ACPI_OEM_TABLE_ID                 SIGNATURE_64 ('Q','U','A','R','T','Z','6','4')
+#define EFI_ACPI_OEM_ID                       {'R','K','C','P',' ',' '}
+#define EFI_ACPI_OEM_TABLE_ID                 SIGNATURE_64 ('R','K','3','5','6','X',' ',' ')
 #define EFI_ACPI_OEM_REVISION                 0x00000001
 #define EFI_ACPI_CREATOR_ID                   SIGNATURE_32 ('E','D','K','2')
 #define EFI_ACPI_CREATOR_REVISION             0x00000001
-
-#define EFI_ACPI_VENDOR_ID                    SIGNATURE_32 ('P','I','N','E')
 
 #define ACPI_HEADER(Signature, Type, Revision) {                  \
     Signature,                      /* UINT32  Signature */       \

@@ -571,15 +571,15 @@
   #
   # Devicetree support
   #
-  Platform/Pine64/SOQuartz/Drivers/FdtDxe/FdtDxe.inf
+  # Platform/Pine64/SOQuartz/Drivers/FdtDxe/FdtDxe.inf
 
   #
   # ACPI Support
   #
   MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
   MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
-  Platform/Pine64/SOQuartz/Drivers/PlatformAcpiDxe/PlatformAcpiDxe.inf
-  Platform/Pine64/SOQuartz/AcpiTables/AcpiTables.inf
+  Platform/Rockchip/Rk356x/Drivers/PlatformAcpiDxe/PlatformAcpiDxe.inf
+  Platform/Rockchip/Rk356x/AcpiTables/$(PLATFORM_NAME).inf
 
   #
   # SMBIOS Support
