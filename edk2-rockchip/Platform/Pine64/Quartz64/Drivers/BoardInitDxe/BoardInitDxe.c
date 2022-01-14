@@ -79,16 +79,7 @@
 #define PMU_NOC_AUTO_CON0                     (PMU_BASE + 0x0070)
 #define PMU_NOC_AUTO_CON1                     (PMU_BASE + 0x0074)
 
-typedef struct {
-  CONST char *Name;
-  UINT8 Group;
-  UINT8 Pin;
-  UINT8 Function;
-  GPIO_PIN_PULL Pull;
-  GPIO_PIN_DRIVE Drive;
-} BOARD_IOMUX_CONFIG;
-
-STATIC CONST BOARD_IOMUX_CONFIG mGmac1IomuxConfig[] = {
+STATIC CONST GPIO_IOMUX_CONFIG mGmac1IomuxConfig[] = {
   { "gmac1_mdcm0",        3, GPIO_PIN_PC4, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
   { "gmac1_mdiom0",       3, GPIO_PIN_PC5, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
   { "gmac1_txd0m0",       3, GPIO_PIN_PB5, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
@@ -106,7 +97,7 @@ STATIC CONST BOARD_IOMUX_CONFIG mGmac1IomuxConfig[] = {
   { "gmac1_txd3m0",       3, GPIO_PIN_PA3, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
 };
 
-STATIC CONST BOARD_IOMUX_CONFIG mSdmmc0IomuxConfig[] = {
+STATIC CONST GPIO_IOMUX_CONFIG mSdmmc0IomuxConfig[] = {
   { "sdmmc0_d0",          1, GPIO_PIN_PD5, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
   { "sdmmc0_d1",          1, GPIO_PIN_PD6, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
   { "sdmmc0_d2",          1, GPIO_PIN_PD7, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
@@ -253,21 +244,12 @@ BoardInitGmac (
   UINT8 OtpData[32];
   UINT8 Hash[SHA256_DIGEST_SIZE];
   UINT32 MacLo, MacHi;
-  UINT32 Index;
 
   /* Assert reset */
   CruAssertSoftReset (14, 12);
 
   /* Configure pins */
-  for (Index = 0; Index < ARRAY_SIZE (mGmac1IomuxConfig); Index++) {
-    CONST BOARD_IOMUX_CONFIG *Mux = &mGmac1IomuxConfig[Index];
-    DEBUG ((DEBUG_INFO, "BOARD: Configuring pin '%a'\n", Mux->Name));
-    GpioPinSetFunction (Mux->Group, Mux->Pin, Mux->Function);
-    GpioPinSetPull (Mux->Group, Mux->Pin, Mux->Pull);
-    if (Mux->Drive != GPIO_PIN_DRIVE_DEFAULT) {
-      GpioPinSetDrive (Mux->Group, Mux->Pin, Mux->Drive);
-    }
-  }
+  GpioSetIomuxConfig (mGmac1IomuxConfig, ARRAY_SIZE (mGmac1IomuxConfig));
 
   /* Setup clocks */
   MmioWrite32 (CRU_CLKSEL_CON (33), 0x00370004);  // Set rmii1_mode to rgmii mode
@@ -369,22 +351,12 @@ BoardInitSdCard (
   VOID
   )
 {
-  UINT32 Index;
-
   DEBUG ((DEBUG_INFO, "BOARD: SD card init\n"));
 
   CruSetSdmmcClockRate (0, 100000000UL);
 
   /* Configure pins */
-  for (Index = 0; Index < ARRAY_SIZE (mSdmmc0IomuxConfig); Index++) {
-    CONST BOARD_IOMUX_CONFIG *Mux = &mSdmmc0IomuxConfig[Index];
-    DEBUG ((DEBUG_INFO, "BOARD: Configuring pin '%a'\n", Mux->Name));
-    GpioPinSetFunction (Mux->Group, Mux->Pin, Mux->Function);
-    GpioPinSetPull (Mux->Group, Mux->Pin, Mux->Pull);
-    if (Mux->Drive != GPIO_PIN_DRIVE_DEFAULT) {
-      GpioPinSetDrive (Mux->Group, Mux->Pin, Mux->Drive);
-    }
-  }
+  GpioSetIomuxConfig (mSdmmc0IomuxConfig, ARRAY_SIZE (mSdmmc0IomuxConfig));
 
   /*
    * This board has the PWREN signal from SDMMC0 inverted. Configure the

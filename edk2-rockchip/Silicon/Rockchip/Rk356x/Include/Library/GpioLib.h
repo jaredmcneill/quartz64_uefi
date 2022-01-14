@@ -70,6 +70,15 @@ typedef enum {
   GPIO_PIN_INPUT_SCHMITT      = 0x2
 } GPIO_PIN_INPUT_ENABLE;
 
+typedef struct {
+  CONST char *Name;
+  UINT8 Group;
+  UINT8 Pin;
+  UINT8 Function;
+  GPIO_PIN_PULL Pull;
+  GPIO_PIN_DRIVE Drive;
+} GPIO_IOMUX_CONFIG;
+
 VOID
 GpioPinSetDirection (
   IN UINT8 Group,
@@ -116,6 +125,12 @@ GpioPinSetInput (
   IN UINT8 Group,
   IN UINT8 Pin,
   IN GPIO_PIN_INPUT_ENABLE InputEnable
+  );
+
+VOID
+GpioSetIomuxConfig (
+  IN CONST GPIO_IOMUX_CONFIG *Configs,
+  IN UINT32 NumConfigs
   );
 
 #endif /* GPIOLIB_H__ */

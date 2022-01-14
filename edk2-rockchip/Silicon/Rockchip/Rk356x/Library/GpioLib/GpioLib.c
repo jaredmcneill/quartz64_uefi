@@ -157,3 +157,22 @@ GpioPinSetInput (
 
   MmioWrite32 (Reg, Value);
 }
+
+VOID
+GpioSetIomuxConfig (
+  IN CONST GPIO_IOMUX_CONFIG *Configs,
+  IN UINT32 NumConfigs
+  )
+{
+  UINT32 Index;
+
+  for (Index = 0; Index < NumConfigs; Index++) {
+    CONST GPIO_IOMUX_CONFIG *Mux = &Configs[Index];
+    DEBUG ((DEBUG_INFO, "GPIO: IOMUX for pin '%a'\n", Mux->Name));
+    GpioPinSetFunction (Mux->Group, Mux->Pin, Mux->Function);
+    GpioPinSetPull (Mux->Group, Mux->Pin, Mux->Pull);
+    if (Mux->Drive != GPIO_PIN_DRIVE_DEFAULT) {
+      GpioPinSetDrive (Mux->Group, Mux->Pin, Mux->Drive);
+    }
+  }
+}
