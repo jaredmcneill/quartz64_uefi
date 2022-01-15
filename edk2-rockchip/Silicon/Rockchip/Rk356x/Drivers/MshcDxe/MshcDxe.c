@@ -756,18 +756,20 @@ MshcDxeInitialize (
 
   /* Configure pins */
   GpioSetIomuxConfig (mSdmmc0IomuxConfig, ARRAY_SIZE (mSdmmc0IomuxConfig));
-  if (!PcdGetBool (PcdMshcDxePwrEnInverted)) {
-    GpioSetIomuxConfig (mSdmmc0IomuxPwrEnDefaultConfig, ARRAY_SIZE (mSdmmc0IomuxPwrEnDefaultConfig));
-  } else {
-    /*
-    * This board has the PWREN signal from SDMMC0 inverted. Configure the
-    * pin as GPIO and drive it low since there is no way with the device tree
-    * bindings to tell the driver about this quirk.
-    */
-    DEBUG ((DEBUG_INFO, "MshcDxeInitialize(): Applying PWREN inverted workaround\n"));
-    GpioSetIomuxConfig (mSdmmc0IomuxPwrEnInvertedConfig, ARRAY_SIZE (mSdmmc0IomuxPwrEnInvertedConfig));
-    GpioPinSetDirection (0, GPIO_PIN_PA5, GPIO_PIN_OUTPUT);
-    GpioPinWrite (0, GPIO_PIN_PA5, FALSE);
+  if (PcdGetBool (PcdMshcDxePwrEnUsed)) {
+    if (!PcdGetBool (PcdMshcDxePwrEnInverted)) {
+      GpioSetIomuxConfig (mSdmmc0IomuxPwrEnDefaultConfig, ARRAY_SIZE (mSdmmc0IomuxPwrEnDefaultConfig));
+    } else {
+      /*
+      * This board has the PWREN signal from SDMMC0 inverted. Configure the
+      * pin as GPIO and drive it low since there is no way with the device tree
+      * bindings to tell the driver about this quirk.
+      */
+      DEBUG ((DEBUG_INFO, "MshcDxeInitialize(): Applying PWREN inverted workaround\n"));
+      GpioSetIomuxConfig (mSdmmc0IomuxPwrEnInvertedConfig, ARRAY_SIZE (mSdmmc0IomuxPwrEnInvertedConfig));
+      GpioPinSetDirection (0, GPIO_PIN_PA5, GPIO_PIN_OUTPUT);
+      GpioPinWrite (0, GPIO_PIN_PA5, FALSE);
+    }
   }
 
   MshcAdjustFifoThreshold ();

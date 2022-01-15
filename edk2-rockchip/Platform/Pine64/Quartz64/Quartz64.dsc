@@ -453,6 +453,7 @@
   #
   # The Quartz64 board has inverted polarity for the PWREN pin on the SD card slot
   #
+  gRk356xTokenSpaceGuid.PcdMshcDxePwrEnUsed|TRUE
   gRk356xTokenSpaceGuid.PcdMshcDxePwrEnInverted|TRUE
 
 [PcdsDynamicHii.common.DEFAULT]
