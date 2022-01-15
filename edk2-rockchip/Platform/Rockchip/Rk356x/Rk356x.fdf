@@ -174,8 +174,8 @@ READ_LOCK_STATUS   = TRUE
   #
   # eMMC
   #
-  #INF EmbeddedPkg/Universal/MmcDxe/MmcDxe.inf
-  #INF Silicon/Rockchip/Rk356x/Drivers/DwEmmcDxe/DwEmmcDxe.inf
+  INF EmbeddedPkg/Universal/MmcDxe/MmcDxe.inf
+  INF Silicon/Rockchip/Rk356x/Drivers/MshcDxe/MshcDxe.inf
 
   #
   # AHCI Support

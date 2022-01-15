@@ -1,11 +1,6 @@
 #/** @file
 #  INF file for the eMMC Host Protocol implementation for the DesignWare MMC.
 #
-#  WARNING:
-#  This driver fails to follow the UEFI driver model without a good
-#  reason, and only remains in the tree because it is still used by
-#  a small number of platforms. It will be removed when no longer used.
-#
 #  Copyright (c) 2014-2017, Linaro Limited. All rights reserved.
 #
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
@@ -14,15 +9,15 @@
 
 [Defines]
   INF_VERSION                    = 0x00010019
-  BASE_NAME                      = DwEmmcDxe
+  BASE_NAME                      = MshcDxe
   FILE_GUID                      = b549f005-4bd4-4020-a0cb-06f42bda68c3
   MODULE_TYPE                    = DXE_DRIVER
   VERSION_STRING                 = 1.0
 
-  ENTRY_POINT                    = DwEmmcDxeInitialize
+  ENTRY_POINT                    = MshcDxeInitialize
 
 [Sources.common]
-  DwEmmcDxe.c
+  MshcDxe.c
 
 [Packages]
   EmbeddedPkg/EmbeddedPkg.dec
@@ -40,6 +35,7 @@
   UefiDriverEntryPoint
   UefiLib
   CruLib
+  GpioLib
 
 [Protocols]
   gEfiCpuArchProtocolGuid
@@ -47,9 +43,10 @@
   gEmbeddedMmcHostProtocolGuid
 
 [Pcd]
-  gRk356xTokenSpaceGuid.PcdDwEmmcDxeBaseAddress
-  gRk356xTokenSpaceGuid.PcdDwEmmcDxeMaxClockFreqInHz
-  gRk356xTokenSpaceGuid.PcdDwEmmcDxeFifoDepth
+  gRk356xTokenSpaceGuid.PcdMshcDxeBaseAddress
+  gRk356xTokenSpaceGuid.PcdMshcDxeMaxClockFreqInHz
+  gRk356xTokenSpaceGuid.PcdMshcDxeFifoDepth
+  gRk356xTokenSpaceGuid.PcdMshcDxePwrEnInverted
 
 [Depex]
   TRUE

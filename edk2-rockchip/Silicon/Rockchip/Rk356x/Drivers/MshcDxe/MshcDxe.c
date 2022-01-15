@@ -1,11 +1,7 @@
 /** @file
   This file implement the MMC Host Protocol for the DesignWare eMMC.
 
-  WARNING:
-  This driver fails to follow the UEFI driver model without a good
-  reason, and only remains in the tree because it is still used by
-  a small number of platforms. It will be removed when no longer used.
-
+  Copyright (c) 2022, Jared McNeill <jmcneill@invisible.ca>
   Copyright (c) 2014-2017, Linaro Limited. All rights reserved.
 
   SPDX-License-Identifier: BSD-2-Clause-Patent
@@ -23,10 +19,11 @@
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/UefiLib.h>
 #include <Library/CruLib.h>
+#include <Library/GpioLib.h>
 
 #include <Protocol/MmcHost.h>
 
-#include "DwEmmc.h"
+#include "Mshc.h"
 
 #define DW_DBG    DEBUG_INFO
 
@@ -34,6 +31,22 @@
 #define DWEMMC_BLOCK_SIZE               512
 #define DWEMMC_DMA_BUF_SIZE             (512 * 8)
 #define DWEMMC_MAX_DESC_PAGES           512
+
+STATIC CONST GPIO_IOMUX_CONFIG mSdmmc0IomuxConfig[] = {
+  { "sdmmc0_d0",          1, GPIO_PIN_PD5, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
+  { "sdmmc0_d1",          1, GPIO_PIN_PD6, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
+  { "sdmmc0_d2",          1, GPIO_PIN_PD7, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
+  { "sdmmc0_d3",          2, GPIO_PIN_PA0, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
+  { "sdmmc0_cmd",         2, GPIO_PIN_PA1, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
+  { "sdmmc0_clk",         2, GPIO_PIN_PA2, 1, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_2 },
+  { "sdmmc0_det",         0, GPIO_PIN_PA4, 1, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+};
+STATIC CONST GPIO_IOMUX_CONFIG mSdmmc0IomuxPwrEnDefaultConfig[] = {
+  { "sdmmc0_pwren",       0, GPIO_PIN_PA5, 1, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+};
+STATIC CONST GPIO_IOMUX_CONFIG mSdmmc0IomuxPwrEnInvertedConfig[] = {
+  { "sdmmc0_pwren",       0, GPIO_PIN_PA5, 0, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+};
 
 typedef struct {
   UINT32                        Des0;
@@ -43,13 +56,12 @@ typedef struct {
 } DWEMMC_IDMAC_DESCRIPTOR;
 
 EFI_MMC_HOST_PROTOCOL     *gpMmcHost;
-DWEMMC_IDMAC_DESCRIPTOR   *gpIdmacDesc;
-EFI_GUID mDwEmmcDevicePathGuid = EFI_CALLER_ID_GUID;
-STATIC UINT32 mDwEmmcCommand;
-STATIC UINT32 mDwEmmcArgument;
+EFI_GUID mMshcDevicePathGuid = EFI_CALLER_ID_GUID;
+STATIC UINT32 mMshcCommand;
+STATIC UINT32 mMshcArgument;
 
 EFI_STATUS
-DwEmmcReadBlockData (
+MshcReadBlockData (
   IN EFI_MMC_HOST_PROTOCOL     *This,
   IN EFI_LBA                    Lba,
   IN UINTN                      Length,
@@ -57,7 +69,7 @@ DwEmmcReadBlockData (
   );
 
 BOOLEAN
-DwEmmcIsPowerOn (
+MshcIsPowerOn (
   VOID
   )
 {
@@ -65,16 +77,16 @@ DwEmmcIsPowerOn (
 }
 
 EFI_STATUS
-DwEmmcInitialize (
+MshcInitialize (
   VOID
   )
 {
-    DEBUG ((DEBUG_BLKIO, "DwEmmcInitialize()"));
+    DEBUG ((DEBUG_BLKIO, "MshcInitialize()"));
     return EFI_SUCCESS;
 }
 
 BOOLEAN
-DwEmmcIsCardPresent (
+MshcIsCardPresent (
   IN EFI_MMC_HOST_PROTOCOL     *This
   )
 {
@@ -82,7 +94,7 @@ DwEmmcIsCardPresent (
 }
 
 BOOLEAN
-DwEmmcIsReadOnly (
+MshcIsReadOnly (
   IN EFI_MMC_HOST_PROTOCOL     *This
   )
 {
@@ -90,7 +102,7 @@ DwEmmcIsReadOnly (
 }
 
 BOOLEAN
-DwEmmcIsDmaSupported (
+MshcIsDmaSupported (
   IN EFI_MMC_HOST_PROTOCOL     *This
   )
 {
@@ -98,7 +110,7 @@ DwEmmcIsDmaSupported (
 }
 
 EFI_STATUS
-DwEmmcBuildDevicePath (
+MshcBuildDevicePath (
   IN EFI_MMC_HOST_PROTOCOL      *This,
   IN EFI_DEVICE_PATH_PROTOCOL   **DevicePath
   )
@@ -106,14 +118,14 @@ DwEmmcBuildDevicePath (
   EFI_DEVICE_PATH_PROTOCOL *NewDevicePathNode;
 
   NewDevicePathNode = CreateDeviceNode (HARDWARE_DEVICE_PATH, HW_VENDOR_DP, sizeof (VENDOR_DEVICE_PATH));
-  CopyGuid (& ((VENDOR_DEVICE_PATH*)NewDevicePathNode)->Guid, &mDwEmmcDevicePathGuid);
+  CopyGuid (& ((VENDOR_DEVICE_PATH*)NewDevicePathNode)->Guid, &mMshcDevicePathGuid);
 
   *DevicePath = NewDevicePathNode;
   return EFI_SUCCESS;
 }
 
 EFI_STATUS
-DwEmmcUpdateClock (
+MshcUpdateClock (
   VOID
   )
 {
@@ -138,15 +150,13 @@ DwEmmcUpdateClock (
 }
 
 EFI_STATUS
-DwEmmcSetClock (
+MshcSetClock (
   IN UINTN                     ClockFreq
   )
 {
   UINT32 Divider, Rate, Data;
   EFI_STATUS Status;
   BOOLEAN Found = FALSE;
-
-  CruSetSdmmcClockRate (0, ClockFreq);
 
   Rate = CruGetSdmmcClockRate (0);
   if (Rate == ClockFreq) {
@@ -163,7 +173,7 @@ DwEmmcSetClock (
     }
   }
 
-  DEBUG ((DEBUG_INFO, "DwEmmcSetClock(): ClockFreq = %lu Hz, Rate = %lu Hz, Divider = %u\n", ClockFreq, Rate, Divider));
+  DEBUG ((DEBUG_INFO, "MshcSetClock(): ClockFreq = %lu Hz, Rate = %lu Hz, Divider = %u\n", ClockFreq, Rate, Divider));
 
   // Wait until MMC is idle
   do {
@@ -172,23 +182,23 @@ DwEmmcSetClock (
 
   // Disable MMC clock first
   MmioWrite32 (DWEMMC_CLKENA, 0);
-  Status = DwEmmcUpdateClock ();
+  Status = MshcUpdateClock ();
   ASSERT (!EFI_ERROR (Status));
 
   MmioWrite32 (DWEMMC_CLKDIV, Divider);
-  Status = DwEmmcUpdateClock ();
+  Status = MshcUpdateClock ();
   ASSERT (!EFI_ERROR (Status));
 
   // Enable MMC clock
   MmioWrite32 (DWEMMC_CLKENA, 1);
   MmioWrite32 (DWEMMC_CLKSRC, 0);
-  Status = DwEmmcUpdateClock ();
+  Status = MshcUpdateClock ();
   ASSERT (!EFI_ERROR (Status));
   return EFI_SUCCESS;
 }
 
 EFI_STATUS
-DwEmmcNotifyState (
+MshcNotifyState (
   IN EFI_MMC_HOST_PROTOCOL     *This,
   IN MMC_STATE                 State
   )
@@ -211,7 +221,7 @@ DwEmmcNotifyState (
     } while (Data & DWEMMC_CTRL_RESET_ALL);
 
     // Setup clock that could not be higher than 400KHz.
-    Status = DwEmmcSetClock (400000);
+    Status = MshcSetClock (400000);
     ASSERT (!EFI_ERROR (Status));
     // Wait clock stable
     MicroSecondDelay (100);
@@ -220,6 +230,7 @@ DwEmmcNotifyState (
     MmioWrite32 (DWEMMC_INTMASK, 0);
     MmioWrite32 (DWEMMC_TMOUT, ~0);
     MmioWrite32 (DWEMMC_IDINTEN, 0);
+    MmioWrite32 (DWEMMC_CTYPE, 0);
     MmioWrite32 (DWEMMC_BMOD, DWEMMC_IDMAC_SWRESET);
 
     MmioWrite32 (DWEMMC_BLKSIZ, DWEMMC_BLOCK_SIZE);
@@ -319,7 +330,7 @@ SendCommand (
 }
 
 EFI_STATUS
-DwEmmcSendCommand (
+MshcSendCommand (
   IN EFI_MMC_HOST_PROTOCOL     *This,
   IN MMC_CMD                    MmcCmd,
   IN UINT32                     Argument
@@ -345,7 +356,7 @@ DwEmmcSendCommand (
     break;
   case MMC_INDX(6):
     if (((Argument >> 31) & 0x1) == 0x1) {
-      Cmd = BIT_CMD_RESPONSE_EXPECT |BIT_CMD_CHECK_RESPONSE_CRC |
+      Cmd = BIT_CMD_RESPONSE_EXPECT | BIT_CMD_CHECK_RESPONSE_CRC |
             BIT_CMD_DATA_EXPECTED | BIT_CMD_READ |
             BIT_CMD_WAIT_PRVDATA_COMPLETE;
     } else {
@@ -353,10 +364,11 @@ DwEmmcSendCommand (
     }
     break;
   case MMC_INDX(7):
-    if (Argument)
+    if (Argument) {
         Cmd = BIT_CMD_RESPONSE_EXPECT | BIT_CMD_CHECK_RESPONSE_CRC;
-    else
+    } else {
         Cmd = 0;
+    }
     break;
   case MMC_INDX(8):
     Cmd = BIT_CMD_RESPONSE_EXPECT | BIT_CMD_CHECK_RESPONSE_CRC |
@@ -397,7 +409,7 @@ DwEmmcSendCommand (
     Cmd = BIT_CMD_RESPONSE_EXPECT;
     break;
   case MMC_INDX(51):
-    Cmd = BIT_CMD_RESPONSE_EXPECT |BIT_CMD_CHECK_RESPONSE_CRC |
+    Cmd = BIT_CMD_RESPONSE_EXPECT | BIT_CMD_CHECK_RESPONSE_CRC |
           BIT_CMD_DATA_EXPECTED | BIT_CMD_READ |
           BIT_CMD_WAIT_PRVDATA_COMPLETE;
     break;
@@ -409,8 +421,8 @@ DwEmmcSendCommand (
   Cmd |= MMC_GET_INDX(MmcCmd) | BIT_CMD_USE_HOLD_REG | BIT_CMD_START;
 
   if (IsPendingReadCommand (Cmd) || IsPendingWriteCommand (Cmd)) {
-    mDwEmmcCommand = Cmd;
-    mDwEmmcArgument = Argument;
+    mMshcCommand = Cmd;
+    mMshcArgument = Argument;
   } else {
     Status = SendCommand (Cmd, Argument);
   }
@@ -418,7 +430,7 @@ DwEmmcSendCommand (
 }
 
 EFI_STATUS
-DwEmmcReceiveResponse (
+MshcReceiveResponse (
   IN EFI_MMC_HOST_PROTOCOL     *This,
   IN MMC_RESPONSE_TYPE          Type,
   IN UINT32*                    Buffer
@@ -445,7 +457,7 @@ DwEmmcReceiveResponse (
 }
 
 VOID
-DwEmmcAdjustFifoThreshold (
+MshcAdjustFifoThreshold (
   VOID
   )
 {
@@ -455,7 +467,7 @@ DwEmmcAdjustFifoThreshold (
   UINT32 BlkSize = DWEMMC_BLOCK_SIZE, Idx = 0, RxWatermark = 1, TxWatermark, TxWatermarkInvers;
 
   /* Skip FIFO adjustment if we do not have platform FIFO depth info */
-  FifoDepth = PcdGet32 (PcdDwEmmcDxeFifoDepth);
+  FifoDepth = PcdGet32 (PcdMshcDxeFifoDepth);
   if (!FifoDepth) {
     return;
   }
@@ -485,149 +497,8 @@ DwEmmcAdjustFifoThreshold (
   MmioWrite32 (DWEMMC_FIFOTH, FifoThreshold);
 }
 
-#if 0
 EFI_STATUS
-PrepareDmaData (
-  IN DWEMMC_IDMAC_DESCRIPTOR*    IdmacDesc,
-  IN UINTN                      Length,
-  IN UINT32*                    Buffer
-  )
-{
-  UINTN  Cnt, Blks, Idx, LastIdx;
-
-  Cnt = (Length + DWEMMC_DMA_BUF_SIZE - 1) / DWEMMC_DMA_BUF_SIZE;
-  Blks = (Length + DWEMMC_BLOCK_SIZE - 1) / DWEMMC_BLOCK_SIZE;
-  Length = DWEMMC_BLOCK_SIZE * Blks;
-
-  for (Idx = 0; Idx < Cnt; Idx++) {
-    (IdmacDesc + Idx)->Des0 = DWEMMC_IDMAC_DES0_OWN | DWEMMC_IDMAC_DES0_CH |
-                              DWEMMC_IDMAC_DES0_DIC;
-    (IdmacDesc + Idx)->Des1 = DWEMMC_IDMAC_DES1_BS1(DWEMMC_DMA_BUF_SIZE);
-    /* Buffer Address */
-    (IdmacDesc + Idx)->Des2 = (UINT32)((UINTN)Buffer + DWEMMC_DMA_BUF_SIZE * Idx);
-    /* Next Descriptor Address */
-    (IdmacDesc + Idx)->Des3 = (UINT32)((UINTN)IdmacDesc +
-                                       (sizeof(DWEMMC_IDMAC_DESCRIPTOR) * (Idx + 1)));
-  }
-  /* First Descriptor */
-  IdmacDesc->Des0 |= DWEMMC_IDMAC_DES0_FS;
-  /* Last Descriptor */
-  LastIdx = Cnt - 1;
-  (IdmacDesc + LastIdx)->Des0 |= DWEMMC_IDMAC_DES0_LD;
-  (IdmacDesc + LastIdx)->Des0 &= ~(DWEMMC_IDMAC_DES0_DIC | DWEMMC_IDMAC_DES0_CH);
-  (IdmacDesc + LastIdx)->Des1 = DWEMMC_IDMAC_DES1_BS1(Length -
-                                                      (LastIdx * DWEMMC_DMA_BUF_SIZE));
-  /* Set the Next field of Last Descriptor */
-  (IdmacDesc + LastIdx)->Des3 = 0;
-  MmioWrite32 (DWEMMC_DBADDR, (UINT32)((UINTN)IdmacDesc));
-
-  return EFI_SUCCESS;
-}
-
-VOID
-StartDma (
-  UINTN    Length
-  )
-{
-  UINT32 Data;
-
-  Data = MmioRead32 (DWEMMC_CTRL);
-  Data |= DWEMMC_CTRL_INT_EN | DWEMMC_CTRL_DMA_EN | DWEMMC_CTRL_IDMAC_EN;
-  MmioWrite32 (DWEMMC_CTRL, Data);
-  Data = MmioRead32 (DWEMMC_BMOD);
-  Data |= DWEMMC_IDMAC_ENABLE | DWEMMC_IDMAC_FB;
-  MmioWrite32 (DWEMMC_BMOD, Data);
-
-  MmioWrite32 (DWEMMC_BLKSIZ, DWEMMC_BLOCK_SIZE);
-  MmioWrite32 (DWEMMC_BYTCNT, Length);
-}
-
-EFI_STATUS
-DwEmmcReadBlockData (
-  IN EFI_MMC_HOST_PROTOCOL     *This,
-  IN EFI_LBA                    Lba,
-  IN UINTN                      Length,
-  IN UINT32*                   Buffer
-  )
-{
-  EFI_STATUS  Status;
-  UINT32      DescPages, CountPerPage, Count;
-  EFI_TPL     Tpl;
-
-  Tpl = gBS->RaiseTPL (TPL_NOTIFY);
-
-  CountPerPage = EFI_PAGE_SIZE / 16;
-  Count = (Length + DWEMMC_DMA_BUF_SIZE - 1) / DWEMMC_DMA_BUF_SIZE;
-  DescPages = (Count + CountPerPage - 1) / CountPerPage;
-
-  InvalidateDataCacheRange (Buffer, Length);
-
-  Status = PrepareDmaData (gpIdmacDesc, Length, Buffer);
-  if (EFI_ERROR (Status)) {
-    goto out;
-  }
-
-  WriteBackDataCacheRange (gpIdmacDesc, DescPages * EFI_PAGE_SIZE);
-  StartDma (Length);
-
-  Status = SendCommand (mDwEmmcCommand, mDwEmmcArgument);
-  if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "Failed to read data, mDwEmmcCommand:%x, mDwEmmcArgument:%x, Status:%r\n", mDwEmmcCommand, mDwEmmcArgument, Status));
-    goto out;
-  }
-out:
-  // Restore Tpl
-  gBS->RestoreTPL (Tpl);
-  return Status;
-}
-
-EFI_STATUS
-DwEmmcWriteBlockData (
-  IN EFI_MMC_HOST_PROTOCOL     *This,
-  IN EFI_LBA                    Lba,
-  IN UINTN                      Length,
-  IN UINT32*                    Buffer
-  )
-{
-  EFI_STATUS  Status;
-  UINT32      DescPages, CountPerPage, Count;
-  EFI_TPL     Tpl;
-
-  Tpl = gBS->RaiseTPL (TPL_NOTIFY);
-
-  CountPerPage = EFI_PAGE_SIZE / 16;
-  Count = (Length + DWEMMC_DMA_BUF_SIZE - 1) / DWEMMC_DMA_BUF_SIZE;
-  DescPages = (Count + CountPerPage - 1) / CountPerPage;
-
-  WriteBackDataCacheRange (Buffer, Length);
-
-  Status = PrepareDmaData (gpIdmacDesc, Length, Buffer);
-  if (EFI_ERROR (Status)) {
-    goto out;
-  }
-
-  WriteBackDataCacheRange (gpIdmacDesc, DescPages * EFI_PAGE_SIZE);
-  StartDma (Length);
-
-  Status = SendCommand (mDwEmmcCommand, mDwEmmcArgument);
-  if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "Failed to write data, mDwEmmcCommand:%x, mDwEmmcArgument:%x, Status:%r\n", mDwEmmcCommand, mDwEmmcArgument, Status));
-    goto out;
-  }
-out:
-  // Restore Tpl
-  gBS->RestoreTPL (Tpl);
-  return Status;
-}
-#else
-
-#define FIFO_RESET	(0x1<<1)	/* Reset FIFO */
-#define FIFO_EMPTY	(0x1<<2)
-#define FIFO_RESET	(0x1<<1)	/* Reset FIFO */
-#define DWEMMC_MSHCI_FIFO           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x200)
-
-EFI_STATUS
-DwEmmcReadBlockData (
+MshcReadBlockData (
   IN EFI_MMC_HOST_PROTOCOL     *This,
   IN EFI_LBA                    Lba,
   IN UINTN                      Length,
@@ -643,13 +514,15 @@ DwEmmcReadBlockData (
 
   DEBUG ((DW_DBG, "%a():\n", __func__));
 
-  if (mDwEmmcCommand & BIT_CMD_WAIT_PRVDATA_COMPLETE) {
+  ASSERT ((mMshcCommand & BIT_CMD_WRITE) == BIT_CMD_READ);
+
+  if (mMshcCommand & BIT_CMD_WAIT_PRVDATA_COMPLETE) {
     do {
       Data = MmioRead32 (DWEMMC_STATUS);
     } while (Data & DWEMMC_STS_DATA_BUSY);
   }
 
-  if ((mDwEmmcCommand & BIT_CMD_STOP_ABORT_CMD) || (mDwEmmcCommand & BIT_CMD_DATA_EXPECTED)) {
+  if ((mMshcCommand & BIT_CMD_STOP_ABORT_CMD) || (mMshcCommand & BIT_CMD_DATA_EXPECTED)) {
     if (!(MmioRead32 (DWEMMC_STATUS) & FIFO_EMPTY)) {
       Data = MmioRead32 (DWEMMC_CTRL);
       Data |= FIFO_RESET;
@@ -660,7 +533,7 @@ DwEmmcReadBlockData (
         TimeOut--;
       }
       if (TimeOut == 0) {
-        DEBUG ((DEBUG_ERROR, "%a():  CMD=%d SDC_SDC_ERROR\n", __func__, mDwEmmcCommand&0x3f));
+        DEBUG ((DEBUG_ERROR, "%a():  CMD=%d SDC_SDC_ERROR\n", __func__, mMshcCommand&0x3f));
         return EFI_DEVICE_ERROR;
       }
     }
@@ -669,9 +542,9 @@ DwEmmcReadBlockData (
   MmioWrite32 (DWEMMC_BLKSIZ, 512);
   MmioWrite32 (DWEMMC_BYTCNT, Length);
 
-  Status = SendCommand (mDwEmmcCommand, mDwEmmcArgument);
+  Status = SendCommand (mMshcCommand, mMshcArgument);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "Failed to read data, mDwEmmcCommand:%x, mDwEmmcArgument:%x, Status:%r\n", mDwEmmcCommand, mDwEmmcArgument, Status));
+    DEBUG ((DEBUG_ERROR, "Failed to read data, mMshcCommand:%x, mMshcArgument:%x, Status:%r\n", mMshcCommand, mMshcArgument, Status));
     return EFI_DEVICE_ERROR;
   }
 
@@ -685,7 +558,7 @@ DwEmmcReadBlockData (
     }
 
     while((!(MmioRead32(DWEMMC_STATUS) & FIFO_EMPTY)) && DataLen) {
-      *Buffer++ = MmioRead32(DWEMMC_MSHCI_FIFO);
+      *Buffer++ = MmioRead32(DWEMMC_DATA);
       DataLen--;
       TimeOut = 1000000;
     }
@@ -718,7 +591,7 @@ DwEmmcReadBlockData (
 	DWEMMC_INT_EBE)
 
 EFI_STATUS
-DwEmmcWriteBlockData (
+MshcWriteBlockData (
   IN EFI_MMC_HOST_PROTOCOL     *This,
   IN EFI_LBA                    Lba,
   IN UINTN                      Length,
@@ -736,14 +609,16 @@ DwEmmcWriteBlockData (
 
   DEBUG ((DW_DBG, "%a():\n", __func__));
 
-  if (mDwEmmcCommand & BIT_CMD_WAIT_PRVDATA_COMPLETE) {
+  ASSERT ((mMshcCommand & BIT_CMD_WRITE) == BIT_CMD_WRITE);
+
+  if (mMshcCommand & BIT_CMD_WAIT_PRVDATA_COMPLETE) {
     do {
       Data = MmioRead32 (DWEMMC_STATUS);
     } while (Data & DWEMMC_STS_DATA_BUSY);
   }
 
-  if (!(((mDwEmmcCommand&0x3f) == 6) || ((mDwEmmcCommand&0x3f) == 51))) {
-    if ((mDwEmmcCommand & BIT_CMD_STOP_ABORT_CMD) || (mDwEmmcCommand & BIT_CMD_DATA_EXPECTED)) {
+  if (!(((mMshcCommand&0x3f) == 6) || ((mMshcCommand&0x3f) == 51))) {
+    if ((mMshcCommand & BIT_CMD_STOP_ABORT_CMD) || (mMshcCommand & BIT_CMD_DATA_EXPECTED)) {
       if (!(MmioRead32 (DWEMMC_STATUS) & FIFO_EMPTY)) {
         Data = MmioRead32 (DWEMMC_CTRL);
         Data |= FIFO_RESET;
@@ -754,7 +629,7 @@ DwEmmcWriteBlockData (
           TimeOut--;
         }
         if (TimeOut == 0) {
-          DEBUG ((DEBUG_ERROR, "%a():  CMD=%d SDC_SDC_ERROR\n", __func__, mDwEmmcCommand&0x3f));
+          DEBUG ((DEBUG_ERROR, "%a():  CMD=%d SDC_SDC_ERROR\n", __func__, mMshcCommand&0x3f));
           return EFI_DEVICE_ERROR;
         }
       }
@@ -764,16 +639,16 @@ DwEmmcWriteBlockData (
   MmioWrite32 (DWEMMC_BLKSIZ, 512);
   MmioWrite32 (DWEMMC_BYTCNT, Length);
 
-  Status = SendCommand (mDwEmmcCommand, mDwEmmcArgument);
+  Status = SendCommand (mMshcCommand, mMshcArgument);
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "Failed to write data, mDwEmmcCommand:%x, mDwEmmcArgument:%x, Status:%r\n", mDwEmmcCommand, mDwEmmcArgument, Status));
+    DEBUG ((DEBUG_ERROR, "Failed to write data, mMshcCommand:%x, mMshcArgument:%x, Status:%r\n", mMshcCommand, mMshcArgument, Status));
     return EFI_DEVICE_ERROR;
   }
 
   for (Count = 0; Count < Size32; Count++) {
     while(MMC_GET_FCNT(MmioRead32(DWEMMC_STATUS)) >32)
     MicroSecondDelay(1);
-    MmioWrite32((DWEMMC_MSHCI_FIFO), *DataBuffer++);
+    MmioWrite32(DWEMMC_DATA, *DataBuffer++);
   }
 
   do {
@@ -787,10 +662,8 @@ DwEmmcWriteBlockData (
   return EFI_SUCCESS;
 }
 
-#endif
-
 EFI_STATUS
-DwEmmcSetIos (
+MshcSetIos (
   IN EFI_MMC_HOST_PROTOCOL      *This,
   IN  UINT32                    BusClockFreq,
   IN  UINT32                    BusWidth,
@@ -800,8 +673,8 @@ DwEmmcSetIos (
   EFI_STATUS Status = EFI_SUCCESS;
   UINT32    Data;
 
-  if ((PcdGet32 (PcdDwEmmcDxeMaxClockFreqInHz) != 0) &&
-      (BusClockFreq > PcdGet32 (PcdDwEmmcDxeMaxClockFreqInHz))) {
+  if ((PcdGet32 (PcdMshcDxeMaxClockFreqInHz) != 0) &&
+      (BusClockFreq > PcdGet32 (PcdMshcDxeMaxClockFreqInHz))) {
     return EFI_UNSUPPORTED;
   }
   if (TimingMode != EMMCBACKWARD) {
@@ -835,13 +708,13 @@ DwEmmcSetIos (
     return EFI_UNSUPPORTED;
   }
   if (BusClockFreq) {
-    Status = DwEmmcSetClock (BusClockFreq);
+    Status = MshcSetClock (BusClockFreq);
   }
   return Status;
 }
 
 BOOLEAN
-DwEmmcIsMultiBlock (
+MshcIsMultiBlock (
   IN EFI_MMC_HOST_PROTOCOL      *This
   )
 {
@@ -850,20 +723,20 @@ DwEmmcIsMultiBlock (
 
 EFI_MMC_HOST_PROTOCOL gMciHost = {
   MMC_HOST_PROTOCOL_REVISION,
-  DwEmmcIsCardPresent,
-  DwEmmcIsReadOnly,
-  DwEmmcBuildDevicePath,
-  DwEmmcNotifyState,
-  DwEmmcSendCommand,
-  DwEmmcReceiveResponse,
-  DwEmmcReadBlockData,
-  DwEmmcWriteBlockData,
-  DwEmmcSetIos,
-  DwEmmcIsMultiBlock
+  MshcIsCardPresent,
+  MshcIsReadOnly,
+  MshcBuildDevicePath,
+  MshcNotifyState,
+  MshcSendCommand,
+  MshcReceiveResponse,
+  MshcReadBlockData,
+  MshcWriteBlockData,
+  MshcSetIos,
+  MshcIsMultiBlock
 };
 
 EFI_STATUS
-DwEmmcDxeInitialize (
+MshcDxeInitialize (
   IN EFI_HANDLE         ImageHandle,
   IN EFI_SYSTEM_TABLE   *SystemTable
   )
@@ -873,13 +746,31 @@ DwEmmcDxeInitialize (
 
   Handle = NULL;
 
-  DwEmmcAdjustFifoThreshold ();
-  gpIdmacDesc = (DWEMMC_IDMAC_DESCRIPTOR *)AllocatePages (DWEMMC_MAX_DESC_PAGES);
-  if (gpIdmacDesc == NULL) {
-    return EFI_BUFFER_TOO_SMALL;
+  CruSetSdmmcClockRate (0, 100000000UL);
+
+  CruAssertSoftReset (13, 4);
+  MicroSecondDelay (5);
+  CruDeassertSoftReset (13, 4);
+
+  DEBUG ((DEBUG_BLKIO, "MshcDxeInitialize()\n"));
+
+  /* Configure pins */
+  GpioSetIomuxConfig (mSdmmc0IomuxConfig, ARRAY_SIZE (mSdmmc0IomuxConfig));
+  if (!PcdGetBool (PcdMshcDxePwrEnInverted)) {
+    GpioSetIomuxConfig (mSdmmc0IomuxPwrEnDefaultConfig, ARRAY_SIZE (mSdmmc0IomuxPwrEnDefaultConfig));
+  } else {
+    /*
+    * This board has the PWREN signal from SDMMC0 inverted. Configure the
+    * pin as GPIO and drive it low since there is no way with the device tree
+    * bindings to tell the driver about this quirk.
+    */
+    DEBUG ((DEBUG_INFO, "MshcDxeInitialize(): Applying PWREN inverted workaround\n"));
+    GpioSetIomuxConfig (mSdmmc0IomuxPwrEnInvertedConfig, ARRAY_SIZE (mSdmmc0IomuxPwrEnInvertedConfig));
+    GpioPinSetDirection (0, GPIO_PIN_PA5, GPIO_PIN_OUTPUT);
+    GpioPinWrite (0, GPIO_PIN_PA5, FALSE);
   }
 
-  DEBUG ((DEBUG_BLKIO, "DwEmmcDxeInitialize()\n"));
+  MshcAdjustFifoThreshold ();
 
   //Publish Component Name, BlockIO protocol interfaces
   Status = gBS->InstallMultipleProtocolInterfaces (

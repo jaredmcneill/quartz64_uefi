@@ -450,6 +450,11 @@
   gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|0
   gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|22
 
+  #
+  # The Quartz64 board has inverted polarity for the PWREN pin on the SD card slot
+  #
+  gRk356xTokenSpaceGuid.PcdMshcDxePwrEnInverted|TRUE
+
 [PcdsDynamicHii.common.DEFAULT]
 
   #
@@ -568,7 +573,7 @@
   # eMMC
   #
   EmbeddedPkg/Universal/MmcDxe/MmcDxe.inf
-  Silicon/Rockchip/Rk356x/Drivers/DwEmmcDxe/DwEmmcDxe.inf
+  Silicon/Rockchip/Rk356x/Drivers/MshcDxe/MshcDxe.inf
 
   #
   # Devicetree support

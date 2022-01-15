@@ -1,10 +1,5 @@
 /** @file
 *
-*  WARNING:
-*  This driver fails to follow the UEFI driver model without a good
-*  reason, and only remains in the tree because it is still used by
-*  a small number of platforms. It will be removed when no longer used.
-*
 *  Copyright (c) 2014-2017, Linaro Limited. All rights reserved.
 *
 *  SPDX-License-Identifier: BSD-2-Clause-Patent
@@ -12,44 +7,44 @@
 **/
 
 
-#ifndef __DWEMMC_H__
-#define __DWEMMC_H__
+#ifndef __MSHC_H__
+#define __MSHC_H__
 
 #include <Protocol/EmbeddedGpio.h>
 
-// DW MMC Registers
-#define DWEMMC_CTRL             ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x000)
-#define DWEMMC_PWREN            ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x004)
-#define DWEMMC_CLKDIV           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x008)
-#define DWEMMC_CLKSRC           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x00c)
-#define DWEMMC_CLKENA           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x010)
-#define DWEMMC_TMOUT            ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x014)
-#define DWEMMC_CTYPE            ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x018)
-#define DWEMMC_BLKSIZ           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x01c)
-#define DWEMMC_BYTCNT           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x020)
-#define DWEMMC_INTMASK          ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x024)
-#define DWEMMC_CMDARG           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x028)
-#define DWEMMC_CMD              ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x02c)
-#define DWEMMC_RESP0            ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x030)
-#define DWEMMC_RESP1            ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x034)
-#define DWEMMC_RESP2            ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x038)
-#define DWEMMC_RESP3            ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x03c)
-#define DWEMMC_RINTSTS          ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x044)
-#define DWEMMC_STATUS           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x048)
-#define DWEMMC_FIFOTH           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x04c)
-#define DWEMMC_TCBCNT           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x05c)
-#define DWEMMC_TBBCNT           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x060)
-#define DWEMMC_DEBNCE           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x064)
-#define DWEMMC_HCON             ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x070)
-#define DWEMMC_UHSREG           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x074)
-#define DWEMMC_BMOD             ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x080)
-#define DWEMMC_DBADDR           ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x088)
-#define DWEMMC_IDSTS            ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x08c)
-#define DWEMMC_IDINTEN          ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x090)
-#define DWEMMC_DSCADDR          ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x094)
-#define DWEMMC_BUFADDR          ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0x098)
-#define DWEMMC_CARDTHRCTL       ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0X100)
-#define DWEMMC_DATA             ((UINT32)PcdGet32 (PcdDwEmmcDxeBaseAddress) + 0X200)
+// DW MSHC Registers
+#define DWEMMC_CTRL             ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x000)
+#define DWEMMC_PWREN            ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x004)
+#define DWEMMC_CLKDIV           ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x008)
+#define DWEMMC_CLKSRC           ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x00c)
+#define DWEMMC_CLKENA           ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x010)
+#define DWEMMC_TMOUT            ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x014)
+#define DWEMMC_CTYPE            ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x018)
+#define DWEMMC_BLKSIZ           ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x01c)
+#define DWEMMC_BYTCNT           ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x020)
+#define DWEMMC_INTMASK          ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x024)
+#define DWEMMC_CMDARG           ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x028)
+#define DWEMMC_CMD              ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x02c)
+#define DWEMMC_RESP0            ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x030)
+#define DWEMMC_RESP1            ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x034)
+#define DWEMMC_RESP2            ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x038)
+#define DWEMMC_RESP3            ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x03c)
+#define DWEMMC_RINTSTS          ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x044)
+#define DWEMMC_STATUS           ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x048)
+#define DWEMMC_FIFOTH           ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x04c)
+#define DWEMMC_TCBCNT           ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x05c)
+#define DWEMMC_TBBCNT           ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x060)
+#define DWEMMC_DEBNCE           ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x064)
+#define DWEMMC_HCON             ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x070)
+#define DWEMMC_UHSREG           ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x074)
+#define DWEMMC_BMOD             ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x080)
+#define DWEMMC_DBADDR           ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x088)
+#define DWEMMC_IDSTS            ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x08c)
+#define DWEMMC_IDINTEN          ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x090)
+#define DWEMMC_DSCADDR          ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x094)
+#define DWEMMC_BUFADDR          ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0x098)
+#define DWEMMC_CARDTHRCTL       ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0X100)
+#define DWEMMC_DATA             ((UINT32)PcdGet32 (PcdMshcDxeBaseAddress) + 0X200)
 
 #define CMD_UPDATE_CLK                          0x80202000
 #define CMD_START_BIT                           (1 << 31)
@@ -129,4 +124,7 @@
 
 #define DWEMMC_GET_HDATA_WIDTH(x)               (((x) >> 7) & 0x7)
 
-#endif  // __DWEMMC_H__
+#define FIFO_RESET	(0x1<<1)	/* Reset FIFO */
+#define FIFO_EMPTY	(0x1<<2)
+
+#endif  // __MSHC_H__
