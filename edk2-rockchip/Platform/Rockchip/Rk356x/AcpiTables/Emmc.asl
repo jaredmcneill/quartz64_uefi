@@ -17,8 +17,11 @@ Device (EMMC) {
     Name (_DSD, Package () {
         ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
         Package () {
-            Package () { "sdhci-caps-mask", 0xFF00 },   // Bits [15:8]: BASE_CLK_FREQ
-            Package () { "sdhci-caps", 0x3200 }         // BASE_CLK_FREQ = 50 MHz
+            Package () { "sdhci-caps-mask", 0x70000FF00 },   // Bits [15:8]: BASE_CLK_FREQ
+                                                             // Bit [32]: SDR50_SUPPORT
+                                                             // Bit [33]: SDR104_SUPPORT
+                                                             // Bit [34]: DDR50_SUPPORT
+            Package () { "sdhci-caps", 0x3200 }              // BASE_CLK_FREQ = 50 MHz
         }
     })
 
