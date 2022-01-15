@@ -46,6 +46,7 @@
   gRk356xTokenSpaceGuid.PcdMshcDxeBaseAddress
   gRk356xTokenSpaceGuid.PcdMshcDxeMaxClockFreqInHz
   gRk356xTokenSpaceGuid.PcdMshcDxeFifoDepth
+  gRk356xTokenSpaceGuid.PcdMshcDxePwrEnUsed
   gRk356xTokenSpaceGuid.PcdMshcDxePwrEnInverted
 
 [Depex]
