@@ -15,6 +15,7 @@ Connect a serial console to UART2 using settings 115200 8n1.
 ## Operating system support
 
 | OS | Version | Supported hardware | Notes |
+| --- | --- | --- | --- |
 | ESXi-Arm | 1.8 | HDMI, USB2, USB3, serial | |
 | FreeBSD | 14.0-CURRENT | ? | Mangled serial output, boot stuck waiting for random seed |
 | NetBSD | 9.99.x | HDMI, USB2, USB3, serial, SD card, PCIe, eMMC, ethernet, thermal sensors | |
