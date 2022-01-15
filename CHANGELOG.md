@@ -1,3 +1,9 @@
+#### 2022-01-15
+
+* Add SD card support to UEFI.
+* Add eMMC device to ACPI tables.
+* Reduce the amount of duplicated code between boards.
+
 #### 2022-01-11
 
 * Do not make the device tree available since some OSes that support
