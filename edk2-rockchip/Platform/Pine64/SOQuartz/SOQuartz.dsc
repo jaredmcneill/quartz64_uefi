@@ -566,7 +566,7 @@
   # eMMC
   #
   EmbeddedPkg/Universal/MmcDxe/MmcDxe.inf
-  Silicon/Rockchip/Rk356x/Drivers/DwEmmcDxe/DwEmmcDxe.inf
+  Silicon/Rockchip/Rk356x/Drivers/MshcDxe/MshcDxe.inf
 
   #
   # Devicetree support
