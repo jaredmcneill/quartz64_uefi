@@ -31,7 +31,8 @@
   gRk356xTokenSpaceGuid.PcdMshcDxeBaseAddress|0xFE2B0000|UINT32|0x00000007
   gRk356xTokenSpaceGuid.PcdMshcDxeMaxClockFreqInHz|50000000|UINT32|0x00000008
   gRk356xTokenSpaceGuid.PcdMshcDxeFifoDepth|0x100|UINT32|0x00000009
-  gRk356xTokenSpaceGuid.PcdMshcDxePwrEnInverted|FALSE|BOOLEAN|0x0000000A
+  gRk356xTokenSpaceGuid.PcdMshcDxePwrEnUsed|FALSE|BOOLEAN|0x0000000A
+  gRk356xTokenSpaceGuid.PcdMshcDxePwrEnInverted|FALSE|BOOLEAN|0x0000000B
   # Pcds for PCIe
   gRk356xTokenSpaceGuid.PcdPcieResetGpioBank|0xFFFFFFFF|UINT32|0x00000010
   gRk356xTokenSpaceGuid.PcdPcieResetGpioPin|0xFFFFFFFF|UINT32|0x00000011
