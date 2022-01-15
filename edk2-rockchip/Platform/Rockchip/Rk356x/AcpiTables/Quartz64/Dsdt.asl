@@ -20,6 +20,7 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
     include ("Usb3.asl")
     include ("Gmac.asl")
     include ("Mshc.asl")
+    include ("Emmc.asl")
     include ("Pcie2x1.asl")
 
   } // Scope (_SB)
