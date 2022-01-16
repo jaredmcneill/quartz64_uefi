@@ -448,6 +448,13 @@
   gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|0
   gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|20
 
+  #
+  # The ROC-RK3566-PC has a WiFi card on the second MSHC
+  #
+  gRk356xTokenSpaceGuid.PcdMshc1Status|0xF
+  gRk356xTokenSpaceGuid.PcdMshc1SdioIrq|TRUE
+  gRk356xTokenSpaceGuid.PcdMshc1NonRemovable|TRUE
+
 [PcdsDynamicHii.common.DEFAULT]
 
   #

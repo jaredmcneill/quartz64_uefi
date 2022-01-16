@@ -56,5 +56,9 @@
   gRk356xTokenSpaceGuid.PcdUsb2Size
   gRk356xTokenSpaceGuid.PcdNumUsb2Controller
 
+  gRk356xTokenSpaceGuid.PcdMshc1Status
+  gRk356xTokenSpaceGuid.PcdMshc1SdioIrq
+  gRk356xTokenSpaceGuid.PcdMshc1NonRemovable
+
 [BuildOptions]
   GCC:*_*_*_ASL_FLAGS       = -vw3133 -vw3150
