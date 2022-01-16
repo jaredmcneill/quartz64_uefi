@@ -100,6 +100,17 @@ STATIC CONST GPIO_IOMUX_CONFIG mGmac1IomuxConfig[] = {
   { "gmac1_txd3m0",       3, GPIO_PIN_PA3, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
 };
 
+STATIC CONST GPIO_IOMUX_CONFIG mSdmmc1IomuxConfig[] = {
+  { "sdmmc1_d0",          2, GPIO_PIN_PA3, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
+  { "sdmmc1_d1",          2, GPIO_PIN_PA4, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
+  { "sdmmc1_d2",          2, GPIO_PIN_PA5, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
+  { "sdmmc1_d3",          2, GPIO_PIN_PA6, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
+  { "sdmmc1_cmd",         2, GPIO_PIN_PA7, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
+  { "sdmmc1_clk",         2, GPIO_PIN_PB0, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
+  { "sdmmc1_pwren",       2, GPIO_PIN_PB1, 0, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "sdmmc1_det",         2, GPIO_PIN_PB2, 0, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+};
+
 STATIC
 EFI_STATUS
 BoardInitSetCpuSpeed (
@@ -357,6 +368,28 @@ BoardInitPmic (
   PmicWrite (PMIC_POWER_EN3, 0x11);
 }
 
+STATIC
+VOID
+BoardInitWiFi (
+  VOID
+  )
+{
+  DEBUG ((DEBUG_INFO, "BOARD: WiFi init\n"));
+
+  CruSetSdmmcClockRate (1, 100000000UL);
+
+  /* Configure pins */
+  GpioSetIomuxConfig (mSdmmc1IomuxConfig, ARRAY_SIZE (mSdmmc1IomuxConfig));
+
+  /* Set GPIO2 PB1 (WIFI_REG_ON) output high to enable WiFi */
+  GpioPinSetDirection (2, GPIO_PIN_PB1, GPIO_PIN_OUTPUT);
+  MicroSecondDelay (1000);
+  GpioPinWrite (2, GPIO_PIN_PB1, FALSE);
+  MicroSecondDelay (500000);
+  GpioPinWrite (2, GPIO_PIN_PB1, TRUE);
+  MicroSecondDelay (100000);
+}
+
 EFI_STATUS
 EFIAPI
 BoardInitDriverEntryPoint (
@@ -394,6 +427,9 @@ BoardInitDriverEntryPoint (
 
   /* GMAC setup */
   BoardInitGmac ();
+
+  /* WiFi setup */
+  BoardInitWiFi ();
 
   return EFI_SUCCESS;
 }
