@@ -12,6 +12,17 @@ Run `make sdcard`.
 
 Connect a serial console to UART2 using settings 115200 8n1.
 
+## Operating system support
+
+| OS | Version | Supported hardware | Notes |
+| --- | --- | --- | --- |
+| ESXi-Arm | 1.8 | HDMI, USB2, USB3, serial | |
+| FreeBSD | 14.0-CURRENT | ? | Mangled serial output, boot stuck waiting for random seed |
+| NetBSD | 9.99.x | HDMI, USB2, USB3, serial, SD card, PCIe, eMMC, ethernet, thermal sensors | |
+| OpenBSD | 7.0-current | HDMI, USB2, USB3, serial | To use HDMI console, enter `set tty fb0` at the bootloader prompt. |
+| Ubuntu | 21.04 | HDMI, USB2, USB3, serial, PCIe, thermal sensors | Needs `irqchip.gicv3_nolpi=1` for MSI support |
+| Windows PE | ? | HDMI, USB3, PCIe | BSOD when plugging device in to USB2 port (#2) |
+
 ## eMMC controller Device-Specific Method (_DSM)
 
 The divider register in the RK356x's SDHCI controller does not work, so to change the eMMC card clock we have to do it through the CRU. This is exposed to the OS as an ACPI Device-Specific Method (_DSM).
