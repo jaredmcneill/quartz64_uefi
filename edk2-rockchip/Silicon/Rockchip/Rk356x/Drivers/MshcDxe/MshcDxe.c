@@ -299,8 +299,6 @@ SendCommand (
 {
   UINT32      Data, ErrMask;
 
-  MicroSecondDelay(15000);
-
   // Wait until MMC is idle
   do {
     Data = MmioRead32 (DWEMMC_STATUS);
@@ -314,7 +312,7 @@ SendCommand (
             DWEMMC_INT_RCRC | DWEMMC_INT_RE;
   ErrMask |= DWEMMC_INT_DCRC | DWEMMC_INT_DRT | DWEMMC_INT_SBE;
   do {
-    MicroSecondDelay(500);
+    MicroSecondDelay(1);
     Data = MmioRead32 (DWEMMC_RINTSTS);
 
     if (Data & ErrMask) {
