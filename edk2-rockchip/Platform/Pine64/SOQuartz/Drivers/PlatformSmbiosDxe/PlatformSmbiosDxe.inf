@@ -45,6 +45,7 @@
   PrintLib
   TimeBaseLib
   CruLib
+  SdramLib
 
 [Protocols]
   gEfiSmbiosProtocolGuid           # PROTOCOL SOMETIMES_CONSUMED

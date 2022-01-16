@@ -45,6 +45,7 @@
   PrintLib
   TimeBaseLib
   CruLib
+  SdramLib
 
 [Protocols]
   gEfiSmbiosProtocolGuid           # PROTOCOL SOMETIMES_CONSUMED
@@ -64,4 +65,3 @@
   gRk356xTokenSpaceGuid.PcdCpuSpeed
   gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor
   gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString
-

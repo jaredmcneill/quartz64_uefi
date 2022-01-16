@@ -1,7 +1,7 @@
 Build/
 idblock.bin
-*_EFI_*.itb
-sdcard_*.img
-sdcard_*.img.gz
+*.itb
+*.img
+*.img.gz
 .uefitools_done
 .vscode

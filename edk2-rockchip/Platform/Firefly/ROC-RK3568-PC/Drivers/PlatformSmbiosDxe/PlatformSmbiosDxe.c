@@ -50,9 +50,12 @@
 #include <Library/UefiRuntimeServicesTableLib.h>
 #include <Library/PrintLib.h>
 #include <Library/CruLib.h>
+#include <Library/SdramLib.h>
 #include <Protocol/ArmScmiClockProtocol.h>
 
 #define SMB_IS_DIGIT(c)  (((c) >= '0') && ((c) <= '9'))
+
+STATIC UINT64 mMemorySize = 0;
 
 /***********************************************************************
         SMBIOS data definition  TYPE0  BIOS Information
@@ -1031,10 +1034,10 @@ MemArrMapInfoUpdateSmbiosType19 (
   )
 {
   // Note: Type 19 addresses are expressed in KB, not bytes
-  mMemArrMapInfoType19.StartingAddress = PcdGet64(PcdSystemMemoryBase) / 1024;
+  mMemArrMapInfoType19.StartingAddress = mMemorySize / 1024;
 
   mMemArrMapInfoType19.EndingAddress = mMemArrMapInfoType19.StartingAddress +
-    PcdGet64(PcdSystemMemorySize) / 1024 - 1;
+    mMemorySize / 1024 - 1;
 
   LogSmbiosData ((EFI_SMBIOS_TABLE_HEADER*)&mMemArrMapInfoType19, mMemArrMapInfoType19Strings, NULL);
 }
@@ -1063,6 +1066,8 @@ PlatformSmbiosDriverEntryPoint (
 {
 
   DEBUG ((DEBUG_INFO, "PlatformSmbiosDriverEntryPoint() called\n"));
+
+  mMemorySize = SdramGetMemorySize ();
 
   BIOSInfoUpdateSmbiosType0 ();
 

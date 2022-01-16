@@ -50,9 +50,12 @@
 #include <Library/UefiRuntimeServicesTableLib.h>
 #include <Library/PrintLib.h>
 #include <Library/CruLib.h>
+#include <Library/SdramLib.h>
 #include <Protocol/ArmScmiClockProtocol.h>
 
 #define SMB_IS_DIGIT(c)  (((c) >= '0') && ((c) <= '9'))
+
+STATIC UINT64 mMemorySize = 0;
 
 /***********************************************************************
         SMBIOS data definition  TYPE0  BIOS Information
@@ -997,7 +1000,7 @@ PhyMemArrayInfoUpdateSmbiosType16 (
  //  - Type 17 VolatileSize in Bytes
  //
 
-  mMemDevInfoType17.Size = PcdGet64(PcdSystemMemorySize) / (1024 * 1024);;
+  mMemDevInfoType17.Size = mMemorySize / (1024 * 1024);;
 
   mPhyMemArrayInfoType16.MaximumCapacity = mMemDevInfoType17.Size * 1024; // Size in KB
   mMemDevInfoType17.VolatileSize = MultU64x32 (mMemDevInfoType17.Size, 1024 * 1024);  // Size in Bytes
@@ -1034,7 +1037,7 @@ MemArrMapInfoUpdateSmbiosType19 (
   mMemArrMapInfoType19.StartingAddress = PcdGet64(PcdSystemMemoryBase) / 1024;
 
   mMemArrMapInfoType19.EndingAddress = mMemArrMapInfoType19.StartingAddress +
-    PcdGet64(PcdSystemMemorySize) / 1024 - 1;
+    mMemorySize / 1024 - 1;
 
   LogSmbiosData ((EFI_SMBIOS_TABLE_HEADER*)&mMemArrMapInfoType19, mMemArrMapInfoType19Strings, NULL);
 }
@@ -1063,6 +1066,8 @@ PlatformSmbiosDriverEntryPoint (
 {
 
   DEBUG ((DEBUG_INFO, "PlatformSmbiosDriverEntryPoint() called\n"));
+
+  mMemorySize = SdramGetMemorySize ();
 
   BIOSInfoUpdateSmbiosType0 ();
 

@@ -33,6 +33,7 @@
   MemoryAllocationLib
   PcdLib
   PrintLib
+  SdramLib
 
 [Sources.common]
   Rk356x.c
@@ -59,11 +60,11 @@
   gArmTokenSpaceGuid.PcdArmPrimaryCoreMask
   gArmTokenSpaceGuid.PcdArmPrimaryCore
   gArmTokenSpaceGuid.PcdFdSize
-  gArmTokenSpaceGuid.PcdSystemMemoryBase
-  gArmTokenSpaceGuid.PcdSystemMemorySize
 
 [Pcd]
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialClockRate
+  gArmTokenSpaceGuid.PcdSystemMemoryBase
+  gArmTokenSpaceGuid.PcdSystemMemorySize
 
 [Ppis]
   gArmMpCoreInfoPpiGuid

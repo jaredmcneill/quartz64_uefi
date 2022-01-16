@@ -121,6 +121,7 @@
   I2cLib|Silicon/Rockchip/Rk356x/Library/I2cLib/I2cLib.inf
   MultiPhyLib|Silicon/Rockchip/Rk356x/Library/MultiPhyLib/MultiPhyLib.inf
   OtpLib|Silicon/Rockchip/Rk356x/Library/OtpLib/OtpLib.inf
+  SdramLib|Silicon/Rockchip/Rk356x/Library/SdramLib/SdramLib.inf
 
   # Devices
   NonDiscoverableDeviceRegistrationLib|MdeModulePkg/Library/NonDiscoverableDeviceRegistrationLib/NonDiscoverableDeviceRegistrationLib.inf
@@ -385,15 +386,12 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdMaxVariableSize|0x2000
   gEfiMdeModulePkgTokenSpaceGuid.PcdMaxAuthVariableSize|0x2800
 
+  # Smallest possible memory size
+  gArmTokenSpaceGuid.PcdSystemMemoryBase|0
+  gArmTokenSpaceGuid.PcdSystemMemorySize|0x80000000
+
   # Size of the region used by UEFI in permanent memory (Reserved 64MB)
   gArmPlatformTokenSpaceGuid.PcdSystemMemoryUefiRegionSize|0x04000000
-
-  # RAM size
-  gArmTokenSpaceGuid.PcdSystemMemoryBase|0x00000000
-  # 4GB model
-  gArmTokenSpaceGuid.PcdSystemMemorySize|0x100000000
-  # 8GB model
-  #gArmTokenSpaceGuid.PcdSystemMemorySize|0x200000000
 
   # UART2
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase|0xFE660000

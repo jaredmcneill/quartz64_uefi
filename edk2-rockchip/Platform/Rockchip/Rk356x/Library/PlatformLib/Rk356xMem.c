@@ -15,6 +15,7 @@
 #include <Library/MemoryAllocationLib.h>
 #include <Library/PcdLib.h>
 #include <Library/Rk356xMem.h>
+#include <Library/SdramLib.h>
 #include <IndustryStandard/Rk356x.h>
 
 UINT64 mSystemMemoryBase = FixedPcdGet64 (PcdSystemMemoryBase);
@@ -45,6 +46,8 @@ ArmPlatformGetVirtualMemoryMap (
 {
   UINTN                         Index = 0;
   ARM_MEMORY_REGION_DESCRIPTOR  *VirtualMemoryTable;
+
+  mSystemMemorySize = SdramGetMemorySize ();
 
   DEBUG ((DEBUG_INFO, "RAM: 0x%ll08X (Size 0x%ll08X)\n", mSystemMemoryBase, mSystemMemorySize));
 
