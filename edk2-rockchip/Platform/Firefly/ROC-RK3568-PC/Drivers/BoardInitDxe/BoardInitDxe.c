@@ -61,6 +61,11 @@
 
 #define PMIC_CHIP_NAME          0xed
 #define PMIC_CHIP_VER           0xee
+#define PMIC_POWER_EN1          0xb2
+#define PMIC_POWER_EN2          0xb3
+#define PMIC_POWER_EN3          0xb4
+#define PMIC_LDO1_ON_VSEL       0xcc
+#define PMIC_LDO9_ON_VSEL       0xdc
 
 /*
  * CPU_GRF registers
@@ -317,6 +322,18 @@ PmicRead (
 }
 
 STATIC
+EFI_STATUS
+PmicWrite (
+  IN UINT8 Register,
+  IN UINT8 Value
+  )
+{
+  return I2cWrite (I2C0_BASE, PMIC_I2C_ADDR,
+                  &Register, sizeof (Register),
+                  &Value, sizeof (Value));
+}
+
+STATIC
 VOID
 BoardInitPmic (
   VOID
@@ -353,6 +370,16 @@ BoardInitPmic (
 
   DEBUG ((DEBUG_INFO, "PMIC: Detected RK%03X ver 0x%X\n", ChipName, ChipVer));
   ASSERT (ChipName == 0x809);
+
+  /* Check LD01 and LD09 are configured correctly. */
+  PmicRead (PMIC_LDO1_ON_VSEL, &Value);
+  ASSERT (Value == 0x0c); /* 0.8V */
+  PmicRead (PMIC_LDO9_ON_VSEL, &Value);
+  ASSERT (Value == 0x30); /* 1.8V */
+
+  /* Enable LDO1 and LDO9 for HDMI */
+  PmicWrite (PMIC_POWER_EN1, 0x11);
+  PmicWrite (PMIC_POWER_EN3, 0x11);
 }
 
 STATIC
@@ -382,7 +409,7 @@ BoardInitEmmc (
   VOID
   )
 {
-#if 0	/* TODO: */
+#if 0 /* TODO: */
   UINT32 VendSpec;
 
   DEBUG ((DEBUG_INFO, "BOARD: eMMC card init\n"));
