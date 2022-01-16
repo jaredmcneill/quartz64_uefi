@@ -4,7 +4,7 @@ This repository contains a port of Tianocore EDK II to the PINE64 Quartz64 board
 
 https://www.pine64.org/quartz64a/
 
-## Building an SD card image
+## Building an SD card / eMMC image
 
 Run `make sdcard`.
 
