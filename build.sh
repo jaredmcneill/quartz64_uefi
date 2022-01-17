@@ -11,6 +11,9 @@ export WORKSPACE="$PWD"
 export PACKAGES_PATH=$PWD/edk2:$PWD/edk2-platforms:$PWD/edk2-non-osi:$PWD/edk2-rockchip
 export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
 
+TRUST_INI=RK3568TRUST.ini
+MINIALL_INI=RK3568MINIALL.ini
+
 fetch_deps() {
 	git submodule update --init --recursive
 }
@@ -32,22 +35,25 @@ build_uefi() {
 build_idblock() {
 	echo " => Building idblock.bin"
 	FLASHFILES="FlashHead.bin FlashData.bin FlashBoot.bin"
-	rm -f idblock.bin rk3566_ddr_*.bin rk356x_usbplug*.bin UsbHead.bin ${FLASHFILES}
+	rm -f idblock.bin rk35*_ddr_*.bin rk356x_usbplug*.bin UsbHead.bin ${FLASHFILES}
 
 	# Default DDR image uses 1.5M baud. Patch it to use 115200 to match UEFI first.
-	cat rkbin/tools/ddrbin_param.txt | sed 's/^uart baudrate=/&115200/' > ddrbin_param.txt
-	./rkbin/tools/ddrbin_tool ddrbin_param.txt rkbin/${DDR}
-	rm -f ddrbin_param.txt
+	cat `pwd`/rkbin/tools/ddrbin_param.txt					 		\
+		| sed 's/^uart baudrate=.*$/uart baudrate=115200/'  		\
+		| sed 's/^dis_printf_training=.*$/dis_printf_training=1/' 	\
+		> `pwd`/Build/ddrbin_param.txt
+	./rkbin/tools/ddrbin_tool `pwd`/Build/ddrbin_param.txt rkbin/${DDR}
+	./rkbin/tools/ddrbin_tool -g `pwd`/Build/ddrbin_param_dump.txt rkbin/${DDR}
 
 	# Create idblock.bin
-	(cd rkbin && ./tools/boot_merger RKBOOT/RK3566MINIALL.ini)
+	(cd rkbin && ./tools/boot_merger RKBOOT/${MINIALL_INI})
 	./rkbin/tools/boot_merger unpack --loader rkbin/rk356x_spl_loader_*.bin --output .
 	cat ${FLASHFILES} > idblock.bin
 	(cd rkbin && git checkout ${DDR})
 
 	# Cleanup
 	rm -f rkbin/rk356x_spl_loader_*.bin
-	rm -f rk3566_ddr_*.bin rk356x_usbplug*.bin UsbHead.bin ${FLASHFILES}
+	rm -f rk35*_ddr_*.bin rk356x_usbplug*.bin UsbHead.bin ${FLASHFILES}
 }
 
 build_fit() {
@@ -62,8 +68,8 @@ build_fit() {
 
 fetch_deps
 
-BL31=$(grep '^PATH=.*_bl31_' rkbin/RKTRUST/RK3568TRUST.ini | cut -d = -f 2-)
-DDR=$(grep '^Path1=.*_ddr_' rkbin/RKBOOT/RK3566MINIALL.ini | cut -d = -f 2-)
+BL31=$(grep '^PATH=.*_bl31_' rkbin/RKTRUST/${TRUST_INI} | cut -d = -f 2-)
+DDR=$(grep '^Path1=.*_ddr_' rkbin/RKBOOT/${MINIALL_INI} | cut -d = -f 2-)
 
 test -r rkbin/${BL31} || (echo "rkbin/${BL31} not found"; false)
 . edk2/edksetup.sh
