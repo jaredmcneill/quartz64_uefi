@@ -1,5 +1,5 @@
 Build/
-idblock.bin
+idblock_*.bin
 *.itb
 *.img
 *.img.gz

@@ -18,12 +18,20 @@ sdcard: uefi_release
 	parted -s sdcard.img unit s mkpart uboot 8MiB 16MiB
 	parted -s sdcard.img unit s mkpart env 16MiB 32MiB
 
-	for board in QUARTZ64 SOQUARTZ ROC-RK3566-PC; do				\
-		cp sdcard.img $${board}_EFI.img;				\
-		dd if=idblock.bin of=$${board}_EFI.img 			\
-		    seek=64 conv=notrunc;						\
+	for board in QUARTZ64 SOQUARTZ ROC-RK3566-PC; do	\
+		cp sdcard.img $${board}_EFI.img;		\
+		dd if=idblock_RK3566.bin of=$${board}_EFI.img 	\
+		    seek=64 conv=notrunc;			\
 		dd if=$${board}_EFI.itb of=$${board}_EFI.img	\
-		    seek=20480 conv=notrunc;					\
+		    seek=20480 conv=notrunc;			\
+	done
+
+	for board in ROC-RK3568-PC; do				\
+		cp sdcard.img $${board}_EFI.img;		\
+		dd if=idblock_RK3568.bin of=$${board}_EFI.img 	\
+		    seek=64 conv=notrunc;			\
+		dd if=$${board}_EFI.itb of=$${board}_EFI.img	\
+		    seek=20480 conv=notrunc;			\
 	done
 	rm -f sdcard.img
 
@@ -36,7 +44,7 @@ release: sdcard
 clean:
 	rm -rf Build
 	rm -f bl31_*.bin
-	rm -f idblock.bin
+	rm -f idblock_*.bin
 	rm -f *.itb
 	rm -f .uefitools_done
 	rm -f *_EFI.img *_EFI.img.gz
