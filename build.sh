@@ -10,7 +10,6 @@ shift
 export WORKSPACE="$PWD"
 export PACKAGES_PATH=$PWD/edk2:$PWD/edk2-platforms:$PWD/edk2-non-osi:$PWD/edk2-rockchip
 export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
-export GCC5_AARCH64_PREFIX=aarch64-unknown-linux-gnu-
 
 fetch_deps() {
 	git submodule update --init --recursive
