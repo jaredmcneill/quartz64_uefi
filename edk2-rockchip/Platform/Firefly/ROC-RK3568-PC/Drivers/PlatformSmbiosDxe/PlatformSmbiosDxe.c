@@ -1000,7 +1000,7 @@ PhyMemArrayInfoUpdateSmbiosType16 (
  //  - Type 17 VolatileSize in Bytes
  //
 
-  mMemDevInfoType17.Size = PcdGet64(PcdSystemMemorySize) / (1024 * 1024);;
+  mMemDevInfoType17.Size = mMemorySize / (1024 * 1024);
 
   mPhyMemArrayInfoType16.MaximumCapacity = mMemDevInfoType17.Size * 1024; // Size in KB
   mMemDevInfoType17.VolatileSize = MultU64x32 (mMemDevInfoType17.Size, 1024 * 1024);  // Size in Bytes
@@ -1034,7 +1034,7 @@ MemArrMapInfoUpdateSmbiosType19 (
   )
 {
   // Note: Type 19 addresses are expressed in KB, not bytes
-  mMemArrMapInfoType19.StartingAddress = mMemorySize / 1024;
+  mMemArrMapInfoType19.StartingAddress = PcdGet64(PcdSystemMemoryBase) / 1024;
 
   mMemArrMapInfoType19.EndingAddress = mMemArrMapInfoType19.StartingAddress +
     mMemorySize / 1024 - 1;

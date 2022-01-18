@@ -29,6 +29,6 @@ INF Platform/Firefly/ROC-RK3568-PC/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.i
 INF MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
 
 #
-# TianoCore logo (splash screen)
+# Firefly logo (splash screen)
 #
-INF MdeModulePkg/Logo/LogoDxe.inf
+INF Platform/Firefly/Drivers/LogoDxe/LogoDxe.inf
