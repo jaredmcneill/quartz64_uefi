@@ -71,8 +71,6 @@ EmmcSdMmcNotifyPhase (
   SD_MMC_BUS_MODE                 *Timing;
   UINTN                            MaxClockFreq;
   UINT32                           Value, i;
-  UINT16                           ClockCtrl;
-  UINT8                            HostCtrl2;
 
   DEBUG ((DEBUG_INFO, "EmmcSdMmcNotifyPhase()\n"));
 
@@ -91,11 +89,8 @@ EmmcSdMmcNotifyPhase (
      * Since the clock has already been set up prior to the power toggle,
      * re-add the SDCLK_ENABLE bit to start the clock.
      */
-    ClockCtrl = MmioRead16((UINT32)PcdGet32 (PcdEmmcDxeBaseAddress) +
-      SD_MMC_HC_HOST_CTRL2);
-    ClockCtrl |= BIT2;
-    MmioWrite16((UINT32)PcdGet32 (PcdEmmcDxeBaseAddress) +
-      SD_MMC_HC_CLOCK_CTRL, ClockCtrl);
+    MmioOr16((UINT32)PcdGet32 (PcdEmmcDxeBaseAddress) +
+      SD_MMC_HC_CLOCK_CTRL, BIT2);
     break;
 
   case EdkiiSdMmcUhsSignaling:
@@ -106,11 +101,8 @@ EmmcSdMmcNotifyPhase (
     Timing = (SD_MMC_BUS_MODE *)PhaseData;
     if (*Timing == SdMmcMmcHs400) {
       /* HS400 uses a non-standard setting */
-      HostCtrl2 = MmioRead8((UINT32)PcdGet32 (PcdEmmcDxeBaseAddress) +
-        SD_MMC_HC_HOST_CTRL2);
-      HostCtrl2 |= EMMC_CTRL_HS400;
-      MmioWrite8((UINT32)PcdGet32 (PcdEmmcDxeBaseAddress) +
-        SD_MMC_HC_HOST_CTRL2, HostCtrl2);
+      MmioOr8((UINT32)PcdGet32 (PcdEmmcDxeBaseAddress) +
+        SD_MMC_HC_HOST_CTRL2, BIT2|BIT1|BIT0);
     }
     break;
 
