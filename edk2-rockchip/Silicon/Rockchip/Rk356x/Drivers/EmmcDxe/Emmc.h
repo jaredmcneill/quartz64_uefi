@@ -14,7 +14,6 @@
 
 #define SD_MMC_HC_CLOCK_CTRL    0x2C
 #define SD_MMC_HC_HOST_CTRL2    0x3E
-#define EMMC_CTRL_HS400         0x7
 
 // eMMC Registers
 #define DWCMSHC_HOST_CTRL3      ((UINT32)PcdGet32 (PcdEmmcDxeBaseAddress) + 0x508)
