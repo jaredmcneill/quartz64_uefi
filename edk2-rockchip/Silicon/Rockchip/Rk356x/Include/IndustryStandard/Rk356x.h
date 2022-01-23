@@ -17,6 +17,7 @@
 #define CPU_GRF             0xFDC30000UL
 #define SYS_GRF             0xFDC60000UL
 #define PIPE_PHY_GRF(n)     (0xFDC70000UL + (n) * 0x10000)
+#define SYSTEM_SRAM         0xFDCC0000UL
 #define PMUCRU_BASE         0xFDD00000UL
 #define CRU_BASE            0xFDD20000UL
 #define I2C0_BASE           0xFDD40000UL
