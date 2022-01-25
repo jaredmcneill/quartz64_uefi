@@ -388,7 +388,7 @@
 
   # Smallest possible memory size
   gArmTokenSpaceGuid.PcdSystemMemoryBase|0
-  gArmTokenSpaceGuid.PcdSystemMemorySize|0x80000000
+  gArmTokenSpaceGuid.PcdSystemMemorySize|0x40000000
 
   # Size of the region used by UEFI in permanent memory (Reserved 64MB)
   gArmPlatformTokenSpaceGuid.PcdSystemMemoryUefiRegionSize|0x04000000
