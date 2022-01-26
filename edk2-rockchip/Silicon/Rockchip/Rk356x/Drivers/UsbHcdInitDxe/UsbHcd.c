@@ -272,6 +272,11 @@ UsbEndOfDxeCallback (
 
   /* Register USB3 controllers */
   for (Index = 0; Index < NumUsb3Controller; Index++) {
+    if ((Index == 0 && FixedPcdGet8(PcdXhc0Status) == 0x0) ||
+        (Index == 1 && FixedPcdGet8(PcdXhc1Status) == 0x0)) {
+      continue;
+    }
+
     XhciControllerAddr = PcdGet64 (PcdUsb3BaseAddr) +
                           (Index * PcdGet32 (PcdUsb3Size));
 
@@ -292,9 +297,13 @@ UsbEndOfDxeCallback (
 
   /* Register USB2 controllers */
   for (Index = 0; Index < NumUsb2Controller; Index++) {
+    if ((Index == 0 && FixedPcdGet8(PcdEhc0Status) == 0x0) ||
+        (Index == 1 && FixedPcdGet8(PcdEhc1Status) == 0x0)) {
+      continue;
+    }
+
     EhciControllerAddr = PcdGet64 (PcdUsb2BaseAddr) +
                           (Index * PcdGet32 (PcdUsb2Size));
-    OhciControllerAddr = EhciControllerAddr + 0x10000;
 
     Status = RegisterNonDiscoverableMmioDevice (
                NonDiscoverableDeviceTypeEhci,
@@ -309,6 +318,17 @@ UsbEndOfDxeCallback (
       DEBUG ((DEBUG_ERROR, "Failed to register EHCI device 0x%x, error 0x%r \n",
         EhciControllerAddr, Status));
     }
+  }
+
+  for (Index = 0; Index < NumUsb2Controller; Index++) {
+    if ((Index == 0 && FixedPcdGet8(PcdOhc0Status) == 0x0) ||
+        (Index == 1 && FixedPcdGet8(PcdOhc1Status) == 0x0)) {
+      continue;
+    }
+
+    OhciControllerAddr = PcdGet64 (PcdUsb2BaseAddr) +
+                          (Index * PcdGet32 (PcdUsb2Size)) +
+                          0x10000;
 
     Status = RegisterNonDiscoverableMmioDevice (
                NonDiscoverableDeviceTypeOhci,

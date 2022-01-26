@@ -429,6 +429,11 @@
   gRk356xTokenSpaceGuid.PcdCpuName|"Rockchip RK3566 (Cortex-A55)"
 
   #
+  # Only a single USB controller is brought out
+  #
+  gRk356xTokenSpaceGuid.PcdXhc0Status|0xF
+
+  #
   # PCI support
   #
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress|0x0000000300000000

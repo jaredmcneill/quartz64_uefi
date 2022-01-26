@@ -41,6 +41,12 @@
   gRk356xTokenSpaceGuid.PcdUsb3BaseAddr
   gRk356xTokenSpaceGuid.PcdUsb3Size
   gRk356xTokenSpaceGuid.PcdUsbPhyGrfBaseAddr
+  gRk356xTokenSpaceGuid.PcdOhc0Status
+  gRk356xTokenSpaceGuid.PcdOhc1Status
+  gRk356xTokenSpaceGuid.PcdEhc0Status
+  gRk356xTokenSpaceGuid.PcdEhc1Status
+  gRk356xTokenSpaceGuid.PcdXhc0Status
+  gRk356xTokenSpaceGuid.PcdXhc1Status
 
 [Guids]
   gEfiEndOfDxeEventGroupGuid

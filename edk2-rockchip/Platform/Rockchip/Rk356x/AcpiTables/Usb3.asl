@@ -21,6 +21,8 @@ Device (XHC0) {
         })
         Return (RBUF)
     }
+
+    Name (_STA, FixedPcdGet8(PcdXhc0Status))
 } // XHC0
 
 // USB XHCI Host Controller
@@ -36,4 +38,6 @@ Device (XHC1) {
         })
         Return (RBUF)
     }
+
+    Name (_STA, FixedPcdGet8(PcdXhc1Status))
 } // XHC0

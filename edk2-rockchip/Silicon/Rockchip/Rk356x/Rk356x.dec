@@ -27,6 +27,12 @@
   gRk356xTokenSpaceGuid.PcdUsb3Size|0x400000|UINT32|0x00000004
   gRk356xTokenSpaceGuid.PcdNumUsb3Controller|2|UINT32|0x00000005
   gRk356xTokenSpaceGuid.PcdUsbPhyGrfBaseAddr|0xFDCA0000|UINT64|0x00000006
+  gRk356xTokenSpaceGuid.PcdOhc0Status|0x0|UINT8|0x00000007
+  gRk356xTokenSpaceGuid.PcdOhc1Status|0x0|UINT8|0x00000008
+  gRk356xTokenSpaceGuid.PcdEhc0Status|0x0|UINT8|0x00000009
+  gRk356xTokenSpaceGuid.PcdEhc1Status|0x0|UINT8|0x0000000a
+  gRk356xTokenSpaceGuid.PcdXhc0Status|0x0|UINT8|0x0000000b
+  gRk356xTokenSpaceGuid.PcdXhc1Status|0x0|UINT8|0x0000000c
   # Pcds for MSHC
   gRk356xTokenSpaceGuid.PcdMshcDxeBaseAddress|0xFE2B0000|UINT32|0x00000010
   gRk356xTokenSpaceGuid.PcdMshcDxeMaxClockFreqInHz|50000000|UINT32|0x00000011
