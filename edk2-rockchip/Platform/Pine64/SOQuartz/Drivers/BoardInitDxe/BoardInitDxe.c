@@ -164,9 +164,9 @@ BoardInitDriverEntryPoint (
 
   DEBUG ((DEBUG_INFO, "BoardInitDriverEntryPoint() called\n"));
 
-  /* Set GPIO0 PD3 (WORK_LED) output high to enable LED */
-  GpioPinSetDirection (0, GPIO_PIN_PD3, GPIO_PIN_OUTPUT);
-  GpioPinWrite (0, GPIO_PIN_PD3, TRUE);
+  /* Set GPIO0 PC0 (WORK_LED) output low to enable LED */
+  GpioPinSetDirection (0, GPIO_PIN_PC0, GPIO_PIN_OUTPUT);
+  GpioPinWrite (0, GPIO_PIN_PC0, FALSE);
 
   /* Update CPU speed */
   BoardInitSetCpuSpeed ();
@@ -177,10 +177,6 @@ BoardInitDriverEntryPoint (
   /* Configure MULTI-PHY 0 and 1 for USB3 mode */
   MultiPhySetMode (0, MULTIPHY_MODE_USB3);
   MultiPhySetMode (1, MULTIPHY_MODE_USB3);
-
-  /* Set GPIO4 PB5 (USB_HOST_PWREN) output high to power USB ports */
-  GpioPinSetDirection (4, GPIO_PIN_PB5, GPIO_PIN_OUTPUT);
-  GpioPinWrite (4, GPIO_PIN_PB5, TRUE);
 
   return EFI_SUCCESS;
 }
