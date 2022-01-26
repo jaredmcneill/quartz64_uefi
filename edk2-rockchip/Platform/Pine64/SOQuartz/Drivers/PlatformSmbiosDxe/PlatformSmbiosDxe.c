@@ -1000,7 +1000,7 @@ PhyMemArrayInfoUpdateSmbiosType16 (
  //  - Type 17 VolatileSize in Bytes
  //
 
-  mMemDevInfoType17.Size = mMemorySize / (1024 * 1024);;
+  mMemDevInfoType17.Size = mMemorySize / (1024 * 1024);
 
   mPhyMemArrayInfoType16.MaximumCapacity = mMemDevInfoType17.Size * 1024; // Size in KB
   mMemDevInfoType17.VolatileSize = MultU64x32 (mMemDevInfoType17.Size, 1024 * 1024);  // Size in Bytes
