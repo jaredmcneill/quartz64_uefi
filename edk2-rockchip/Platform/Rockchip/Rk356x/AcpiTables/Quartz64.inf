@@ -52,9 +52,12 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialClockRate
 
-  gRk356xTokenSpaceGuid.PcdUsb2BaseAddr
-  gRk356xTokenSpaceGuid.PcdUsb2Size
-  gRk356xTokenSpaceGuid.PcdNumUsb2Controller
+  gRk356xTokenSpaceGuid.PcdOhc0Status
+  gRk356xTokenSpaceGuid.PcdOhc1Status
+  gRk356xTokenSpaceGuid.PcdEhc0Status
+  gRk356xTokenSpaceGuid.PcdEhc1Status
+  gRk356xTokenSpaceGuid.PcdXhc0Status
+  gRk356xTokenSpaceGuid.PcdXhc1Status
 
   gRk356xTokenSpaceGuid.PcdMshc1Status
   gRk356xTokenSpaceGuid.PcdMshc1SdioIrq

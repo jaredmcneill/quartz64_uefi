@@ -429,6 +429,16 @@
   gRk356xTokenSpaceGuid.PcdCpuName|"Rockchip RK3566 (Cortex-A55)"
 
   #
+  # USB support
+  #
+  gRk356xTokenSpaceGuid.PcdOhc0Status|0xF
+  gRk356xTokenSpaceGuid.PcdOhc1Status|0xF
+  gRk356xTokenSpaceGuid.PcdEhc0Status|0xF
+  gRk356xTokenSpaceGuid.PcdEhc1Status|0xF
+  gRk356xTokenSpaceGuid.PcdXhc0Status|0xF
+  gRk356xTokenSpaceGuid.PcdXhc1Status|0xF
+
+  #
   # PCI support
   #
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress|0x0000000300000000

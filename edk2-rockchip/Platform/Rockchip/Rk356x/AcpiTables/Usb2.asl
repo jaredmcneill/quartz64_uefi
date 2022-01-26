@@ -30,6 +30,8 @@ Device (OHC0) {
         Return (RBUF)
     }
 
+    Name (_STA, FixedPcdGet8(PcdOhc0Status))
+
     Device (RHUB) {
         Name (_ADR, 0)
         Device (PRT1) {
@@ -70,6 +72,8 @@ Device (EHC0) {
         })
         Return (RBUF)
     }
+
+    Name (_STA, FixedPcdGet8(PcdEhc0Status))
 
     Device (RHUB) {
         Name (_ADR, 0)
@@ -120,6 +124,8 @@ Device (OHC1) {
         Return (RBUF)
     }
 
+    Name (_STA, FixedPcdGet8(PcdOhc1Status))
+
     Device (RHUB) {
         Name (_ADR, 0)
         Device (PRT1) {
@@ -160,6 +166,8 @@ Device (EHC1) {
         })
         Return (RBUF)
     }
+
+    Name (_STA, FixedPcdGet8(PcdEhc1Status))
 
     Device (RHUB) {
         Name (_ADR, 0)
