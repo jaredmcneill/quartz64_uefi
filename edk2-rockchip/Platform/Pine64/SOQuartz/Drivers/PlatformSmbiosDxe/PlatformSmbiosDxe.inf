@@ -65,4 +65,3 @@
   gRk356xTokenSpaceGuid.PcdCpuSpeed
   gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor
   gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString
-
