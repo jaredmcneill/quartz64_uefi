@@ -76,10 +76,10 @@
 #define IATU_LWR_TARGET_ADDR_OFF        0x014
 #define IATU_UPPER_TARGET_ADDR_OFF      0x018
 
-#define PCIE_POWER_GPIO_BANK            FixedPcdGet32 (PcdPciePowerGpioBank)
-#define PCIE_POWER_GPIO_PIN             FixedPcdGet32 (PcdPciePowerGpioPin)
-#define PCIE_RESET_GPIO_BANK            FixedPcdGet32 (PcdPcieResetGpioBank)
-#define PCIE_RESET_GPIO_PIN             FixedPcdGet32 (PcdPcieResetGpioPin)
+#define PCIE_POWER_GPIO_BANK            FixedPcdGet8  (PcdPciePowerGpioBank)
+#define PCIE_POWER_GPIO_PIN             FixedPcdGet8  (PcdPciePowerGpioPin)
+#define PCIE_RESET_GPIO_BANK            FixedPcdGet8  (PcdPcieResetGpioBank)
+#define PCIE_RESET_GPIO_PIN             FixedPcdGet8  (PcdPcieResetGpioPin)
 #define PCIE_LINK_SPEED                 FixedPcdGet32 (PcdPcieLinkSpeed)
 #define PCIE_NUM_LANES                  FixedPcdGet32 (PcdPcieNumLanes)
 
@@ -296,11 +296,11 @@ InitializePciHost (
   UINT64                   PciIoBase;
   UINT64                   PciIoSize;
 
-  ASSERT (PCIE_RESET_GPIO_BANK != 0xFFFFFFFFU);
-  ASSERT (PCIE_RESET_GPIO_PIN != 0xFFFFFFFFU);
+  ASSERT (PCIE_RESET_GPIO_BANK != 0xFFU);
+  ASSERT (PCIE_RESET_GPIO_PIN != 0xFFU);
 
   /* Power PCIe */
-  if (PCIE_POWER_GPIO_BANK != 0xFFFFFFFFU) {
+  if (PCIE_POWER_GPIO_BANK != 0xFFU) {
     GpioPinSetPull (PCIE_POWER_GPIO_BANK, PCIE_POWER_GPIO_PIN, GPIO_PIN_PULL_NONE);
     GpioPinSetDirection (PCIE_POWER_GPIO_BANK, PCIE_POWER_GPIO_PIN, GPIO_PIN_OUTPUT);
     GpioPinWrite (PCIE_POWER_GPIO_BANK, PCIE_POWER_GPIO_PIN, TRUE);

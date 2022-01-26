@@ -444,8 +444,6 @@
   gEfiMdePkgTokenSpaceGuid.PcdPciIoTranslation|0x000000033FFF0000
   gRk356xTokenSpaceGuid.PcdPcieResetGpioBank|1
   gRk356xTokenSpaceGuid.PcdPcieResetGpioPin|10
-  gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|0
-  gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|22
 
 [PcdsDynamicHii.common.DEFAULT]
 
