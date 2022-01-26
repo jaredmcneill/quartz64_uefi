@@ -451,6 +451,13 @@
   gRk356xTokenSpaceGuid.PcdPcieResetGpioBank|1
   gRk356xTokenSpaceGuid.PcdPcieResetGpioPin|10
 
+  #
+  # The SOQuartz has a WiFi card on the second MSHC
+  #
+  gRk356xTokenSpaceGuid.PcdMshc1Status|0xF
+  gRk356xTokenSpaceGuid.PcdMshc1SdioIrq|TRUE
+  gRk356xTokenSpaceGuid.PcdMshc1NonRemovable|TRUE
+
 [PcdsDynamicHii.common.DEFAULT]
 
   #
