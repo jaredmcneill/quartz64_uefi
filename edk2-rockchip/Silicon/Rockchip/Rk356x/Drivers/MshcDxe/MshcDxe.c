@@ -355,7 +355,7 @@ MshcSendCommand (
            BIT_CMD_SEND_INIT;
     break;
   case MMC_INDX(6):
-    if (((Argument >> 31) & 0x1) == 0x1) {
+    if (((Argument >> 31) & 0x1) == 0x1 || Argument == 0x00FFFFF0) {
       Cmd = BIT_CMD_RESPONSE_EXPECT | BIT_CMD_CHECK_RESPONSE_CRC |
             BIT_CMD_DATA_EXPECTED | BIT_CMD_READ |
             BIT_CMD_WAIT_PRVDATA_COMPLETE;
@@ -421,9 +421,11 @@ MshcSendCommand (
   Cmd |= MMC_GET_INDX(MmcCmd) | BIT_CMD_USE_HOLD_REG | BIT_CMD_START;
 
   if (IsPendingReadCommand (Cmd) || IsPendingWriteCommand (Cmd)) {
+    // DEBUG ((DEBUG_INFO, "%a(): Deferred Cmd=0x%08X(%u), Argument 0x%08X\n", __func__, MmcCmd, MMC_GET_INDX (MmcCmd), Argument));
     mMshcCommand = Cmd;
     mMshcArgument = Argument;
   } else {
+    // DEBUG ((DEBUG_INFO, "%a(): Immediate Cmd=0x%08X(%u), Argument 0x%08X\n", __func__, MmcCmd, MMC_GET_INDX (MmcCmd)));
     Status = SendCommand (Cmd, Argument);
   }
   return Status;
@@ -539,7 +541,7 @@ MshcReadBlockData (
     }
   }
 
-  MmioWrite32 (DWEMMC_BLKSIZ, 512);
+  MmioWrite32 (DWEMMC_BLKSIZ, Length < 512 ? Length : 512);
   MmioWrite32 (DWEMMC_BYTCNT, Length);
 
   Status = SendCommand (mMshcCommand, mMshcArgument);
