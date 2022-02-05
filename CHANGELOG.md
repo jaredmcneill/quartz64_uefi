@@ -1,12 +1,8 @@
-#### 2022-01-15
+#### 2022-02-05
 
-* Add SD card support to UEFI.
-* Add eMMC device to ACPI tables.
-* Reduce the amount of duplicated code between boards.
-
-#### 2022-01-11
-
-* Do not make the device tree available since some OSes that support
-  both ACPI and DT will prefer the latter by default.
-* Enable auto clock gating.
-* Fix Windows BSOD due to duplicate unique IDs on PRP0001 devices.
+* Add UEFI eMMC support.
+* SD card performance fixes in UEFI.
+* Add memory size detection support (no longer separate images for 4GB/8GB models).
+* Switch to faster 1560MHz DDR image like U-Boot and disable DDR debug log messages.
+* Add 4K and EDID support to display driver.
+* Use standard Pine64 logo.
