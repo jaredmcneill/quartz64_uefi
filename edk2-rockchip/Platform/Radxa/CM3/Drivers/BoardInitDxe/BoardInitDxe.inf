@@ -1,0 +1,55 @@
+#/** @file
+#
+#  Board init RADXA CM3 platforms
+#
+#  Copyright (c) 2022 Jared McNeill <jmcneill@invisible.ca>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = BoardInitDxe
+  FILE_GUID                      = D595E3B3-A972-4A6D-94F6-11309E3FA496
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = BoardInitDriverEntryPoint
+
+[Sources]
+  BoardInitDxe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  CryptoPkg/CryptoPkg.dec
+  ArmPlatformPkg/ArmPlatformPkg.dec
+  ArmPkg/ArmPkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  Platform/Rockchip/Rk356x/Rk356x.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  ArmLib
+  UefiBootServicesTableLib
+  MemoryAllocationLib
+  BaseMemoryLib
+  BaseCryptLib
+  BaseLib
+  UefiLib
+  UefiDriverEntryPoint
+  DebugLib
+  PrintLib
+  TimeBaseLib
+  TimerLib
+  CruLib
+  GpioLib
+  I2cLib
+  MultiPhyLib
+  OtpLib
+
+[Protocols]
+
+
+[Depex]
+  TRUE
