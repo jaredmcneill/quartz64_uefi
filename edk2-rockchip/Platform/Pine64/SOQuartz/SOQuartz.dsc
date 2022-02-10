@@ -452,7 +452,7 @@
   gRk356xTokenSpaceGuid.PcdPcieResetGpioPin|10
 
   #
-  # The SOQuartz has a WiFi card on the second MSHC
+  # This module has a WiFi card on the second MSHC
   #
   gRk356xTokenSpaceGuid.PcdMshc1Status|0xF
   gRk356xTokenSpaceGuid.PcdMshc1SdioIrq|TRUE
