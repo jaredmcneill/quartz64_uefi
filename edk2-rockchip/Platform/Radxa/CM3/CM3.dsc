@@ -264,6 +264,16 @@
 
   gArmTokenSpaceGuid.PcdArmGicV3WithV2Legacy|FALSE
 
+  #
+  # USB support
+  #
+  gRk356xTokenSpaceGuid.PcdOhc0Status|0xF
+  gRk356xTokenSpaceGuid.PcdOhc1Status|0xF
+  gRk356xTokenSpaceGuid.PcdEhc0Status|0xF
+  gRk356xTokenSpaceGuid.PcdEhc1Status|0xF
+  gRk356xTokenSpaceGuid.PcdXhc0Status|0xF
+  gRk356xTokenSpaceGuid.PcdXhc1Status|0xF
+
 
 [PcdsFixedAtBuild.common]
   gEfiMdePkgTokenSpaceGuid.PcdMaximumUnicodeStringLength|1000000
