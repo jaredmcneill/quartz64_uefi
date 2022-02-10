@@ -264,17 +264,6 @@
 
   gArmTokenSpaceGuid.PcdArmGicV3WithV2Legacy|FALSE
 
-  #
-  # USB support
-  #
-  gRk356xTokenSpaceGuid.PcdOhc0Status|0xF
-  gRk356xTokenSpaceGuid.PcdOhc1Status|0xF
-  gRk356xTokenSpaceGuid.PcdEhc0Status|0xF
-  gRk356xTokenSpaceGuid.PcdEhc1Status|0xF
-  gRk356xTokenSpaceGuid.PcdXhc0Status|0xF
-  gRk356xTokenSpaceGuid.PcdXhc1Status|0xF
-
-
 [PcdsFixedAtBuild.common]
   gEfiMdePkgTokenSpaceGuid.PcdMaximumUnicodeStringLength|1000000
   gEfiMdePkgTokenSpaceGuid.PcdMaximumAsciiStringLength|1000000
@@ -435,6 +424,16 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdImageProtectionPolicy|0x3
   gRk356xTokenSpaceGuid.PcdPlatformName|"RADXA CM3"
   gRk356xTokenSpaceGuid.PcdCpuName|"Rockchip RK3566 (Cortex-A55)"
+
+  #
+  # USB support
+  #
+  gRk356xTokenSpaceGuid.PcdOhc0Status|0xF
+  gRk356xTokenSpaceGuid.PcdOhc1Status|0xF
+  gRk356xTokenSpaceGuid.PcdEhc0Status|0xF
+  gRk356xTokenSpaceGuid.PcdEhc1Status|0xF
+  gRk356xTokenSpaceGuid.PcdXhc0Status|0xF
+  gRk356xTokenSpaceGuid.PcdXhc1Status|0xF
 
   #
   # PCI support
