@@ -265,7 +265,7 @@ BoardInitGmac (
                RXCLK_DLY_ENA);
 
   /* Reset PHY */
-  GpioPinSetDirection (4, GPIO_PIN_PC2, GPIO_PIN_OUTPUT);	/* XXX from furkan */
+  GpioPinSetDirection (4, GPIO_PIN_PC2, GPIO_PIN_OUTPUT);
   MicroSecondDelay (1000);
   GpioPinWrite (4, GPIO_PIN_PC2, 0);
   MicroSecondDelay (20000);

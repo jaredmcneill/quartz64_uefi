@@ -447,13 +447,13 @@
   gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|27
 
   #
-  # The RADXA CM3 has inverted polarity for the PWREN pin on the SD card slot
+  # This module has inverted polarity for the PWREN pin on the SD card slot
   #
   gRk356xTokenSpaceGuid.PcdMshcDxePwrEnUsed|TRUE
   gRk356xTokenSpaceGuid.PcdMshcDxePwrEnInverted|TRUE
 
   #
-  # The SOQuartz has a WiFi card on the second MSHC
+  # This module has a WiFi card on the second MSHC
   #
   gRk356xTokenSpaceGuid.PcdMshc1Status|0xF
   gRk356xTokenSpaceGuid.PcdMshc1SdioIrq|TRUE
