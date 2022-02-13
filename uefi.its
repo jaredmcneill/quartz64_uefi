@@ -97,7 +97,7 @@
 		};
 		fdt {
 			description = "UEFI dtb";
-			data = /incbin/("./rk3566-soquartz-cm4.dtb");
+			data = /incbin/("./@BOARDTYPE@.dtb");
 			type = "flat_dt";
 			arch = "arm64";
 			compression = "none";
@@ -111,7 +111,7 @@
 	configurations {
 		default = "conf";
 		conf {
-			description = "rk3566-soquartz";
+			description = "@BOARDTYPE@";
 			rollback-index = <0x0>;
 			firmware = "atf-1";
 			loadables = "uboot", "atf-2", "atf-3", "atf-4", "atf-5", "optee";

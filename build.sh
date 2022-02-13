@@ -58,12 +58,14 @@ build_idblock() {
 
 build_fit() {
 	board=$1
+	type=$2
 	board_upper=`echo $board | tr '[:lower:]' '[:upper:]'`
 	echo " => Building FIT"
 	./scripts/extractbl31.py rkbin/${BL31}
 	cp -f Build/${board}/${RKUEFIBUILDTYPE}_GCC5/FV/RK356X_EFI.fd Build/RK356X_EFI.fd
-	./rkbin/tools/mkimage -f uefi_${board}.its -E ${board_upper}_EFI.itb
-	rm -f bl31_0x*.bin Build/RK356X_EFI.fd
+	cat uefi.its | sed "s,@BOARDTYPE@,${type},g" > ${board_upper}_EFI.its
+	./rkbin/tools/mkimage -f ${board_upper}_EFI.its -E ${board_upper}_EFI.itb
+	rm -f bl31_0x*.bin Build/RK356X_EFI.fd ${board_upper}_EFI.its
 }
 
 fetch_deps
@@ -78,13 +80,13 @@ build_uefitools
 
 # Quartz64 boards
 build_uefi Pine64 Quartz64
-build_fit Quartz64
+build_fit Quartz64 rk3566-quartz64-a
 # SOQuartz modules
 build_uefi Pine64 SOQuartz
-build_fit SOQuartz
+build_fit SOQuartz rk3566-soquartz-cm4
 # ROC-RK356x-PC boards
 build_uefi Firefly ROC-RK3566-PC
-build_fit ROC-RK3566-PC
+build_fit ROC-RK3566-PC rk3566-firefly-roc-pc
 
 build_idblock
 
