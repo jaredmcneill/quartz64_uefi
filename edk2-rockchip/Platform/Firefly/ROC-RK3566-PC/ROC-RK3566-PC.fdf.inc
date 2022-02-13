@@ -25,7 +25,7 @@ INF RuleOverride = ACPITABLE Platform/Rockchip/Rk356x/AcpiTables/$(PLATFORM_NAME
 #
 # SMBIOS Support
 #
-INF Platform/Firefly/ROC-RK3566-PC/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.inf
+INF Platform/Rockchip/Rk356x/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.inf
 INF MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
 
 #

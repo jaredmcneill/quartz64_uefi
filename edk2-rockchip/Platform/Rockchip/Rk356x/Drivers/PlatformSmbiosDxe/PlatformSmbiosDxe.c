@@ -1,6 +1,6 @@
 /** @file
  *
- *  Static SMBIOS Table for the RADXA CM3 platform
+ *  Static SMBIOS Table for RK3566/RK3568 based platforms
  *  Derived from the RaspberryPi package.
  *
  *  Note - Arm SBBR ver 1.2 required and recommended SMBIOS structures:
@@ -154,6 +154,7 @@ SMBIOS_TABLE_TYPE1 mSysInfoType1 = {
 
 CHAR8 mSysInfoManufName[128];
 CHAR8 mSysInfoProductName[128];
+CHAR8 mSysInfoFamilyName[128];
 CHAR8 mSysInfoVersionName[128];
 CHAR8 mSysInfoSerial[sizeof (UINT64) * 2 + 1];
 CHAR8 mSysInfoSKU[sizeof (UINT64) * 2 + 1];
@@ -164,7 +165,7 @@ CHAR8 *mSysInfoType1Strings[] = {
   mSysInfoVersionName,
   mSysInfoSerial,
   mSysInfoSKU,
-  "CM3",
+  mSysInfoFamilyName,
   NULL
 };
 
@@ -472,12 +473,14 @@ CHAR8 *mSysSlotInfoType9Strings[] = {
         SMBIOS data definition  TYPE 11  OEM Strings
 ************************************************************************/
 
+CHAR8 mOemInfoProductUrl[128];
+
 SMBIOS_TABLE_TYPE11 mOemStringsType11 = {
   { EFI_SMBIOS_TYPE_OEM_STRINGS, sizeof (SMBIOS_TABLE_TYPE11), 0 },
   1 // StringCount
 };
 CHAR8 *mOemStringsType11Strings[] = {
-  "https://wiki.radxa.com/Rock3/CM3",
+  mOemInfoProductUrl,
   NULL
 };
 
@@ -501,6 +504,8 @@ CHAR8 *mPhyMemArrayInfoType16Strings[] = {
 /***********************************************************************
         SMBIOS data definition  TYPE17  Memory Device Information
 ************************************************************************/
+CHAR8 mMemDevInfoVendor[128];
+
 SMBIOS_TABLE_TYPE17 mMemDevInfoType17 = {
   { EFI_SMBIOS_TYPE_MEMORY_DEVICE, sizeof (SMBIOS_TABLE_TYPE17), 0 },
   0,                    // MemoryArrayHandle; // Should match SMBIOS_TABLE_TYPE16.Handle, initialized at runtime, refer to PhyMemArrayInfoUpdateSmbiosType16()
@@ -568,7 +573,7 @@ SMBIOS_TABLE_TYPE17 mMemDevInfoType17 = {
 };
 CHAR8 *mMemDevInfoType17Strings[] = {
   "SDRAM",
-  "SK hynix",
+  mMemDevInfoVendor,
   NULL
 };
 
@@ -830,7 +835,8 @@ SysInfoUpdateSmbiosType1 (
   UINT64 BoardSerial = 0;
 
   AsciiStrCpyS (mSysInfoProductName, sizeof (mSysInfoProductName), (CHAR8 *) PcdGetPtr(PcdPlatformName));
-  AsciiStrCpyS (mSysInfoManufName, sizeof (mSysInfoManufName), "Radxa");
+  AsciiStrCpyS (mSysInfoFamilyName, sizeof (mSysInfoFamilyName), (CHAR8 *) PcdGetPtr(PcdFamilyName));
+  AsciiStrCpyS (mSysInfoManufName, sizeof (mSysInfoManufName), (CHAR8 *) PcdGetPtr(PcdPlatformVendorName));
   AsciiSPrint (mSysInfoVersionName, sizeof (mSysInfoVersionName), "%X", BoardRevision);
 
   I64ToHexString (mSysInfoSKU, sizeof (mSysInfoSKU), BoardRevision);
@@ -980,6 +986,8 @@ OemStringsUpdateSmbiosType11 (
   VOID
   )
 {
+  AsciiStrCpyS (mOemInfoProductUrl, sizeof (mOemInfoProductUrl), (CHAR8 *) PcdGetPtr(PcdProductUrl));
+
   LogSmbiosData ((EFI_SMBIOS_TABLE_HEADER*)&mOemStringsType11, mOemStringsType11Strings, NULL);
 }
 
@@ -1022,6 +1030,8 @@ MemDevInfoUpdateSmbiosType17 (
   VOID
   )
 {
+  AsciiStrCpyS (mMemDevInfoVendor, sizeof (mMemDevInfoVendor), (CHAR8 *) PcdGetPtr(PcdMemoryVendorName));
+
   LogSmbiosData ((EFI_SMBIOS_TABLE_HEADER*)&mMemDevInfoType17, mMemDevInfoType17Strings, NULL);
 }
 

@@ -424,6 +424,10 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdImageProtectionPolicy|0x3
   gRk356xTokenSpaceGuid.PcdPlatformName|"RADXA CM3"
   gRk356xTokenSpaceGuid.PcdCpuName|"Rockchip RK3566 (Cortex-A55)"
+  gRk356xTokenSpaceGuid.PcdPlatformVendorName|"RADXA"
+  gRk356xTokenSpaceGuid.PcdFamilyName|"ROCK3"
+  gRk356xTokenSpaceGuid.PcdProductUrl|"https://wiki.radxa.com/Rock3/CM3"
+  gRk356xTokenSpaceGuid.PcdMemoryVendorName|"Unknown"
 
   #
   # USB support
@@ -611,7 +615,7 @@
   #
   # SMBIOS Support
   #
-  Platform/Radxa/CM3/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.inf
+  Platform/Rockchip/Rk356x/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.inf
   MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
 
   #

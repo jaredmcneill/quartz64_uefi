@@ -427,6 +427,10 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdImageProtectionPolicy|0x3
   gRk356xTokenSpaceGuid.PcdPlatformName|"PINE64 SOQuartz CM4"
   gRk356xTokenSpaceGuid.PcdCpuName|"Rockchip RK3566 (Cortex-A55)"
+  gRk356xTokenSpaceGuid.PcdPlatformVendorName|"Pine64"
+  gRk356xTokenSpaceGuid.PcdFamilyName|"Quartz64"
+  gRk356xTokenSpaceGuid.PcdProductUrl|"https://wiki.pine64.org/wiki/SOQuartz"
+  gRk356xTokenSpaceGuid.PcdMemoryVendorName|"Micron"
 
   #
   # Only a single USB controller is brought out
@@ -601,7 +605,7 @@
   #
   # SMBIOS Support
   #
-  Platform/Pine64/SOQuartz/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.inf
+  Platform/Rockchip/Rk356x/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.inf
   MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
 
   #

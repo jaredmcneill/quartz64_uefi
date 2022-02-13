@@ -427,6 +427,10 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdImageProtectionPolicy|0x3
   gRk356xTokenSpaceGuid.PcdPlatformName|"PINE64 Quartz64 Model A"
   gRk356xTokenSpaceGuid.PcdCpuName|"Rockchip RK3566 (Cortex-A55)"
+  gRk356xTokenSpaceGuid.PcdPlatformVendorName|"Pine64"
+  gRk356xTokenSpaceGuid.PcdFamilyName|"Quartz64"
+  gRk356xTokenSpaceGuid.PcdProductUrl|"https://www.pine64.org/quartz64a/"
+  gRk356xTokenSpaceGuid.PcdMemoryVendorName|"Micron"
 
   #
   # USB support
@@ -607,7 +611,7 @@
   #
   # SMBIOS Support
   #
-  Platform/Pine64/Quartz64/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.inf
+  Platform/Rockchip/Rk356x/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.inf
   MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
 
   #

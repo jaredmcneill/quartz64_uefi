@@ -30,6 +30,10 @@
   gRk356xTokenSpaceGuid.PcdCpuSpeed|0x0|UINT32|0x00000009
   gRk356xTokenSpaceGuid.PcdPlatformName|"Unknown"|VOID*|0x00000010
   gRk356xTokenSpaceGuid.PcdCpuName|"Unknown"|VOID*|0x00000011
+  gRk356xTokenSpaceGuid.PcdPlatformVendorName|"Unknown"|VOID*|0x00000012
+  gRk356xTokenSpaceGuid.PcdProductUrl|"Unknown"|VOID*|0x00000013
+  gRk356xTokenSpaceGuid.PcdMemoryVendorName|"Unknown"|VOID*|0x00000014
+  gRk356xTokenSpaceGuid.PcdFamilyName|"Unknown"|VOID*|0x00000015
   gRk356xTokenSpaceGuid.PcdFirmwareBlockSize|0x0|UINT32|0x00000029
   gRk356xTokenSpaceGuid.PcdGicGsivId|0x0|UINT32|0x00000030
   gRk356xTokenSpaceGuid.PcdGicPmuIrq0|0x0|UINT32|0x00000031

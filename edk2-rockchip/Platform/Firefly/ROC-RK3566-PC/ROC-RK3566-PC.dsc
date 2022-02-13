@@ -427,6 +427,10 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdImageProtectionPolicy|0x3
   gRk356xTokenSpaceGuid.PcdPlatformName|"Firefly ROC-RK3566-PC"
   gRk356xTokenSpaceGuid.PcdCpuName|"Rockchip RK3566 (Cortex-A55)"
+  gRk356xTokenSpaceGuid.PcdPlatformVendorName|"Firefly"
+  gRk356xTokenSpaceGuid.PcdFamilyName|"ROC-RK3566-PC"
+  gRk356xTokenSpaceGuid.PcdProductUrl|"https://en.t-firefly.com/product/industry/rocrk3566pc.html"
+  gRk356xTokenSpaceGuid.PcdMemoryVendorName|"Unknown"
 
   #
   # USB support
@@ -608,7 +612,7 @@
   #
   # SMBIOS Support
   #
-  Platform/Firefly/ROC-RK3566-PC/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.inf
+  Platform/Rockchip/Rk356x/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.inf
   MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
 
   #
