@@ -85,7 +85,7 @@
 		};
 		optee {
 			description = "OP-TEE";
-			data = /incbin/("./rkbin/bin/rk35/rk3568_bl32_v2.01.bin");
+			data = /incbin/("./edk2-rockchip-non-osi/rkbin/bin/rk35/rk3568_bl32_v2.01.bin");
 			type = "firmware";
 			arch = "arm64";
 			os = "op-tee";

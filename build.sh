@@ -14,6 +14,8 @@ export GCC5_AARCH64_PREFIX=aarch64-linux-gnu-
 TRUST_INI=RK3568TRUST.ini
 MINIALL_INI=RK3568MINIALL.ini
 
+RKBIN=edk2-rockchip-non-osi/rkbin
+
 fetch_deps() {
 	git submodule update --init --recursive
 }
@@ -38,21 +40,21 @@ build_idblock() {
 	rm -f idblock.bin rk35*_ddr_*.bin rk356x_usbplug*.bin UsbHead.bin ${FLASHFILES}
 
 	# Default DDR image uses 1.5M baud. Patch it to use 115200 to match UEFI first.
-	cat `pwd`/rkbin/tools/ddrbin_param.txt					 		\
+	cat `pwd`/${RKBIN}/tools/ddrbin_param.txt					 		\
 		| sed 's/^uart baudrate=.*$/uart baudrate=115200/'  		\
 		| sed 's/^dis_printf_training=.*$/dis_printf_training=1/' 	\
 		> `pwd`/Build/ddrbin_param.txt
-	./rkbin/tools/ddrbin_tool `pwd`/Build/ddrbin_param.txt rkbin/${DDR}
-	./rkbin/tools/ddrbin_tool -g `pwd`/Build/ddrbin_param_dump.txt rkbin/${DDR}
+	./${RKBIN}/tools/ddrbin_tool `pwd`/Build/ddrbin_param.txt ${RKBIN}/${DDR}
+	./${RKBIN}/tools/ddrbin_tool -g `pwd`/Build/ddrbin_param_dump.txt ${RKBIN}/${DDR}
 
 	# Create idblock.bin
-	(cd rkbin && ./tools/boot_merger RKBOOT/${MINIALL_INI})
-	./rkbin/tools/boot_merger unpack --loader rkbin/rk356x_spl_loader_*.bin --output .
+	(cd ${RKBIN} && ./tools/boot_merger RKBOOT/${MINIALL_INI})
+	./${RKBIN}/tools/boot_merger unpack --loader ${RKBIN}/rk356x_spl_loader_*.bin --output .
 	cat ${FLASHFILES} > idblock.bin
-	(cd rkbin && git checkout ${DDR})
+	git checkout ${RKBIN}/${DDR}
 
 	# Cleanup
-	rm -f rkbin/rk356x_spl_loader_*.bin
+	rm -f ${RKBIN}/rk356x_spl_loader_*.bin
 	rm -f rk35*_ddr_*.bin rk356x_usbplug*.bin UsbHead.bin ${FLASHFILES}
 }
 
@@ -61,19 +63,19 @@ build_fit() {
 	type=$2
 	board_upper=`echo $board | tr '[:lower:]' '[:upper:]'`
 	echo " => Building FIT"
-	./scripts/extractbl31.py rkbin/${BL31}
+	./scripts/extractbl31.py ${RKBIN}/${BL31}
 	cp -f Build/${board}/${RKUEFIBUILDTYPE}_GCC5/FV/RK356X_EFI.fd Build/RK356X_EFI.fd
 	cat uefi.its | sed "s,@BOARDTYPE@,${type},g" > ${board_upper}_EFI.its
-	./rkbin/tools/mkimage -f ${board_upper}_EFI.its -E ${board_upper}_EFI.itb
+	./${RKBIN}/tools/mkimage -f ${board_upper}_EFI.its -E ${board_upper}_EFI.itb
 	rm -f bl31_0x*.bin Build/RK356X_EFI.fd ${board_upper}_EFI.its
 }
 
 fetch_deps
 
-BL31=$(grep '^PATH=.*_bl31_' rkbin/RKTRUST/${TRUST_INI} | cut -d = -f 2-)
-DDR=$(grep '^Path1=.*_ddr_' rkbin/RKBOOT/${MINIALL_INI} | cut -d = -f 2-)
+BL31=$(grep '^PATH=.*_bl31_' ${RKBIN}/RKTRUST/${TRUST_INI} | cut -d = -f 2-)
+DDR=$(grep '^Path1=.*_ddr_' ${RKBIN}/RKBOOT/${MINIALL_INI} | cut -d = -f 2-)
 
-test -r rkbin/${BL31} || (echo "rkbin/${BL31} not found"; false)
+test -r ${RKBIN}/${BL31} || (echo "${RKBIN}/${BL31} not found"; false)
 . edk2/edksetup.sh
 
 build_uefitools
