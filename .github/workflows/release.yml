@@ -39,3 +39,12 @@ jobs:
           asset_path: ./QUARTZ64_EFI.img.gz
           asset_name: QUARTZ64_EFI.img.gz
           asset_content_type: application/gzip
+      - name: upload SOQUARTZ_EFI artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./SOQUARTZ_EFI.img.gz
+          asset_name: SOQUARTZ_EFI.img.gz
+          asset_content_type: application/gzip
