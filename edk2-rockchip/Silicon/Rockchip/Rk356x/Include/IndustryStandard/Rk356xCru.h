@@ -76,7 +76,7 @@
 #define PMUCRU_PLL_CON1(n)  (PMUCRU_BASE + (n) * 0x40 + 0x4)
 #define PMUCRU_PLL_CON2(n)  (PMUCRU_BASE + (n) * 0x40 + 0x8)
 #define PMUCRU_PLL_CON3(n)  (PMUCRU_BASE + (n) * 0x40 + 0xc)
-#define PMUCRU_PLL_CON4(n)  (PMUCRU_BASE + (n) * 0x40 + 0xc)
+#define PMUCRU_PLL_CON4(n)  (PMUCRU_BASE + (n) * 0x40 + 0x10)
 
 /* PMU MODE registers */
 #define PMUCRU_MODE_CON00   (PMUCRU_BASE + 0x0080)
