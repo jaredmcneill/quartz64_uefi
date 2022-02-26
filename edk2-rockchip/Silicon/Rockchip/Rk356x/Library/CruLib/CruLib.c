@@ -246,15 +246,22 @@ CruSetSdmmcClockRate (
     UINT32 Val;
     UINT32 Sel;
     UINT32 Shift, Mask;
+    EFI_PHYSICAL_ADDRESS Reg;
     
-    ASSERT (Index <= 1);
+    ASSERT (Index <= 2);
 
     if (Index == 0) {
+        Reg = CRU_CLKSEL_CON (30);
         Shift = CRU_CLKSEL_CON30_CLK_SDMMC0_SEL_SHIFT;
         Mask = CRU_CLKSEL_CON30_CLK_SDMMC0_SEL_MASK;
-    } else {
+    } else if (Index == 1) {
+        Reg = CRU_CLKSEL_CON (30);
         Shift = CRU_CLKSEL_CON30_CLK_SDMMC1_SEL_SHIFT;
         Mask = CRU_CLKSEL_CON30_CLK_SDMMC1_SEL_MASK;
+    } else {
+        Reg = CRU_CLKSEL_CON (32);
+        Shift = CRU_CLKSEL_CON32_CLK_SDMMC2_SEL_SHIFT;
+        Mask = CRU_CLKSEL_CON32_CLK_SDMMC2_SEL_MASK;
     }
 
     if (Rate <= 750000U) {
@@ -275,9 +282,9 @@ CruSetSdmmcClockRate (
 
     Val = Mask << 16;
     Val |= Sel << Shift;
-    MmioWrite32 (CRU_CLKSEL_CON (30), Val);
+    MmioWrite32 (Reg, Val);
 
-    DEBUG ((DEBUG_INFO, "CruSetSdmmcClockRate(%u, %lu): CRU_CLKSEL_CON30 = %08X (wrote %08X)\n", Index, Rate, MmioRead32 (CRU_CLKSEL_CON (30)), Val));
+    DEBUG ((DEBUG_INFO, "CruSetSdmmcClockRate(%u, %lu): 0x%08X = %08X (wrote %08X)\n", Index, Rate, (UINT32)Reg, MmioRead32 (Reg), Val));
 }
 
 VOID
