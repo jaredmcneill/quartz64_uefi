@@ -11,7 +11,7 @@
 // Mobile Storage Host Controller
 Device (MSH0) {
     Name (_HID, "PRP0001")
-    Name (_UID, 3)
+    Name (_UID, 4)
     Name (_CCA, Zero)
 
     Name (_DSD, Package () {
@@ -38,7 +38,7 @@ Device (MSH0) {
 // Mobile Storage Host Controller
 Device (MSH1) {
     Name (_HID, "PRP0001")
-    Name (_UID, 4)
+    Name (_UID, 5)
     Name (_CCA, Zero)
 
     Name (_DSD, Package () {
@@ -70,6 +70,52 @@ Device (MSH1) {
     Name (_STA, FixedPcdGet8(PcdMshc1Status))
 
 #if FixedPcdGetBool(PcdMshc1NonRemovable) == 1
+    Device (SDMM) {
+        Method (_ADR) {
+            Return (0)
+        }
+        Method (_RMV) {
+            Return (0) // non-removable
+        }
+    }
+#endif
+}
+
+// Mobile Storage Host Controller
+Device (MSH2) {
+    Name (_HID, "PRP0001")
+    Name (_UID, 6)
+    Name (_CCA, Zero)
+
+    Name (_DSD, Package () {
+        ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+        Package () {
+            Package () { "compatible", Package () { "rockchip,rk3568-dw-mshc", "rockchip,rk3288-dw-mshc" } },
+            Package () { "fifo-depth", 0x100 },
+            Package () { "max-frequency", 50000000 },
+            Package () { "bus-width", 4 },
+            Package () { "cap-sd-highspeed", 1 },
+#if FixedPcdGetBool(PcdMshc2SdioIrq) == 1
+            Package () { "cap-sdio-irq", 1 },
+#endif
+            Package () { "disable-wp", 1 },
+#if FixedPcdGetBool(PcdMshc2NonRemovable) == 1
+            Package () { "non-removable", 1 }
+#endif
+        }
+    })
+
+    Method (_CRS, 0x0, Serialized) {
+        Name (RBUF, ResourceTemplate() {
+            Memory32Fixed (ReadWrite, 0xFE000000, 0x4000)
+            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 132 }
+        })
+        Return (RBUF)
+    }
+
+    Name (_STA, FixedPcdGet8(PcdMshc2Status))
+
+#if FixedPcdGetBool(PcdMshc2NonRemovable) == 1
     Device (SDMM) {
         Method (_ADR) {
             Return (0)

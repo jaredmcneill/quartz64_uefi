@@ -442,6 +442,12 @@
   gRk356xTokenSpaceGuid.PcdXhc1Status|0xF
 
   #
+  # Ethernet support
+  #
+  gRk356xTokenSpaceGuid.PcdMac0Status|0xF
+  gRk356xTokenSpaceGuid.PcdMac1Status|0xF
+
+  #
   # PCI support
   #
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress|0x0000000300000000
@@ -461,6 +467,13 @@
   gRk356xTokenSpaceGuid.PcdPcieResetGpioPin|30
   gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|0
   gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|20
+
+  #
+  # The ROC-RK3568-PC has a WiFi card on the third MSHC
+  #
+  gRk356xTokenSpaceGuid.PcdMshc2Status|0xF
+  gRk356xTokenSpaceGuid.PcdMshc2SdioIrq|TRUE
+  gRk356xTokenSpaceGuid.PcdMshc2NonRemovable|TRUE
 
 [PcdsDynamicHii.common.DEFAULT]
 

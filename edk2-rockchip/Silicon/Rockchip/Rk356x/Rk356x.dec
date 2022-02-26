@@ -33,6 +33,9 @@
   gRk356xTokenSpaceGuid.PcdEhc1Status|0x0|UINT8|0x0000000a
   gRk356xTokenSpaceGuid.PcdXhc0Status|0x0|UINT8|0x0000000b
   gRk356xTokenSpaceGuid.PcdXhc1Status|0x0|UINT8|0x0000000c
+  # Pcds for GMAC
+  gRk356xTokenSpaceGuid.PcdMac0Status|0x0|UINT8|0x0000000d
+  gRk356xTokenSpaceGuid.PcdMac1Status|0x0|UINT8|0x0000000e
   # Pcds for MSHC
   gRk356xTokenSpaceGuid.PcdMshcDxeBaseAddress|0xFE2B0000|UINT32|0x00000010
   gRk356xTokenSpaceGuid.PcdMshcDxeMaxClockFreqInHz|50000000|UINT32|0x00000011
@@ -42,6 +45,9 @@
   gRk356xTokenSpaceGuid.PcdMshc1Status|0x0|UINT8|0x00000015
   gRk356xTokenSpaceGuid.PcdMshc1SdioIrq|FALSE|BOOLEAN|0x00000016
   gRk356xTokenSpaceGuid.PcdMshc1NonRemovable|FALSE|BOOLEAN|0x00000017
+  gRk356xTokenSpaceGuid.PcdMshc2Status|0x0|UINT8|0x00000018
+  gRk356xTokenSpaceGuid.PcdMshc2SdioIrq|FALSE|BOOLEAN|0x00000019
+  gRk356xTokenSpaceGuid.PcdMshc2NonRemovable|FALSE|BOOLEAN|0x0000001a
   # Pcds for eMMC
   gRk356xTokenSpaceGuid.PcdEmmcDxeBaseAddress|0xFE310000|UINT32|0x00000020
   # Pcds for PCIe

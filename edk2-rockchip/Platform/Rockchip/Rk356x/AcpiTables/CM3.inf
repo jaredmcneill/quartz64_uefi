@@ -58,10 +58,15 @@
   gRk356xTokenSpaceGuid.PcdEhc1Status
   gRk356xTokenSpaceGuid.PcdXhc0Status
   gRk356xTokenSpaceGuid.PcdXhc1Status
+  gRk356xTokenSpaceGuid.PcdMac0Status
+  gRk356xTokenSpaceGuid.PcdMac1Status
 
   gRk356xTokenSpaceGuid.PcdMshc1Status
   gRk356xTokenSpaceGuid.PcdMshc1SdioIrq
   gRk356xTokenSpaceGuid.PcdMshc1NonRemovable
-
+  gRk356xTokenSpaceGuid.PcdMshc2Status
+  gRk356xTokenSpaceGuid.PcdMshc2SdioIrq
+  gRk356xTokenSpaceGuid.PcdMshc2NonRemovable
+  
 [BuildOptions]
   GCC:*_*_*_ASL_FLAGS       = -vw3133 -vw3150

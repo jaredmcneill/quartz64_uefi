@@ -440,6 +440,11 @@
   gRk356xTokenSpaceGuid.PcdXhc1Status|0xF
 
   #
+  # Ethernet support
+  #
+  gRk356xTokenSpaceGuid.PcdMac1Status|0xF
+
+  #
   # PCI support
   #
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress|0x0000000300000000
