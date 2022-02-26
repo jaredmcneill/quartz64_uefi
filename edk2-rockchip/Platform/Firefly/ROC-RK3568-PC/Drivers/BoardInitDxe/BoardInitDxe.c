@@ -2,7 +2,7 @@
  *
  *  Board init for the ROC-RK3568-PC platform
  *
- *  Copyright (c) 2021, Jared McNeill <jmcneill@invisible.ca>
+ *  Copyright (c) 2021-2022, Jared McNeill <jmcneill@invisible.ca>
  *
  *  SPDX-License-Identifier: BSD-2-Clause-Patent
  *
@@ -36,12 +36,16 @@
 /*
  * GMAC registers
  */
+#define GMAC0_MAC_ADDRESS0_LOW  (GMAC0_BASE + 0x0304)
+#define GMAC0_MAC_ADDRESS0_HIGH (GMAC0_BASE + 0x0300)
 #define GMAC1_MAC_ADDRESS0_LOW  (GMAC1_BASE + 0x0304)
 #define GMAC1_MAC_ADDRESS0_HIGH (GMAC1_BASE + 0x0300)
 
+#define GRF_MAC0_CON0           (SYS_GRF + 0x0380)
 #define GRF_MAC1_CON0           (SYS_GRF + 0x0388)
 #define  CLK_RX_DL_CFG_SHIFT    8
 #define  CLK_TX_DL_CFG_SHIFT    0
+#define GRF_MAC0_CON1           (SYS_GRF + 0x0384)
 #define GRF_MAC1_CON1           (SYS_GRF + 0x038C)
 #define  PHY_INTF_SEL_SHIFT     4
 #define  PHY_INTF_SEL_MASK      (0x7U << PHY_INTF_SEL_SHIFT)
@@ -50,9 +54,13 @@
 #define  MAC_SPEED              BIT2
 #define  RXCLK_DLY_ENA          BIT1
 #define  TXCLK_DLY_ENA          BIT0
+#define GRF_IOFUNC_SEL0         (SYS_GRF + 0x0300)
+#define  GMAC1_IOMUX_SEL        BIT8
 
-#define TX_DELAY                0x4E
-#define RX_DELAY                0x2C
+#define TX_DELAY_GMAC0          0x3C
+#define RX_DELAY_GMAC0          0x2F
+#define TX_DELAY_GMAC1          0x4F
+#define RX_DELAY_GMAC1          0x26
 
 /*
  * PMIC registers
@@ -82,47 +90,49 @@
 #define PMU_NOC_AUTO_CON0                     (PMU_BASE + 0x0070)
 #define PMU_NOC_AUTO_CON1                     (PMU_BASE + 0x0074)
 
+STATIC CONST GPIO_IOMUX_CONFIG mGmac0IomuxConfig[] = {
+  { "gmac0_mdcm",         2, GPIO_PIN_PC3, 2, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac0_mdio",         2, GPIO_PIN_PC4, 2, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac0_txd0",         2, GPIO_PIN_PB3, 1, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+  { "gmac0_txd1",         2, GPIO_PIN_PB4, 1, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+  { "gmac0_txen",         2, GPIO_PIN_PB5, 1, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac0_rxd0",         2, GPIO_PIN_PB6, 1, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac0_rxd1",         2, GPIO_PIN_PB7, 2, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac0_rxdvcrs",      2, GPIO_PIN_PC0, 2, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac0_rxclk",        2, GPIO_PIN_PA5, 2, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac0_txclk",        2, GPIO_PIN_PB0, 2, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_1 },
+  { "gmac0_mclkinout",    2, GPIO_PIN_PC2, 2, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac0_rxd2",         2, GPIO_PIN_PA3, 2, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac0_rxd3",         2, GPIO_PIN_PA4, 2, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac0_txd2",         2, GPIO_PIN_PA6, 2, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+  { "gmac0_txd3",         2, GPIO_PIN_PA7, 2, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+};
+
 STATIC CONST GPIO_IOMUX_CONFIG mGmac1IomuxConfig[] = {
-  { "gmac1_mdcm0",        3, GPIO_PIN_PC4, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_mdiom0",       3, GPIO_PIN_PC5, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_txd0m0",       3, GPIO_PIN_PB5, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
-  { "gmac1_txd1m0",       3, GPIO_PIN_PB6, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
-  { "gmac1_txenm0",       3, GPIO_PIN_PB7, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_rxd0m0",       3, GPIO_PIN_PB1, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_rxd1m0",       3, GPIO_PIN_PB2, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_rxdvcrsm0",    3, GPIO_PIN_PB3, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_rxclkm0",      3, GPIO_PIN_PA7, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_txclkm0",      3, GPIO_PIN_PA6, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_1 },
-  { "gmac1_mclkinoutm0",  3, GPIO_PIN_PC0, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_rxd2m0",       3, GPIO_PIN_PA4, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_rxd3m0",       3, GPIO_PIN_PA5, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_txd2m0",       3, GPIO_PIN_PA2, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
-  { "gmac1_txd3m0",       3, GPIO_PIN_PA3, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+  { "gmac1_mdcm1",        4, GPIO_PIN_PB6, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_mdiom1",       4, GPIO_PIN_PB7, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_txd0m1",       4, GPIO_PIN_PA4, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+  { "gmac1_txd1m1",       4, GPIO_PIN_PA5, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+  { "gmac1_txenm1",       4, GPIO_PIN_PA6, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_rxd0m1",       4, GPIO_PIN_PA7, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_rxd1m1",       4, GPIO_PIN_PB0, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_rxdvcrsm1",    4, GPIO_PIN_PB1, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_rxclkm1",      4, GPIO_PIN_PA3, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_txclkm1",      4, GPIO_PIN_PA0, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_1 },
+  { "gmac1_mclkinoutm1",  4, GPIO_PIN_PC1, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_rxd2m1",       4, GPIO_PIN_PA1, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_rxd3m1",       4, GPIO_PIN_PA2, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "gmac1_txd2m1",       3, GPIO_PIN_PD6, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+  { "gmac1_txd3m1",       3, GPIO_PIN_PD7, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
 };
 
-STATIC CONST GPIO_IOMUX_CONFIG mSdmmc1IomuxConfig[] = {
-  { "sdmmc1_d0",          2, GPIO_PIN_PA3, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "sdmmc1_d1",          2, GPIO_PIN_PA4, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "sdmmc1_d2",          2, GPIO_PIN_PA5, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "sdmmc1_d3",          2, GPIO_PIN_PA6, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "sdmmc1_cmd",         2, GPIO_PIN_PA7, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "sdmmc1_clk",         2, GPIO_PIN_PB0, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "sdmmc1_pwren",       2, GPIO_PIN_PB1, 0, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "sdmmc1_det",         2, GPIO_PIN_PB2, 0, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-};
-
-STATIC CONST GPIO_IOMUX_CONFIG mEmmcIomuxConfig[] = {
-  { "emmc_d0",            1, GPIO_PIN_PB4, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "emmc_d1",            1, GPIO_PIN_PB5, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "emmc_d2",            1, GPIO_PIN_PB6, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "emmc_d3",            1, GPIO_PIN_PB7, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "emmc_d4",            1, GPIO_PIN_PC0, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "emmc_d5",            1, GPIO_PIN_PC1, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "emmc_d6",            1, GPIO_PIN_PC2, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "emmc_d7",            1, GPIO_PIN_PC3, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "emmc_cmd",           1, GPIO_PIN_PC4, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "emmc_clkout",        1, GPIO_PIN_PC5, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
-  { "emmc_datastrobe",    1, GPIO_PIN_PC6, 1, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+STATIC CONST GPIO_IOMUX_CONFIG mSdmmc2IomuxConfig[] = {
+  { "sdmmc2_d0m0",        3, GPIO_PIN_PC6, 3, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
+  { "sdmmc2_d1m0",        3, GPIO_PIN_PC7, 3, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
+  { "sdmmc2_d2m0",        3, GPIO_PIN_PD0, 3, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
+  { "sdmmc2_d3m0",        3, GPIO_PIN_PD1, 3, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
+  { "sdmmc2_cmdm0",       3, GPIO_PIN_PD2, 3, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
+  { "sdmmc2_clkm0",       3, GPIO_PIN_PD3, 3, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
 };
 
 STATIC
@@ -263,44 +273,85 @@ BoardInitGmac (
   UINT32 MacLo, MacHi;
 
   /* Assert reset */
-  CruAssertSoftReset (14, 12);
+  CruAssertSoftReset (13, 7);  // GMAC0
+  CruAssertSoftReset (14, 12); // GMAC1
+
+  /* Select M1 mux solution for GMAC1 */
+  MmioWrite32 (GRF_IOFUNC_SEL0, (GMAC1_IOMUX_SEL << 16) | GMAC1_IOMUX_SEL);
 
   /* Configure pins */
+  GpioSetIomuxConfig (mGmac0IomuxConfig, ARRAY_SIZE (mGmac0IomuxConfig));
   GpioSetIomuxConfig (mGmac1IomuxConfig, ARRAY_SIZE (mGmac1IomuxConfig));
 
-  /* Setup clocks */
+  /* Setup GMAC0 clocks */
+  MmioWrite32 (CRU_CLKSEL_CON (31), 0x00370004);  // Set rmii1_mode to rgmii mode
+                                                  // Set rgmii1_clk_sel to 125M
+                                                  // Set rmii1_extclk_sel to mac1 clock from IO
+  /* Setup GMAC1 clocks */
   MmioWrite32 (CRU_CLKSEL_CON (33), 0x00370004);  // Set rmii1_mode to rgmii mode
                                                   // Set rgmii1_clk_sel to 125M
                                                   // Set rmii1_extclk_sel to mac1 clock from IO
 
   /* Configure GMAC1 */
+  MmioWrite32 (GRF_MAC0_CON0,
+               0x7F7F0000U |
+               (TX_DELAY_GMAC0 << CLK_TX_DL_CFG_SHIFT) |
+               (RX_DELAY_GMAC0 << CLK_RX_DL_CFG_SHIFT));
+  MmioWrite32 (GRF_MAC0_CON1,
+               ((PHY_INTF_SEL_MASK | TXCLK_DLY_ENA | RXCLK_DLY_ENA) << 16) |
+               PHY_INTF_SEL_RGMII |
+               TXCLK_DLY_ENA |
+               RXCLK_DLY_ENA);
+
+  /* Configure GMAC1 */
   MmioWrite32 (GRF_MAC1_CON0,
                0x7F7F0000U |
-               (TX_DELAY << CLK_TX_DL_CFG_SHIFT) |
-               (RX_DELAY << CLK_RX_DL_CFG_SHIFT));
+               (TX_DELAY_GMAC1 << CLK_TX_DL_CFG_SHIFT) |
+               (RX_DELAY_GMAC1 << CLK_RX_DL_CFG_SHIFT));
   MmioWrite32 (GRF_MAC1_CON1,
                ((PHY_INTF_SEL_MASK | TXCLK_DLY_ENA | RXCLK_DLY_ENA) << 16) |
                PHY_INTF_SEL_RGMII |
                TXCLK_DLY_ENA |
                RXCLK_DLY_ENA);
 
-  /* Reset PHY */
-  GpioPinSetDirection (0, GPIO_PIN_PB7, GPIO_PIN_OUTPUT);
+  /* Reset GMAC0 PHY */
+  GpioPinSetDirection (2, GPIO_PIN_PD3, GPIO_PIN_OUTPUT);
   MicroSecondDelay (1000);
-  GpioPinWrite (0, GPIO_PIN_PB7, 0);
+  GpioPinWrite (2, GPIO_PIN_PD3, 0);
   MicroSecondDelay (20000);
-  GpioPinWrite (0, GPIO_PIN_PB7, 1);
+  GpioPinWrite (2, GPIO_PIN_PD3, 1);
+  MicroSecondDelay (100000);
+
+  /* Reset GMAC1 PHY */
+  GpioPinSetDirection (2, GPIO_PIN_PD1, GPIO_PIN_OUTPUT);
+  MicroSecondDelay (1000);
+  GpioPinWrite (2, GPIO_PIN_PD1, 0);
+  MicroSecondDelay (20000);
+  GpioPinWrite (2, GPIO_PIN_PD1, 1);
   MicroSecondDelay (100000);
 
   /* Deassert reset */
-  CruDeassertSoftReset (14, 12);
+  CruDeassertSoftReset (13, 7);  // GMAC0
+  CruDeassertSoftReset (14, 12); // GMAC1
 
-  /* Generate a MAC address from the first 32 bytes in the OTP and write it to GMAC */
+  /* Generate MAC addresses from the first 32 bytes in the OTP and write it to GMAC0 and GMAC1 */
   OtpRead (0x00, sizeof (OtpData), OtpData);
   Sha256HashAll (OtpData, sizeof (OtpData), Hash);
   Hash[0] &= 0xFE;
   Hash[0] |= 0x02;
-  DEBUG ((DEBUG_INFO, "BOARD: MAC address %02X:%02X:%02X:%02X:%02X:%02X\n",
+
+  /* Use sequential MAC addresses. Last byte is even for GMAC0, and odd for GMAC1. */
+  Hash[5] &= ~1;
+  DEBUG ((DEBUG_INFO, "BOARD: GMAC0 MAC address %02X:%02X:%02X:%02X:%02X:%02X\n",
+          Hash[0], Hash[1], Hash[2],
+          Hash[3], Hash[4], Hash[5]));
+  MacLo = Hash[3] | (Hash[2] << 8) | (Hash[1] << 16) | (Hash[0] << 24);
+  MacHi = Hash[5] | (Hash[4] << 8);
+  MmioWrite32 (GMAC0_MAC_ADDRESS0_LOW, MacLo);
+  MmioWrite32 (GMAC0_MAC_ADDRESS0_HIGH, MacHi);
+
+  Hash[5] |= 1;
+  DEBUG ((DEBUG_INFO, "BOARD: GMAC1 MAC address %02X:%02X:%02X:%02X:%02X:%02X\n",
           Hash[0], Hash[1], Hash[2],
           Hash[3], Hash[4], Hash[5]));
   MacLo = Hash[3] | (Hash[2] << 8) | (Hash[1] << 16) | (Hash[0] << 24);
@@ -390,42 +441,18 @@ BoardInitWiFi (
 {
   DEBUG ((DEBUG_INFO, "BOARD: WiFi init\n"));
 
-  CruSetSdmmcClockRate (1, 100000000UL);
+  CruSetSdmmcClockRate (2, 100000000UL);
 
   /* Configure pins */
-  GpioSetIomuxConfig (mSdmmc1IomuxConfig, ARRAY_SIZE (mSdmmc1IomuxConfig));
+  GpioSetIomuxConfig (mSdmmc2IomuxConfig, ARRAY_SIZE (mSdmmc2IomuxConfig));
 
-  /* Set GPIO2 PB1 (WIFI_REG_ON) output high to enable WiFi */
-  GpioPinSetDirection (2, GPIO_PIN_PB1, GPIO_PIN_OUTPUT);
+  /* Set GPIO3 PD5 (WIFI_REG_ON) output high to enable WiFi */
+  GpioPinSetDirection (3, GPIO_PIN_PD5, GPIO_PIN_OUTPUT);
   MicroSecondDelay (1000);
-  GpioPinWrite (2, GPIO_PIN_PB1, FALSE);
+  GpioPinWrite (3, GPIO_PIN_PD5, FALSE);
   MicroSecondDelay (500000);
-  GpioPinWrite (2, GPIO_PIN_PB1, TRUE);
+  GpioPinWrite (3, GPIO_PIN_PD5, TRUE);
   MicroSecondDelay (100000);
-}
-
-STATIC VOID
-BoardInitEmmc (
-  VOID
-  )
-{
-#if 0 /* TODO: */
-  UINT32 VendSpec;
-
-  DEBUG ((DEBUG_INFO, "BOARD: eMMC card init\n"));
-
-  CruSetEmmcClockRate (50000000);
-
-  /* Configure pins */
-  GpioSetIomuxConfig (mEmmcIomuxConfig, ARRAY_SIZE (mEmmcIomuxConfig));
-
-  VendSpec = MmioRead32 (0xFE3100E8) & 0xFFF;
-  MmioWrite32 (0xFE310000 + VendSpec + 0x8, 0);
-  MmioWrite32 (0xFE310000 + 0x800, 0);
-  MmioWrite32 (0xFE310000 + 0x804, BIT29);
-  MmioWrite32 (0xFE310000 + 0x808, 0);
-  MmioWrite32 (0xFE310000 + 0x80c, 0);
-#endif
 }
 
 EFI_STATUS
@@ -464,9 +491,6 @@ BoardInitDriverEntryPoint (
 
   /* WiFi setup */
   BoardInitWiFi ();
-
-  /* eMMC setup */
-  BoardInitEmmc ();
 
   return EFI_SUCCESS;
 }

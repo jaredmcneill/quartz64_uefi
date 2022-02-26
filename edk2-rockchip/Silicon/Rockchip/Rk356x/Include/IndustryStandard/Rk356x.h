@@ -28,6 +28,7 @@
 #define VOP_BASE            0xFE040000UL
 #define HDMI_BASE           0xFE0A0000UL
 #define PCIE2X1_APB_BASE    0xFE260000UL
+#define GMAC0_BASE          0xFE2A0000UL
 #define TRNG_BASE           0xFE388000UL
 #define OTP_BASE            0xFE38C000UL
 #define TSADC_BASE          0xFE710000UL
