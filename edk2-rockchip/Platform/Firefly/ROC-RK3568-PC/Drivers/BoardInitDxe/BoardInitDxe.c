@@ -33,6 +33,8 @@
 #include <IndustryStandard/Rk356x.h>
 #include <IndustryStandard/Rk356xCru.h>
 
+#include "EthernetPhy.h"
+
 /*
  * GMAC registers
  */
@@ -358,6 +360,9 @@ BoardInitGmac (
   MacHi = Hash[5] | (Hash[4] << 8);
   MmioWrite32 (GMAC1_MAC_ADDRESS0_LOW, MacLo);
   MmioWrite32 (GMAC1_MAC_ADDRESS0_HIGH, MacHi);
+
+  EthernetPhyInit (GMAC0_BASE);
+  EthernetPhyInit (GMAC1_BASE);
 }
 
 STATIC
