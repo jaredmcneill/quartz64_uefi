@@ -57,3 +57,6 @@
   gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|0xFF|UINT8|0x00000033
   gRk356xTokenSpaceGuid.PcdPcieLinkSpeed|0x2|UINT32|0x00000034
   gRk356xTokenSpaceGuid.PcdPcieNumLanes|0x1|UINT32|0x00000035
+  # Pcds for RTC
+  gRk356xTokenSpaceGuid.PcdRtcI2cBusBase|0|UINT32|0x00000040
+  gRk356xTokenSpaceGuid.PcdRtcI2cAddr|0|UINT8|0x00000041

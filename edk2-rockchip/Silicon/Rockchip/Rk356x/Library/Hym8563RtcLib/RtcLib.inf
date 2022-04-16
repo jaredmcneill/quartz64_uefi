@@ -1,0 +1,45 @@
+#/** @file
+#
+#  Hym8563 RTC Library.
+#
+#  Copyright (c) 2022, Jared McNeill <jmcneill@invisible.ca>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = RtcLib
+  FILE_GUID                      = C15D99FE-C041-4625-810D-24AFBD404365
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = RealTimeClockLib
+  CONSTRUCTOR                    = RtcLibConstructor
+
+[Sources]
+  RtcLib.c
+
+[Packages]
+  ArmPkg/ArmPkg.dec
+  ArmPlatformPkg/ArmPlatformPkg.dec
+  MdePkg/MdePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  UefiRuntimeLib
+  UefiBootServicesTableLib
+  DxeServicesTableLib
+  DebugLib
+  IoLib
+  BaseLib
+  PcdLib
+  I2cLib
+
+[FixedPcd]
+  gRk356xTokenSpaceGuid.PcdRtcI2cBusBase
+  gRk356xTokenSpaceGuid.PcdRtcI2cAddr
+  
+[Guids]
+  gEfiEventVirtualAddressChangeGuid
