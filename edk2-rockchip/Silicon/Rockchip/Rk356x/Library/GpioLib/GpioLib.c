@@ -17,7 +17,7 @@
 
 #define GRF_GPIO_IOMUX_REG(Pin)         (((Pin) / 4) * 4)
 #define GRF_GPIO_IOMUX_SHIFT(Pin)       (((Pin) % 4) * 4)
-#define GRF_GPIO_IOMUX_MASK(Pin)        (0x7U << (GRF_GPIO_IOMUX_SHIFT(Pin) + 16))
+#define GRF_GPIO_IOMUX_MASK(Pin)        (0xFU << (GRF_GPIO_IOMUX_SHIFT(Pin) + 16))
 
 #define GRF_GPIO_P_REG(Pin)             (((Pin) / 8) * 4)
 #define GRF_GPIO_P_SHIFT(Pin)           (((Pin) % 8) * 2)
@@ -25,7 +25,7 @@
 
 #define GRF_GPIO_DS_REG(Pin)            (((Pin) / 2) * 4)
 #define GRF_GPIO_DS_SHIFT(Pin)          (((Pin) % 2) * 8)
-#define GRF_GPIO_DS_MASK(Pin)           (0x3FU << (GRF_GPIO_DS_SHIFT (Pin) + 16))
+#define GRF_GPIO_DS_MASK(Pin)           (0xFFU << (GRF_GPIO_DS_SHIFT (Pin) + 16))
 
 #define GRF_GPIO_IE_REG(Pin)            (((Pin) / 8) * 4)
 #define GRF_GPIO_IE_SHIFT(Pin)          (((Pin) % 8) * 2)
@@ -113,6 +113,10 @@ GpioPinSetPull (
   )
 {
   ASSERT (Group < GPIO_NGROUPS);
+
+  if (Group == 0 && Pin >= GPIO_PIN_PD3 && Pin <= GPIO_PIN_PD6 && Pull == GPIO_PIN_PULL_UP) {
+    Pull = 3;
+  }
 
   CONST EFI_PHYSICAL_ADDRESS Reg = mPinmuxReg[Group].P + GRF_GPIO_P_REG (Pin);
   CONST UINT32 Value = GRF_GPIO_P_MASK (Pin) | ((UINT32)Pull << GRF_GPIO_P_SHIFT (Pin));
