@@ -23,6 +23,7 @@
 #include <Library/I2cLib.h>
 #include <Library/MultiPhyLib.h>
 #include <Library/OtpLib.h>
+#include <Library/SocLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/BaseMemoryLib.h>
@@ -91,6 +92,7 @@
  */
 #define PMU_NOC_AUTO_CON0                     (PMU_BASE + 0x0070)
 #define PMU_NOC_AUTO_CON1                     (PMU_BASE + 0x0074)
+
 
 STATIC CONST GPIO_IOMUX_CONFIG mGmac0IomuxConfig[] = {
   { "gmac0_mdcm",         2, GPIO_PIN_PC3, 2, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
@@ -468,6 +470,13 @@ BoardInitDriverEntryPoint (
   )
 {
   DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() called\n"));
+
+  SocSetDomainVoltage (PMUIO2, VCC_3V3);
+  SocSetDomainVoltage (VCCIO1, VCC_3V3);
+  SocSetDomainVoltage (VCCIO4, VCC_1V8);
+  SocSetDomainVoltage (VCCIO5, VCC_3V3);
+  SocSetDomainVoltage (VCCIO6, VCC_1V8);
+  SocSetDomainVoltage (VCCIO7, VCC_3V3);
 
   BoardInitPmic ();
 
