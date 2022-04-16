@@ -59,8 +59,9 @@ typedef enum {
   GPIO_PIN_DRIVE_0       = 0x1,
   GPIO_PIN_DRIVE_1       = 0x3,
   GPIO_PIN_DRIVE_2       = 0x7,
-  GPIO_PIN_DRIVE_4       = 0xf,
-  GPIO_PIN_DRIVE_5       = 0x1f
+  GPIO_PIN_DRIVE_3       = 0xF,
+  GPIO_PIN_DRIVE_4       = 0x1F,
+  GPIO_PIN_DRIVE_5       = 0x3F
 } GPIO_PIN_DRIVE;
 
 typedef enum {
