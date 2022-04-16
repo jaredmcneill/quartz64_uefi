@@ -2,7 +2,7 @@
  *
  *  Board init for the ROC-RK3566-PC platform
  *
- *  Copyright (c) 2021, Jared McNeill <jmcneill@invisible.ca>
+ *  Copyright (c) 2021-2022, Jared McNeill <jmcneill@invisible.ca>
  *
  *  SPDX-License-Identifier: BSD-2-Clause-Patent
  *
@@ -332,6 +332,7 @@ BoardInitPmic (
 
   DEBUG ((DEBUG_INFO, "BOARD: PMIC init\n"));
 
+  /* I2C2 bus, used for RTC */
   GpioPinSetPull (0, GPIO_PIN_PB1, GPIO_PIN_PULL_NONE);
   GpioPinSetInput (0, GPIO_PIN_PB1, GPIO_PIN_INPUT_SCHMITT);
   GpioPinSetFunction (0, GPIO_PIN_PB1, 1);
@@ -400,6 +401,14 @@ BoardInitDriverEntryPoint (
   DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() called\n"));
 
   BoardInitPmic ();
+
+  /* I2C2 bus, used for RTC */
+  GpioPinSetPull (0, GPIO_PIN_PB5, GPIO_PIN_PULL_NONE);
+  GpioPinSetInput (0, GPIO_PIN_PB5, GPIO_PIN_INPUT_SCHMITT);
+  GpioPinSetFunction (0, GPIO_PIN_PB5, 1);
+  GpioPinSetPull (0, GPIO_PIN_PB6, GPIO_PIN_PULL_NONE);
+  GpioPinSetInput (0, GPIO_PIN_PB6, GPIO_PIN_INPUT_SCHMITT);
+  GpioPinSetFunction (0, GPIO_PIN_PB6, 1);
 
   /* Set GPIO0 PD3 (WORK_LED) output high to enable LED */
   GpioPinSetDirection (0, GPIO_PIN_PD3, GPIO_PIN_OUTPUT);

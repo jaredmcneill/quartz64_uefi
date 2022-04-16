@@ -474,6 +474,13 @@
   gRk356xTokenSpaceGuid.PcdMshc1SdioIrq|TRUE
   gRk356xTokenSpaceGuid.PcdMshc1NonRemovable|TRUE
 
+  #
+  # RTC support (hym8563 at 0x51 on I2C2)
+  #
+  gRk356xTokenSpaceGuid.PcdRtcI2cBusBase|0xFE5B0000
+  gRk356xTokenSpaceGuid.PcdRtcI2cAddr|0x51
+
+
 [PcdsDynamicHii.common.DEFAULT]
 
   #
@@ -534,7 +541,7 @@
   EmbeddedPkg/ResetRuntimeDxe/ResetRuntimeDxe.inf
   EmbeddedPkg/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf {
     <LibraryClasses>
-      RealTimeClockLib|EmbeddedPkg/Library/VirtualRealTimeClockLib/VirtualRealTimeClockLib.inf
+      RealTimeClockLib|Silicon/Rockchip/Rk356x/Library/Hym8563RtcLib/RtcLib.inf
   }
   EmbeddedPkg/MetronomeDxe/MetronomeDxe.inf
 
