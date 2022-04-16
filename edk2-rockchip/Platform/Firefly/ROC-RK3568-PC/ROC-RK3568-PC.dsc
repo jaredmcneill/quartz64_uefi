@@ -466,7 +466,7 @@
   gRk356xTokenSpaceGuid.PcdPcieResetGpioBank|2
   gRk356xTokenSpaceGuid.PcdPcieResetGpioPin|30
   gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|0
-  gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|20
+  gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|28
 
   #
   # The ROC-RK3568-PC has a WiFi card on the third MSHC
