@@ -4,7 +4,7 @@
 #  Copyright (c) 2014, Linaro Limited. All rights reserved.
 #  Copyright (c) 2015 - 2021, Intel Corporation. All rights reserved.
 #  Copyright (c) 2017 - 2021, Andrei Warkentin <andrey.warkentin@gmail.com>
-#  Copyright (C) 2021, Jared McNeill <jmcneill@invisible.ca>
+#  Copyright (C) 2021 - 2022, Jared McNeill <jmcneill@invisible.ca>
 #
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
 #
@@ -475,6 +475,12 @@
   gRk356xTokenSpaceGuid.PcdMshc2SdioIrq|TRUE
   gRk356xTokenSpaceGuid.PcdMshc2NonRemovable|TRUE
 
+  #
+  # RTC support (hym8563 at 0x51 on I2C5)
+  #
+  gRk356xTokenSpaceGuid.PcdRtcI2cBusBase|0xFE5E0000
+  gRk356xTokenSpaceGuid.PcdRtcI2cAddr|0x51
+
 [PcdsDynamicHii.common.DEFAULT]
 
   #
@@ -535,7 +541,7 @@
   EmbeddedPkg/ResetRuntimeDxe/ResetRuntimeDxe.inf
   EmbeddedPkg/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf {
     <LibraryClasses>
-      RealTimeClockLib|EmbeddedPkg/Library/VirtualRealTimeClockLib/VirtualRealTimeClockLib.inf
+      RealTimeClockLib|Silicon/Rockchip/Rk356x/Library/Hym8563RtcLib/RtcLib.inf
   }
   EmbeddedPkg/MetronomeDxe/MetronomeDxe.inf
 

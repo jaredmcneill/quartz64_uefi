@@ -471,6 +471,14 @@ BoardInitDriverEntryPoint (
 
   BoardInitPmic ();
 
+  /* I2C5 bus, used for RTC */
+  GpioPinSetPull (3, GPIO_PIN_PB3, GPIO_PIN_PULL_NONE);
+  GpioPinSetInput (3, GPIO_PIN_PB3, GPIO_PIN_INPUT_SCHMITT);
+  GpioPinSetFunction (3, GPIO_PIN_PB3, 4);
+  GpioPinSetPull (3, GPIO_PIN_PB4, GPIO_PIN_PULL_NONE);
+  GpioPinSetInput (3, GPIO_PIN_PB4, GPIO_PIN_INPUT_SCHMITT);
+  GpioPinSetFunction (3, GPIO_PIN_PB4, 4);
+
   /* Update CPU speed */
   BoardInitSetCpuSpeed ();
 
