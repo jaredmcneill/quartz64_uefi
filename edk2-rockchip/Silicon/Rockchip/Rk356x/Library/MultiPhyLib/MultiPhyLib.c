@@ -19,6 +19,7 @@
 
 #define MULTIPHY_REGISTER(RegNo)    (((RegNo) - 1) * 4)
 
+/* PIPE_PHY_GRF */
 #define PIPE_PHY_GRF_PIPE_CON0      0x0000
 #define  PIPE_DATABUSWIDTH_MASK     0x3
 #define  PIPE_DATABUSWIDTH_32BIT    0x0
@@ -54,6 +55,9 @@
 #define PIPE_PHY_GRF_PIPE_STATUS1   0x0034
 #define  PIPE_PHYSTATUS_O           (1U << 6)
 
+/* PIPE_GRF */
+#define PIPE_GRF_PIPE_CON0          0x0000
+
 #define SOFTRST_INDEX               28
 #define SOFTRST_BIT(n)              (5 + (n) * 2)
 
@@ -65,7 +69,7 @@ GrfUpdateRegister (
   IN UINT32 Val
   )
 {
-  MmioWrite32 (Reg, (Mask << 16) | Val);
+    MmioWrite32 (Reg, (Mask << 16) | Val);
 }
 
 STATIC
@@ -188,6 +192,61 @@ MultiPhySetModeUsb3 (
     return EFI_SUCCESS;
 }
 
+STATIC
+EFI_STATUS
+MultiPhySetModeSata (
+  IN UINT32 Index
+  )
+{
+    EFI_PHYSICAL_ADDRESS BaseAddr = PIPE_PHY (Index);
+    EFI_PHYSICAL_ADDRESS PhyGrfBaseAddr = PIPE_PHY_GRF (Index);
+    EFI_PHYSICAL_ADDRESS PipeGrfBaseAddr = PIPE_GRF;
+    UINT32 PhyClkSel;
+    UINTN Rate;
+
+    /* SATA is supported on any pipephy */
+    ASSERT (Index == 0 || Index == 1 || Index == 2);
+
+    /* Clock setup */
+    Rate = CruGetPciePhyClockRate (Index);
+    ASSERT (Rate == 100000000);
+
+    MmioOr32 (BaseAddr + MULTIPHY_REGISTER (15), BIT0);
+    MmioWrite32 (BaseAddr + MULTIPHY_REGISTER (7), 0x8F);
+
+    GrfUpdateRegister (PhyGrfBaseAddr + PIPE_PHY_GRF_PIPE_CON0, 0xFFFF, 0x0119);
+    GrfUpdateRegister (PhyGrfBaseAddr + PIPE_PHY_GRF_PIPE_CON1, 0xFFFF, 0x0040);
+    GrfUpdateRegister (PhyGrfBaseAddr + PIPE_PHY_GRF_PIPE_CON2, 0xFFFF, 0x80c3);
+    GrfUpdateRegister (PhyGrfBaseAddr + PIPE_PHY_GRF_PIPE_CON3, 0xFFFF, 0x4407);
+    GrfUpdateRegister (PipeGrfBaseAddr + PIPE_GRF_PIPE_CON0,    0xFFFF, 0x2220);
+
+    DEBUG ((DEBUG_INFO, "MultiPhySetModeSata(%u, ...): Rate = %lu Hz\n", Index, Rate));
+    if (Rate == 24000000) {
+        PhyClkSel = PHY_CLK_SEL_24M;
+
+        /* Set PLL control SSC module period to 31.5 kHz */
+        MmioAndThenOr32 (BaseAddr + MULTIPHY_REGISTER (15), ~0xc0, 0x40);   /* SSC_CNT[1:0] */
+        MmioAndThenOr32 (BaseAddr + MULTIPHY_REGISTER (16), ~0xff, 0x5f);   /* SSC_CNT[9:2] */
+    } else if (Rate == 25000000) {
+        PhyClkSel = PHY_CLK_SEL_25M;
+    } else if (Rate == 100000000) {
+        PhyClkSel = PHY_CLK_SEL_100M;
+
+        /* Set SSC down-spread spectrum */
+        MmioAndThenOr32 (BaseAddr + MULTIPHY_REGISTER (32), ~0xF0, 0x50);
+    } else {
+        ASSERT (FALSE);
+        return EFI_DEVICE_ERROR;
+    }
+
+    /* Set PHY reference clock rate */
+    GrfUpdateRegister (PhyGrfBaseAddr + PIPE_PHY_GRF_PIPE_CON1,
+                       PHY_CLK_SEL_MASK,
+                       PhyClkSel);
+
+    return EFI_SUCCESS;
+}
+
 EFI_STATUS
 MultiPhySetMode (
   IN UINT8 Index,
@@ -210,6 +269,12 @@ MultiPhySetMode (
         break;
     case MULTIPHY_MODE_PCIE:
         Status = MultiPhySetModePcie (Index);
+        if (Status != EFI_SUCCESS) {
+            return Status;
+        }
+        break;
+    case MULTIPHY_MODE_SATA:
+        Status = MultiPhySetModeSata (Index);
         if (Status != EFI_SUCCESS) {
             return Status;
         }
