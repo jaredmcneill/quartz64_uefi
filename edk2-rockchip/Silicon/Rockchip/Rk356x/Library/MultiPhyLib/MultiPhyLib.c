@@ -123,6 +123,9 @@ MultiPhySetModePcie (
                        PHY_CLK_SEL_MASK,
                        PhyClkSel);
 
+    /* RK356x errata workaround - force rterm detect ready */
+    MmioOr32 (BaseAddr + MULTIPHY_REGISTER (26), BIT5);
+
     return EFI_SUCCESS;
 }
 
