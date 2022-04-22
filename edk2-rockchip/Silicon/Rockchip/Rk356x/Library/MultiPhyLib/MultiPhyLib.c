@@ -17,6 +17,8 @@
 #include <Library/UefiBootServicesTableLib.h>
 #include <IndustryStandard/Rk356x.h>
 
+#define MULTIPHY_USB3_DATA_BITS     FixedPcdGet8 (PcdMultiPhyUsb3DataBits)
+
 #define MULTIPHY_REGISTER(RegNo)    (((RegNo) - 1) * 4)
 
 /* PIPE_PHY_GRF */
@@ -162,7 +164,12 @@ MultiPhySetModeUsb3 (
     /* Enable USB3 PHY mode, 16-bit data bus, 5Gbps */
     GrfUpdateRegister (PhyGrfBaseAddr + PIPE_PHY_GRF_PIPE_CON0,
                        PIPE_DATABUSWIDTH_MASK  | PIPE_PHYMODE_MASK | PIPE_RATE_MASK,
-                       PIPE_DATABUSWIDTH_16BIT | PIPE_PHYMODE_USB3 | PIPE_RATE_USB3_5GBPS);
+#if MULTIPHY_USB3_DATA_BITS == 16
+                       PIPE_DATABUSWIDTH_16BIT |
+#else
+                       PIPE_DATABUSWIDTH_32BIT |
+#endif
+                       PIPE_PHYMODE_USB3 | PIPE_RATE_USB3_5GBPS);
 
     /* Clock setup */
     Rate = CruGetPciePhyClockRate (Index);

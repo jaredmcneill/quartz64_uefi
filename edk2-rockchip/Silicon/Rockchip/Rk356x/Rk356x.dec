@@ -60,3 +60,5 @@
   # Pcds for RTC
   gRk356xTokenSpaceGuid.PcdRtcI2cBusBase|0|UINT32|0x00000040
   gRk356xTokenSpaceGuid.PcdRtcI2cAddr|0|UINT8|0x00000041
+  # Pcds for MultiPhy
+  gRk356xTokenSpaceGuid.PcdMultiPhyUsb3DataBits|32|UINT8|0x00000050

@@ -442,6 +442,8 @@
   gRk356xTokenSpaceGuid.PcdEhc1Status|0xF
   gRk356xTokenSpaceGuid.PcdXhc0Status|0xF
   gRk356xTokenSpaceGuid.PcdXhc1Status|0xF
+  # Hack to work around broken USB3 port on Quartz64 model A
+  gRk356xTokenSpaceGuid.PcdMultiPhyUsb3DataBits|16
 
   #
   # Ethernet support
