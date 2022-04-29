@@ -1,4 +1,3 @@
-#### 2022-04-16
+#### 2022-04-29
 
-* Add Firefly Station M2 and ROC-RK3566-PC support.
-* Add RTC support for Firefly boards.
+* Fix a bug that prevented USB3 devices from working on USB3 ports with Firefly boards.
