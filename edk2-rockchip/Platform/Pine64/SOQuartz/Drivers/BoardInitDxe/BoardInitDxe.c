@@ -23,6 +23,7 @@
 #include <Library/I2cLib.h>
 #include <Library/MultiPhyLib.h>
 #include <Library/OtpLib.h>
+#include <Library/SocLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/BaseMemoryLib.h>
@@ -402,6 +403,15 @@ BoardInitDriverEntryPoint (
   )
 {
   DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() called\n"));
+
+  SocSetDomainVoltage (PMUIO2, VCC_3V3);
+  SocSetDomainVoltage (VCCIO1, VCC_3V3);
+  SocSetDomainVoltage (VCCIO2, VCC_1V8);
+  SocSetDomainVoltage (VCCIO3, VCC_3V3);
+  SocSetDomainVoltage (VCCIO4, VCC_1V8);
+  SocSetDomainVoltage (VCCIO5, VCC_3V3);
+  SocSetDomainVoltage (VCCIO6, VCC_1V8);
+  SocSetDomainVoltage (VCCIO7, VCC_3V3);
 
   BoardInitPmic ();
 
