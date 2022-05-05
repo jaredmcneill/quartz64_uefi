@@ -300,6 +300,7 @@ SendCommand (
   )
 {
   UINT32      Data, ErrMask;
+  EFI_STATUS  Status = EFI_SUCCESS;
 
   // Wait until MMC is idle
   do {
@@ -317,16 +318,17 @@ SendCommand (
     MicroSecondDelay(1);
     Data = MmioRead32 (DWEMMC_RINTSTS);
 
-    if (Data & ErrMask) {
+    if (Status == EFI_SUCCESS && (Data & ErrMask) != 0) {
       DEBUG ((DEBUG_INFO, "%a(): EFI_DEVICE_ERROR DWEMMC_RINTSTS=0x%x MmcCmd 0x%x(%d),Argument 0x%x\n",
           __func__, Data, MmcCmd, MmcCmd&0x3f, Argument));
-      return EFI_DEVICE_ERROR;
+      Status = EFI_DEVICE_ERROR;
+      // Keep spinning until CMD done bit is set.
     }
     if (Data & DWEMMC_INT_DTO) {     // Transfer Done
       break;
     }
   } while (!(Data & DWEMMC_INT_CMD_DONE));
-  return EFI_SUCCESS;
+  return Status;
 }
 
 EFI_STATUS
