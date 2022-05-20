@@ -1,0 +1,6 @@
+build-essential ccache  \
+device-tree-compiler  \
+gcc-aarch64-linux-gnu  \
+gcc-arm-linux-gnueabihf git iasl nasm  \
+parted python3 python3-pip qemu sudo  \
+udev uuid-dev vim wget zip  \
