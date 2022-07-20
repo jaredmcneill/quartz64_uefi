@@ -1,3 +1,4 @@
-#### 2022-04-29
+#### 2022-07-20
 
-* Fix a bug that prevented USB3 devices from working on USB3 ports with Firefly boards.
+* Generate UUID and serial number in SMBIOS.
+* Support building with newer GCC versions.
