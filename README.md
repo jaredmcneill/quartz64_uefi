@@ -23,7 +23,7 @@ Connect a serial console to UART2 using settings `115200 8n1`.
 
 | OS | Version | Supported hardware | Notes |
 | --- | --- | --- | --- |
-| ESXi-Arm | 1.8 | HDMI, USB2, USB3, serial | |
+| ESXi-Arm | 1.10 | HDMI, USB2, USB3, serial, PCIe, ethernet | |
 | Fedora | 36 | HDMI, USB2, USB3, serial, PCIe, thermal sensors | Needs `irqchip.gicv3_nolpi=1` for MSI support |
 | FreeBSD | 14.0-CURRENT | ? | Mangled serial output, boot stuck waiting for random seed |
 | NetBSD | 9.99.x | HDMI, USB2, USB3, serial, SD card, PCIe, eMMC, ethernet, thermal sensors | |
