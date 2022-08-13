@@ -24,6 +24,7 @@ Please, rely on your vendor official documentation about the right settings, tha
 | OS | Version | Supported hardware | Notes |
 | --- | --- | --- | --- |
 | ESXi-Arm | 1.8 | HDMI, USB2, USB3, serial | |
+| Fedora | 36 | HDMI, USB2, USB3, serial, PCIe, thermal sensors | Needs `irqchip.gicv3_nolpi=1` for MSI support |
 | FreeBSD | 14.0-CURRENT | ? | Mangled serial output, boot stuck waiting for random seed |
 | NetBSD | 9.99.x | HDMI, USB2, USB3, serial, SD card, PCIe, eMMC, ethernet, thermal sensors | |
 | OpenBSD | 7.0-current | HDMI, USB2, USB3, serial | To use HDMI console, enter `set tty fb0` at the bootloader prompt. |
