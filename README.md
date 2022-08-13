@@ -1,16 +1,23 @@
-# UEFI for PINE64 Quartz64 (Rockchip RK356X)
+# UEFI for Rockchip RK356X based SBR
 
-This repository contains a port of Tianocore EDK II to the PINE64 Quartz64 board.
+This repository contains a port of Tianocore EDK II to various Rockchip RK356x based boards:
 
-https://www.pine64.org/quartz64a/
+* [PINE64 Quartz64 A](https://www.pine64.org/quartz64a/) / [PINE64 Quartz64 B](https://www.pine64.org/quartz64b/) / [PINE64 SOQuartz](https://wiki.pine64.org/wiki/SOQuartz)
+* [Firefly roc-rk3566-pc](https://en.t-firefly.com/product/industry/rocrk3566pc.html) / [StationPC Station M2](https://www.stationpc.com/product/stationm2)
+* [Firefly roc-rk3568-pc](https://en.t-firefly.com/product/industry/rocrk3568pc.html) / [StationPC Station P2](https://www.stationpc.com/product/stationp2)
+* [Radxa Rock3 CM](https://wiki.radxa.com/Rock3/CM3/IO)
 
 ## Building an SD card / eMMC image
 
-Run `make sdcard`.
+If you want to build the image, checkout the repository and run:
+`$ make sdcard`
+
+Prebuild images are also provided and are available in the [release section](https://github.com/jaredmcneill/quartz64_uefi/releases).
 
 ## Running
 
-Connect a serial console to UART2 using settings 115200 8n1.
+After writing the image on your media of choice (eMMC, SD, M.2) according to the support available from your operating system of choice, is suggested to connect a serial console the UART2 of your board to see the boot.
+Please, rely on your vendor official documentation about the right settings, that usually are `115200 8n1` .
 
 ## Operating system support
 
