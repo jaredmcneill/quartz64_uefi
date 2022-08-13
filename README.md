@@ -13,7 +13,8 @@ If you want to build the image, checkout the repository and run:
 `$ make sdcard`
 
 Prebuild images are also provided for stable ports and are available in the [release section](https://github.com/jaredmcneill/quartz64_uefi/releases).
-*Note:* ROC-RK3568-PC, Station P2, and ROCK3 Compute Module ports are still work in progress: as such no prebuild images are released for those boards.
+
+**Note:** ROC-RK3568-PC, Station P2, and ROCK3 Compute Module ports are still work in progress: as such no prebuild images are released for those boards.
 
 ## Running
 
