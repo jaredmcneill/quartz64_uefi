@@ -55,6 +55,9 @@
 #define  TXCLK_DLY_ENA          BIT0
 #define GRF_IOFUNC_SEL0         (SYS_GRF + 0x0300)
 #define  GMAC1_IOMUX_SEL        BIT8
+#define GRF_IOFUNC_SEL5         (SYS_GRF + 0x0314)
+#define  PCIE20_IOMUX_SEL2      BIT2
+#define  PCIE20_IOMUX_SEL3      BIT3
 
 #define TX_DELAY                0x42
 #define RX_DELAY                0x28
@@ -101,10 +104,12 @@ STATIC CONST GPIO_IOMUX_CONFIG mGmac1IomuxConfig[] = {
   { "gmac1_mclkinoutm1",  4, GPIO_PIN_PC1, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
   { "gmac1_rxd2m1",       4, GPIO_PIN_PA1, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
   { "gmac1_rxd3m1",       4, GPIO_PIN_PA2, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_txd2m1",       4, GPIO_PIN_PD6, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
-  { "gmac1_txd3m1",       4, GPIO_PIN_PD7, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+  { "gmac1_txd2m1",       3, GPIO_PIN_PD6, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
+  { "gmac1_txd3m1",       3, GPIO_PIN_PD7, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
 };
 
+#if 0
+/* M1 */
 STATIC CONST GPIO_IOMUX_CONFIG mSdmmc1IomuxConfig[] = {
   { "sdmmc1_d0",          2, GPIO_PIN_PA3, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
   { "sdmmc1_d1",          2, GPIO_PIN_PA4, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
@@ -113,6 +118,7 @@ STATIC CONST GPIO_IOMUX_CONFIG mSdmmc1IomuxConfig[] = {
   { "sdmmc1_cmd",         2, GPIO_PIN_PA7, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
   { "sdmmc1_clk",         2, GPIO_PIN_PB0, 1, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
 };
+#endif
 
 STATIC
 EFI_STATUS
@@ -243,7 +249,7 @@ BoardInitSetCpuSpeed (
 
 STATIC
 VOID
-BoardInitGmac1 (
+BoardInitGmac (
   VOID
   )
 {
@@ -256,7 +262,6 @@ BoardInitGmac1 (
 
   /* Select M1 mux solution for GMAC1 */
   MmioWrite32 (GRF_IOFUNC_SEL0, (GMAC1_IOMUX_SEL << 16) | GMAC1_IOMUX_SEL);
-
   /* Configure pins */
   GpioSetIomuxConfig (mGmac1IomuxConfig, ARRAY_SIZE (mGmac1IomuxConfig));
 
@@ -278,6 +283,7 @@ BoardInitGmac1 (
                RXCLK_DLY_ENA);
 
   /* Reset PHY */
+  /* snps,reset-gpio = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>; */
   GpioPinSetDirection (3, GPIO_PIN_PB0, GPIO_PIN_OUTPUT);
   MicroSecondDelay (1000);
   GpioPinWrite (3, GPIO_PIN_PB0, 0);
@@ -388,6 +394,7 @@ BoardInitDriverEntryPoint (
 
   SocSetDomainVoltage (PMUIO2, VCC_3V3);
   SocSetDomainVoltage (VCCIO1, VCC_3V3);
+  SocSetDomainVoltage (VCCIO2, VCC_1V8);
   SocSetDomainVoltage (VCCIO3, VCC_3V3);
   SocSetDomainVoltage (VCCIO4, VCC_1V8);
   SocSetDomainVoltage (VCCIO5, VCC_3V3);
@@ -421,7 +428,7 @@ BoardInitDriverEntryPoint (
   GpioPinWrite (0, GPIO_PIN_PA6, TRUE);
 
   /* GMAC setup */
-  BoardInitGmac1 ();
+  BoardInitGmac ();
 
   return EFI_SUCCESS;
 }
