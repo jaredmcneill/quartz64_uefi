@@ -1,0 +1,7 @@
+The source code in this directory is licensed under the standard EDK2 terms.
+
+Use of the StationPC logo is subject to the terms and conditions put forward by
+T-Chip Intelligent Technology CO.
+
+https://wiki.stationpc.com/docs/stationpc/BrandandLogo
+
