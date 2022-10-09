@@ -88,7 +88,7 @@ build_uefi Pine64 SOQuartz
 build_fit SOQuartz rk3566-soquartz-cm4
 # ROC-RK356x-PC boards
 build_uefi Firefly ROC-RK3566-PC
-build_fit ROC-RK3566-PC rk3566-firefly-roc-pc
+build_fit ROC-RK3566-PC rk3566-roc-pc
 build_uefi Firefly ROC-RK3568-PC
 build_fit ROC-RK3568-PC rk3568-firefly-roc-pc
 
