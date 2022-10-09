@@ -612,7 +612,7 @@
   #
   # Devicetree support
   #
-  # Platform/Firefly/ROC-RK3566-PC/Drivers/FdtDxe/FdtDxe.inf
+  # Platform/Rockchip/Rk356x/Drivers/FdtDxe/FdtDxe.inf
 
   #
   # ACPI Support
