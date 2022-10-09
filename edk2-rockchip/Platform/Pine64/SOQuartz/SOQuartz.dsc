@@ -599,7 +599,7 @@
   #
   # Devicetree support
   #
-  # Platform/Pine64/SOQuartz/Drivers/FdtDxe/FdtDxe.inf
+  # Platform/Rockchip/Rk356x/Drivers/FdtDxe/FdtDxe.inf
 
   #
   # ACPI Support
