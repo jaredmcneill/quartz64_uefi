@@ -14,9 +14,9 @@ sdcard: uefi_release
 	rm -f sdcard.img
 	fallocate -l 33M sdcard.img
 	parted -s sdcard.img mklabel gpt
-	parted -s sdcard.img unit s mkpart loader 64 8MiB
-	parted -s sdcard.img unit s mkpart uboot 8MiB 16MiB
-	parted -s sdcard.img unit s mkpart env 16MiB 32MiB
+	parted -s sdcard.img mkpart loader 64s 8MiB
+	parted -s sdcard.img mkpart uboot 8MiB 16MiB
+	parted -s sdcard.img mkpart env 16MiB 32MiB
 
 	for board in QUARTZ64 SOQUARTZ ROC-RK3566-PC; do				\
 		cp sdcard.img $${board}_EFI.img;				\
