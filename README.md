@@ -32,6 +32,12 @@ Connect a serial console to UART2 using settings `115200 8n1`.
 | Ubuntu | 21.04 | HDMI, USB2, USB3, serial, PCIe, thermal sensors | Needs `irqchip.gicv3_nolpi=1` for MSI support |
 | Windows PE | ? | HDMI, USB3, PCIe | BSOD when plugging device in to USB2 port (#2) |
 
+## Quick Start Guide
+
+1. Copy one of the [EFI images](https://github.com/jaredmcneill/quartz64_uefi/releases) to an SDcard
+2. Copy an operating system image (e.g. NetBSD-current from https://armbsd.org/) to another media, like an eMMC
+3. Boot!
+
 ## eMMC controller Device-Specific Method (_DSM)
 
 The divider register in the RK356x's SDHCI controller does not work, so to change the eMMC card clock we have to do it through the CRU. This is exposed to the OS as an ACPI Device-Specific Method (_DSM).
