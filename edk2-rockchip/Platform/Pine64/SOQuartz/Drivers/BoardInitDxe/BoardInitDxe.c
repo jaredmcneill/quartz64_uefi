@@ -364,7 +364,7 @@ BoardInitPmic (
 
   /* Check LD01 and LD09 are configured correctly. */
   PmicRead (PMIC_LDO1_ON_VSEL, &Value);
-  ASSERT (Value == 0x0c); /* 0.8V */
+  ASSERT (Value == 0x0c); /* 0.9V */
   PmicRead (PMIC_LDO9_ON_VSEL, &Value);
   ASSERT (Value == 0x30); /* 1.8V */
 
