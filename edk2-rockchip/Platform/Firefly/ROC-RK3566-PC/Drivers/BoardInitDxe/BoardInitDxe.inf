@@ -47,6 +47,7 @@
   I2cLib
   MultiPhyLib
   OtpLib
+  SocLib
 
 [Protocols]
 

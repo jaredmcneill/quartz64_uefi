@@ -2,7 +2,7 @@
  *
  *  Board init for the ROC-RK3566-PC platform
  *
- *  Copyright (c) 2021-2022, Jared McNeill <jmcneill@invisible.ca>
+ *  Copyright (c) 2021-2023, Jared McNeill <jmcneill@invisible.ca>
  *
  *  SPDX-License-Identifier: BSD-2-Clause-Patent
  *
@@ -23,6 +23,7 @@
 #include <Library/I2cLib.h>
 #include <Library/MultiPhyLib.h>
 #include <Library/OtpLib.h>
+#include <Library/SocLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/BaseMemoryLib.h>
@@ -65,6 +66,12 @@
 #define PMIC_POWER_EN2          0xb3
 #define PMIC_POWER_EN3          0xb4
 #define PMIC_LDO1_ON_VSEL       0xcc
+#define PMIC_LDO2_ON_VSEL       0xce
+#define PMIC_LDO3_ON_VSEL       0xd0
+#define PMIC_LDO4_ON_VSEL       0xd2
+#define PMIC_LDO6_ON_VSEL       0xd6
+#define PMIC_LDO7_ON_VSEL       0xd8
+#define PMIC_LDO8_ON_VSEL       0xda
 #define PMIC_LDO9_ON_VSEL       0xdc
 
 /*
@@ -358,15 +365,20 @@ BoardInitPmic (
   DEBUG ((DEBUG_INFO, "PMIC: Detected RK%03X ver 0x%X\n", ChipName, ChipVer));
   ASSERT (ChipName == 0x809);
 
-  /* Check LD01 and LD09 are configured correctly. */
-  PmicRead (PMIC_LDO1_ON_VSEL, &Value);
-  ASSERT (Value == 0x0c); /* 0.8V */
-  PmicRead (PMIC_LDO9_ON_VSEL, &Value);
-  ASSERT (Value == 0x30); /* 1.8V */
+  /* Initialize PMIC for HDMI */
+  PmicWrite (PMIC_LDO1_ON_VSEL, 0x0c);  /* 0.9V - vdda0v9_image*/
+  PmicWrite (PMIC_LDO2_ON_VSEL, 0x0c);  /* 0.9V - vdda_0v9 */
+  PmicWrite (PMIC_LDO3_ON_VSEL, 0x0c);  /* 0.9V - vdd0v9_pmu */
+  PmicWrite (PMIC_LDO4_ON_VSEL, 0x6c);  /* 3.3V - vccio_acodec */
+  /* Skip LDO5 for now; 1.8V/3.3V - vccio_sd */
+  PmicWrite (PMIC_LDO6_ON_VSEL, 0x6c);  /* 3.3V - vcc3v3_pmu */
+  PmicWrite (PMIC_LDO7_ON_VSEL, 0x30);  /* 1.8V - vcca_1v8 */
+  PmicWrite (PMIC_LDO8_ON_VSEL, 0x30);  /* 1.8V - vcca1v8_pmu */
+  PmicWrite (PMIC_LDO9_ON_VSEL, 0x30);  /* 1.8V - vcca1v8_image */
 
-  /* Enable LDO1 and LDO9 for HDMI */
-  PmicWrite (PMIC_POWER_EN1, 0x11);
-  PmicWrite (PMIC_POWER_EN3, 0x11);
+  PmicWrite (PMIC_POWER_EN1, 0xff); /* LDO1, LDO2, LDO3, LDO4 */
+  PmicWrite (PMIC_POWER_EN2, 0xee); /* LDO6, LDO7, LDO8 */
+  PmicWrite (PMIC_POWER_EN3, 0x55); /* LDO9, SW1*/
 }
 
 STATIC
@@ -399,6 +411,14 @@ BoardInitDriverEntryPoint (
   )
 {
   DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() called\n"));
+
+  SocSetDomainVoltage (PMUIO2, VCC_3V3);  /* vcc3v3_pmu */
+  SocSetDomainVoltage (VCCIO1, VCC_3V3);  /* vccio_acodec */
+  /* VCCIO3 is vccio_sd */
+  SocSetDomainVoltage (VCCIO4, VCC_1V8);  /* vcc_1v8 */
+  SocSetDomainVoltage (VCCIO5, VCC_3V3);  /* vcc_3v3 */
+  SocSetDomainVoltage (VCCIO6, VCC_1V8);  /* vcc_1v8*/
+  SocSetDomainVoltage (VCCIO7, VCC_3V3);  /* vcc_3v3 */
 
   BoardInitPmic ();
 
