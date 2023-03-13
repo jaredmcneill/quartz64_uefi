@@ -1,4 +1,3 @@
-#### 2022-07-20
+#### 2023-03-13
 
-* Generate UUID and serial number in SMBIOS.
-* Support building with newer GCC versions.
+* PCIe fixes for Quartz64 and ROC-RK3566-PC.
