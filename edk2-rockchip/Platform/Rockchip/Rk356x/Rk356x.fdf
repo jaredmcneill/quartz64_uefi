@@ -154,7 +154,7 @@ READ_LOCK_STATUS   = TRUE
   #
   # USB Support
   #
-  #INF MdeModulePkg/Bus/Pci/OhciDxe/OhciDxe.inf
+  INF Silicon/Rockchip/Rk356x/Drivers/OhciDxe/OhciDxe.inf
   INF MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
   INF MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
   INF MdeModulePkg/Bus/Pci/NonDiscoverablePciDeviceDxe/NonDiscoverablePciDeviceDxe.inf

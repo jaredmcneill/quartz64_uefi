@@ -581,7 +581,7 @@
   #
   # USB
   #
-  #MdeModulePkg/Bus/Pci/OhciDxe/OhciDxe.inf
+  Silicon/Rockchip/Rk356x/Drivers/OhciDxe/OhciDxe.inf
   MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
   MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
   MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
