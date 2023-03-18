@@ -1,3 +1,3 @@
-#### 2023-03-13
+#### 2023-03-18
 
-* PCIe fixes for Quartz64 and ROC-RK3566-PC.
+* Add OHCI support to UEFI (allows low/full speed devices to be plugged in to EHCI ports).
