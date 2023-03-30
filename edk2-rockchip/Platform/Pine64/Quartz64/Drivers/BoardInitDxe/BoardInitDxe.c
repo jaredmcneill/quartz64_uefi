@@ -388,7 +388,7 @@ BoardInitDriverEntryPoint (
   SocSetDomainVoltage (VCCIO2, VCC_1V8);  /* VCCIO_FLASH */
   SocSetDomainVoltage (VCCIO3, VCC_3V3);  /* VCCIO_SD */
   SocSetDomainVoltage (VCCIO4, VCC_1V8);
-  SocSetDomainVoltage (VCCIO5, VCC_3V3);
+  SocSetDomainVoltage (VCCIO5, VCC_1V8);
   SocSetDomainVoltage (VCCIO6, VCC_1V8);
   SocSetDomainVoltage (VCCIO7, VCC_3V3);
 
