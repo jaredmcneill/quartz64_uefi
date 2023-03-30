@@ -1,3 +1,3 @@
-#### 2023-03-18
+#### 2023-03-30
 
-* Add OHCI support to UEFI (allows low/full speed devices to be plugged in to EHCI ports).
+* Fix VCCIO5 voltage on Quartz64. (#44)
