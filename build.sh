@@ -106,6 +106,10 @@ for board in ${RKUEFIBOARDS}; do
 		build_uefi OrangePi OrangePi3B
 		build_fit OrangePi3B rk3566-orangepi-3b
 		;;
+	PINETAB2)
+		build_uefi Pine64 PineTab2
+		build_fit PineTab2 rk3566-pinetab2
+		;;
 	*)
 		echo "Unknown board ${board}"
 		exit 1
