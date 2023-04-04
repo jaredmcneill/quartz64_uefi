@@ -14,7 +14,7 @@ If you want to build the image, checkout the repository and run:
 
 Prebuild images are also provided for stable ports and are available in the [release section](https://github.com/jaredmcneill/quartz64_uefi/releases).
 
-**Note:** ROC-RK3568-PC, Station P2, and ROCK3 Compute Module ports are still work in progress: as such no prebuild images are released for those boards.
+**Note:** The ROCK3 Compute Module port is still work in progress: as such no prebuild images are released for those boards.
 
 ## Running
 
@@ -24,7 +24,7 @@ Connect a serial console to UART2 using settings `115200 8n1`.
 
 | OS | Version | Supported hardware | Notes |
 | --- | --- | --- | --- |
-| ESXi-Arm | 1.10 | HDMI, USB2, USB3, serial, PCIe, ethernet | |
+| ESXi-Arm | 1.12 | HDMI, USB2, USB3, serial, PCIe, ethernet | |
 | Fedora | 36 | HDMI, USB2, USB3, serial, PCIe, thermal sensors | Needs `irqchip.gicv3_nolpi=1` for MSI support |
 | FreeBSD | 14.0-CURRENT | ? | Mangled serial output, boot stuck waiting for random seed |
 | NetBSD | 9.99.x | HDMI, USB2, USB3, serial, SD card, PCIe, eMMC, ethernet, thermal sensors | |
