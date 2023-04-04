@@ -68,5 +68,7 @@
   gRk356xTokenSpaceGuid.PcdMshc2SdioIrq
   gRk356xTokenSpaceGuid.PcdMshc2NonRemovable
   
+  gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress
+
 [BuildOptions]
   GCC:*_*_*_ASL_FLAGS       = -vw3133 -vw3150

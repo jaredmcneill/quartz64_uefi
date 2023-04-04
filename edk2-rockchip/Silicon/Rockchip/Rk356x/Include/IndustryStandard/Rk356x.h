@@ -18,6 +18,7 @@
 #define PIPE_GRF            0xFDC50000UL
 #define SYS_GRF             0xFDC60000UL
 #define PIPE_PHY_GRF(n)     (0xFDC70000UL + (n) * 0x10000)
+#define PCIE30_PHY_GRF      0xFDCB8000UL
 #define SYSTEM_SRAM         0xFDCC0000UL
 #define PMUCRU_BASE         0xFDD00000UL
 #define CRU_BASE            0xFDD20000UL
@@ -29,12 +30,18 @@
 #define VOP_BASE            0xFE040000UL
 #define HDMI_BASE           0xFE0A0000UL
 #define PCIE2X1_APB_BASE    0xFE260000UL
+#define PCIE3X1_APB_BASE    0xFE270000UL
+#define PCIE3X2_APB_BASE    0xFE280000UL
 #define GMAC0_BASE          0xFE2A0000UL
 #define TRNG_BASE           0xFE388000UL
 #define OTP_BASE            0xFE38C000UL
 #define TSADC_BASE          0xFE710000UL
 #define PIPE_PHY(n)         (0xFE820000UL + (n) * 0x10000)
 #define PCIE2X1_S_BASE      0x300000000UL
+#define PCIE3X1_S_BASE      0x340000000UL
+#define PCIE3X2_S_BASE      0x380000000UL
 #define PCIE2X1_DBI_BASE    0x3C0000000UL
+#define PCIE3X1_DBI_BASE    0x3C0400000UL
+#define PCIE3X2_DBI_BASE    0x3C0800000UL
 
 #endif /* RK356X_H__ */

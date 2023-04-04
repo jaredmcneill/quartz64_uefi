@@ -24,6 +24,7 @@
 #include <Library/MultiPhyLib.h>
 #include <Library/OtpLib.h>
 #include <Library/SocLib.h>
+#include <Library/Pcie30PhyLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/BaseMemoryLib.h>
@@ -57,8 +58,6 @@
 #define  MAC_SPEED              BIT2
 #define  RXCLK_DLY_ENA          BIT1
 #define  TXCLK_DLY_ENA          BIT0
-#define GRF_IOFUNC_SEL0         (SYS_GRF + 0x0300)
-#define  GMAC1_IOMUX_SEL        BIT8
 
 #define TX_DELAY_GMAC0          0x3C
 #define RX_DELAY_GMAC0          0x2F
@@ -76,6 +75,12 @@
 #define PMIC_POWER_EN2          0xb3
 #define PMIC_POWER_EN3          0xb4
 #define PMIC_LDO1_ON_VSEL       0xcc
+#define PMIC_LDO2_ON_VSEL       0xce
+#define PMIC_LDO3_ON_VSEL       0xd0
+#define PMIC_LDO4_ON_VSEL       0xd2
+#define PMIC_LDO6_ON_VSEL       0xd6
+#define PMIC_LDO7_ON_VSEL       0xd8
+#define PMIC_LDO8_ON_VSEL       0xda
 #define PMIC_LDO9_ON_VSEL       0xdc
 
 /*
@@ -86,6 +91,15 @@
 #define  CORE_PVTPLL_RING_LENGTH_SEL_MASK     (0x1FU << CORE_PVTPLL_RING_LENGTH_SEL_SHIFT)
 #define  CORE_PVTPLL_OSC_EN                   BIT1
 #define  CORE_PVTPLL_START                    BIT0
+
+/*
+ * SYS_GRF registers
+ */
+#define GRF_IOFUNC_SEL0                       (SYS_GRF + 0x0300)
+#define  GMAC1_IOMUX_SEL                      BIT8
+#define GRF_IOFUNC_SEL5                       (SYS_GRF + 0x0314)
+#define  PCIE30X2_IOMUX_SEL_MASK              (BIT7|BIT6)
+#define  PCIE30X2_IOMUX_SEL_M1                BIT6
 
 /*
  * PMU registers
@@ -137,6 +151,12 @@ STATIC CONST GPIO_IOMUX_CONFIG mSdmmc2IomuxConfig[] = {
   { "sdmmc2_d3m0",        3, GPIO_PIN_PD1, 3, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
   { "sdmmc2_cmdm0",       3, GPIO_PIN_PD2, 3, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
   { "sdmmc2_clkm0",       3, GPIO_PIN_PD3, 3, GPIO_PIN_PULL_UP,   GPIO_PIN_DRIVE_2 },
+};
+
+STATIC CONST GPIO_IOMUX_CONFIG mPcie30x2IomuxConfig[] = {
+  { "pcie30x2_clkreqnm1", 2, GPIO_PIN_PD4, 4, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "pcie30x2_perstnm1",  2, GPIO_PIN_PD6, 4, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+  { "pcie30x2_wakenm1",   2, GPIO_PIN_PD5, 4, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
 };
 
 STATIC
@@ -368,6 +388,23 @@ BoardInitGmac (
 }
 
 STATIC
+VOID
+BoardInitPcie (
+  VOID
+  )
+{
+  GpioSetIomuxConfig (mPcie30x2IomuxConfig, ARRAY_SIZE (mPcie30x2IomuxConfig));
+
+  /* PCIe30x2 IO mux selection - M1 */
+  MmioWrite32 (GRF_IOFUNC_SEL5, (PCIE30X2_IOMUX_SEL_MASK << 16) | PCIE30X2_IOMUX_SEL_M1);
+
+  /* PCIECLKIC_OE_H_GPIO3_A7 */
+  GpioPinSetPull (3, GPIO_PIN_PA7, GPIO_PIN_PULL_NONE);
+  GpioPinSetDirection (3, GPIO_PIN_PA7, GPIO_PIN_OUTPUT);
+  GpioPinWrite (3, GPIO_PIN_PA7, FALSE);
+}
+
+STATIC
 EFI_STATUS
 PmicRead (
   IN UINT8 Register,
@@ -438,6 +475,22 @@ BoardInitPmic (
   /* Enable LDO1 and LDO9 for HDMI */
   PmicWrite (PMIC_POWER_EN1, 0x11);
   PmicWrite (PMIC_POWER_EN3, 0x11);
+
+
+  /* Initialize PMIC for HDMI */
+  PmicWrite (PMIC_LDO1_ON_VSEL, 0x0c);  /* 0.9V - vdda0v9_image */
+  PmicWrite (PMIC_LDO2_ON_VSEL, 0x0c);  /* 0.9V - vdda_0v9 */
+  PmicWrite (PMIC_LDO3_ON_VSEL, 0x0c);  /* 0.9V - vdd0v9_pmu */
+  PmicWrite (PMIC_LDO4_ON_VSEL, 0x6c);  /* 3.3V - vccio_acodec */
+  /* Skip LDO5 for now; 1.8V/3.3V - vccio_sd */
+  PmicWrite (PMIC_LDO6_ON_VSEL, 0x6c);  /* 3.3V - vcc3v3_pmu */
+  PmicWrite (PMIC_LDO7_ON_VSEL, 0x30);  /* 1.8V - vcca_1v8 */
+  PmicWrite (PMIC_LDO8_ON_VSEL, 0x30);  /* 1.8V - vcca1v8_pmu */
+  PmicWrite (PMIC_LDO9_ON_VSEL, 0x30);  /* 1.8V - vcca1v8_image */
+
+  PmicWrite (PMIC_POWER_EN1, 0xff); /* LDO1, LDO2, LDO3, LDO4 */
+  PmicWrite (PMIC_POWER_EN2, 0xee); /* LDO6, LDO7, LDO8 */
+  PmicWrite (PMIC_POWER_EN3, 0x55); /* LDO9, SW1*/
 }
 
 STATIC
@@ -507,6 +560,9 @@ BoardInitDriverEntryPoint (
   /* Set GPIO0 PA6 (USB_HOST5V_EN) output high to power USB ports */
   GpioPinSetDirection (0, GPIO_PIN_PA6, GPIO_PIN_OUTPUT);
   GpioPinWrite (0, GPIO_PIN_PA6, TRUE);
+
+  /* PCIe setup */
+  BoardInitPcie ();
 
   /* GMAC setup */
   BoardInitGmac ();

@@ -83,7 +83,7 @@ PciHostBridgeGetRootBridges (
   *Count = 1;
   RootBridge = AllocateZeroPool (*Count * sizeof *RootBridge);
 
-  RootBridge->Segment     = 0;
+  RootBridge->Segment     = PCIE_SEGMENT;
 
   RootBridge->Supports    = EFI_PCI_ATTRIBUTE_IDE_PRIMARY_IO |
                             EFI_PCI_ATTRIBUTE_IDE_SECONDARY_IO |

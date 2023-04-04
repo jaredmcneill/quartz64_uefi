@@ -18,6 +18,10 @@
 
 #include <IndustryStandard/Rk356x.h>
 
+#define PCIE_DBI_BASE                   FixedPcdGet64 (PcdPcieDbiBase)
+#define PCIE_BASE                       FixedPcdGet64 (PcdPciExpressBaseAddress)
+#define PCIE_SEGMENT                    ((PCIE_BASE - 0x300000000UL) / 0x40000000UL)
+
 typedef enum {
   PciCfgWidthUint8      = 0,
   PciCfgWidthUint16,
@@ -45,8 +49,8 @@ PciSegmentLibGetConfigBase (
   UINT32 Bus = (Address & 0xff00000) >> 20;
 
   switch ((UINT16)(Address >> 32)) {
-  case 0:
-    return Bus == 0 ? PCIE2X1_DBI_BASE : PCIE2X1_S_BASE + 0x8000;
+  case PCIE_SEGMENT:
+    return Bus == 0 ? PCIE_DBI_BASE : PCIE_BASE + 0x8000;
   default:
     ASSERT (FALSE);
   }
@@ -89,6 +93,12 @@ PciSegmentLibReadWorker (
   case PciCfgWidthUint16:
     return MmioRead16 (Base + (UINT32)Address);
   case PciCfgWidthUint32:
+    if ((Address & 0xFF00000) == 0) {
+      if ((Address & 0xFFF) == 0x10 || (Address & 0xFFF) == 0x14) {
+        // Hide BAR0 + BAR1 of root port
+        return 0;
+      }
+    }
     return MmioRead32 (Base + (UINT32)Address);
   default:
     ASSERT (FALSE);

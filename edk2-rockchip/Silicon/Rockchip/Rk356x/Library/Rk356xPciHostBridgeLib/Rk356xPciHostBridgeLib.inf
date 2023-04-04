@@ -40,6 +40,7 @@
   CruLib
   GpioLib
   MultiPhyLib
+  Pcie30PhyLib
 
 [FixedPcd]
   gArmTokenSpaceGuid.PcdPciBusMin
@@ -59,3 +60,6 @@
   gRk356xTokenSpaceGuid.PcdPciePowerGpioPin
   gRk356xTokenSpaceGuid.PcdPcieLinkSpeed
   gRk356xTokenSpaceGuid.PcdPcieNumLanes
+  gRk356xTokenSpaceGuid.PcdPcieApbBase
+  gRk356xTokenSpaceGuid.PcdPcieDbiBase
+  gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress

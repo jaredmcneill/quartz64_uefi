@@ -121,6 +121,7 @@
   I2cLib|Silicon/Rockchip/Rk356x/Library/I2cLib/I2cLib.inf
   MultiPhyLib|Silicon/Rockchip/Rk356x/Library/MultiPhyLib/MultiPhyLib.inf
   OtpLib|Silicon/Rockchip/Rk356x/Library/OtpLib/OtpLib.inf
+  Pcie30PhyLib|Silicon/Rockchip/Rk356x/Library/Pcie30PhyLib/Pcie30PhyLib.inf
   SdramLib|Silicon/Rockchip/Rk356x/Library/SdramLib/SdramLib.inf
   SocLib|Silicon/Rockchip/Rk356x/Library/SocLib/SocLib.inf
 
@@ -451,23 +452,29 @@
   #
   # PCI support
   #
-  gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress|0x0000000300000000
+  gRk356xTokenSpaceGuid.PcdPcieApbBase|0xFE280000
+  gRk356xTokenSpaceGuid.PcdPcieDbiBase|0x00000003C0800000
+
+  gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress|0x0000000380000000
   gArmTokenSpaceGuid.PcdPciBusMin|0
-  # TODO: fix
   gArmTokenSpaceGuid.PcdPciBusMax|1
-  gArmTokenSpaceGuid.PcdPciMmio32Base|0xF4000000
+  gArmTokenSpaceGuid.PcdPciMmio32Base|0xF0000000
   gArmTokenSpaceGuid.PcdPciMmio32Size|0x02000000
-  gArmTokenSpaceGuid.PcdPciMmio64Base|0x0000000310000000
+  gArmTokenSpaceGuid.PcdPciMmio64Base|0x0000000390000000
   gArmTokenSpaceGuid.PcdPciMmio64Size|0x000000002FFF0000
   gArmTokenSpaceGuid.PcdPciIoBase|0x0000
   gArmTokenSpaceGuid.PcdPciIoSize|0x10000
   gEmbeddedTokenSpaceGuid.PcdPrePiCpuIoSize|34
 
-  gEfiMdePkgTokenSpaceGuid.PcdPciIoTranslation|0x000000033FFF0000
+  gEfiMdePkgTokenSpaceGuid.PcdPciIoTranslation|0x00000003BFFF0000
   gRk356xTokenSpaceGuid.PcdPcieResetGpioBank|2
   gRk356xTokenSpaceGuid.PcdPcieResetGpioPin|30
   gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|0
   gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|28
+  gRk356xTokenSpaceGuid.PcdPcieLinkSpeed|0x3
+  gRk356xTokenSpaceGuid.PcdPcieNumLanes|0x2
+  gRk356xTokenSpaceGuid.PcdPcie30PhyLane0LinkNum|1
+  gRk356xTokenSpaceGuid.PcdPcie30PhyLane1LinkNum|1
 
   #
   # The ROC-RK3568-PC has a WiFi card on the third MSHC

@@ -12,6 +12,9 @@
 #include <IndustryStandard/Rk356x.h>
 #include "AcpiHeader.h"
 
+#define PCIE_BASE                       FixedPcdGet64 (PcdPciExpressBaseAddress)
+#define PCIE_SEGMENT                    ((PCIE_BASE - 0x300000000UL) / 0x40000000UL)
+
 #pragma pack(push, 1)
 
 typedef struct {
@@ -27,11 +30,11 @@ EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_SPACE_ACCESS_DESCRIPTION_TABLE Mcfg = {
             EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_SPACE_ACCESS_TABLE_REVISION
             ),
     }, {
-        PCIE2X1_S_BASE + 0x8000,
-        0,  // PciSegmentGroupNumber
-        1,  // PciBusMin
-        1,  // PciBusMax
-        0   // Reserved
+        PCIE_BASE + 0x8000,
+        PCIE_SEGMENT,  // PciSegmentGroupNumber
+        1,             // PciBusMin
+        1,             // PciBusMax
+        0              // Reserved
     }
 };
 

@@ -49,6 +49,7 @@
   MultiPhyLib
   OtpLib
   SocLib
+  Pcie30PhyLib
 
 [Protocols]
 

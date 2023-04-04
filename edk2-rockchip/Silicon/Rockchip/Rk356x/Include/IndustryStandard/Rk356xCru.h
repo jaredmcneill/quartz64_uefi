@@ -43,6 +43,13 @@
 /* PLL_CON2 fields */
 #define CRU_PLL_CON2_FRACDIV_MASK                0xffffffU
 
+/* MODE registers */
+#define CRU_MODE_CON00      (CRU_BASE + 0x00C0)
+
+/* CRU_MODE_CON00 fields */
+#define CRU_MODE_CON00_CLK_PLL_MODE_SHIFT(n)     ((n) * 2)
+#define CRU_MODE_CON00_CLK_PLL_MODE_MASK(n)      (0x3U << CRU_MODE_CON00_CLK_PLL_MODE_SHIFT(n))
+
 /* CLKSEL registers */
 #define CRU_CLKSEL_CON(n)   (CRU_BASE + (n) * 0x4 + 0x0100)
 
@@ -98,5 +105,8 @@
 #define PMUCRU_PMUCLKSEL_CON09_PCIEPHY_DIV_MASK(n)    (0x7U << PMUCRU_PMUCLKSEL_CON09_PCIEPHY_DIV_SHIFT(n))
 #define PMUCRU_PMUCLKSEL_CON09_PCIEPHY_SEL_SHIFT(n)   ((n) * 4 + 3)
 #define PMUCRU_PMUCLKSEL_CON09_PCIEPHY_SEL_MASK(n)    (0x1U << PMUCRU_PMUCLKSEL_CON09_PCIEPHY_SEL_SHIFT(n))
+
+/* PMUCRU_PMUGATE registers */
+#define PMUCRU_PMUGATE_CON(n)       (PMUCRU_BASE + (n) * 4 + 0x0180)
 
 #endif /* RK356XCRU_H__ */

@@ -28,11 +28,12 @@ typedef struct {
 } CRU_PLL_RATE;
 
 STATIC CRU_PLL_RATE CruPllRates[] = {
-    { .Rate = 594000000, .RefDiv = 1, .FbDiv = 99, .PostDiv1 = 4, .PostDiv2 = 1, .Dsmpd = 1, .Frac = 0 },
-    { .Rate = 297000000, .RefDiv = 1, .FbDiv = 99, .PostDiv1 = 4, .PostDiv2 = 2, .Dsmpd = 1, .Frac = 0 },
-    { .Rate = 200000000, .RefDiv = 1, .FbDiv = 100, .PostDiv1 = 3, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
-    { .Rate = 148500000, .RefDiv = 1, .FbDiv = 99, .PostDiv1 = 4, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
-    { .Rate = 74250000,  .RefDiv = 2, .FbDiv = 99, .PostDiv1 = 4, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
+    { .Rate = 1200000000, .RefDiv = 1, .FbDiv = 100, .PostDiv1 = 2, .PostDiv2 = 1, .Dsmpd = 1, .Frac = 0 },
+    { .Rate = 594000000,  .RefDiv = 1, .FbDiv = 99,  .PostDiv1 = 4, .PostDiv2 = 1, .Dsmpd = 1, .Frac = 0 },
+    { .Rate = 297000000,  .RefDiv = 1, .FbDiv = 99,  .PostDiv1 = 4, .PostDiv2 = 2, .Dsmpd = 1, .Frac = 0 },
+    { .Rate = 200000000,  .RefDiv = 1, .FbDiv = 100, .PostDiv1 = 3, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
+    { .Rate = 148500000,  .RefDiv = 1, .FbDiv = 99,  .PostDiv1 = 4, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
+    { .Rate = 74250000,   .RefDiv = 2, .FbDiv = 99,  .PostDiv1 = 4, .PostDiv2 = 4, .Dsmpd = 1, .Frac = 0 },
     { .Rate = 0 }
 };
 
@@ -70,6 +71,53 @@ CruGetPllRate (
     return FOutVco / PostDiv1 / PostDiv2;
 }
 
+STATIC VOID
+CruSetPllRate (
+  IN UINT32 PllNumber,
+  IN CRU_PLL_RATE *Rate
+  )
+{
+    UINT32 PllLockRetry = 0;
+    UINTN ModeIndex;
+
+    ASSERT (PllNumber == CRU_GPLL);
+    if (PllNumber == CRU_GPLL) {
+        ModeIndex = 2;
+    } else {
+        ASSERT (FALSE);
+        return;
+    }
+
+    MmioWrite32 (CRU_MODE_CON00,
+                 (CRU_MODE_CON00_CLK_PLL_MODE_MASK (ModeIndex) << 16) |
+                 (0U << PMUCRU_MODE_CON00_CLK_PLL_MODE_SHIFT (ModeIndex)));
+
+    MmioWrite32 (CRU_PLL_CON0 (PllNumber),
+                 ((CRU_PLL_CON0_FBDIV_MASK | CRU_PLL_CON0_POSTDIV1_MASK | CRU_PLL_CON0_BYPASS) << 16) |
+                 (Rate->PostDiv1 << CRU_PLL_CON0_POSTDIV1_SHIFT) |
+                 Rate->FbDiv);
+
+    MmioWrite32 (CRU_PLL_CON1 (PllNumber),
+                 ((CRU_PLL_CON1_REFDIV_MASK | CRU_PLL_CON1_POSTDIV2_MASK | CRU_PLL_CON1_DSMPD) << 16) |
+                 (Rate->Dsmpd ? CRU_PLL_CON1_DSMPD : 0) |
+                 (Rate->PostDiv2 << CRU_PLL_CON1_POSTDIV2_SHIFT) |
+                 Rate->RefDiv);
+
+    MmioAndThenOr32 (CRU_PLL_CON2 (PllNumber), ~CRU_PLL_CON2_FRACDIV_MASK, Rate->Frac);
+
+    do {
+        UINT32 Val = MmioRead32 (CRU_PLL_CON1 (PllNumber));
+        if ((Val & CRU_PLL_CON1_LOCK_STATUS) != 0) {
+            break;
+        }
+        MicroSecondDelay (1000);
+    } while (++PllLockRetry < 100);
+    ASSERT (PllLockRetry < 100);
+
+    MmioWrite32 (CRU_MODE_CON00,
+                 (CRU_MODE_CON00_CLK_PLL_MODE_MASK (ModeIndex) << 16) |
+                 (1U << CRU_MODE_CON00_CLK_PLL_MODE_SHIFT (ModeIndex)));
+}
 
 STATIC UINTN
 PmuCruGetPllRate (
@@ -184,7 +232,6 @@ CruGetCoreClockRate (
 
     return PllRate / (Div + 1);
 }
-
 
 UINTN
 CruGetSdmmcClockRate (
@@ -430,6 +477,15 @@ CruEnableClock (
 }
 
 VOID
+PmuCruEnableClock (
+  IN UINT32 Index,
+  IN UINT8 Bit
+  )
+{
+    MmioWrite32 (PMUCRU_PMUGATE_CON (Index), 1U << (Bit + 16));
+}
+
+VOID
 CruAssertSoftReset (
   IN UINT32 Index,
   IN UINT8 Bit
@@ -445,4 +501,19 @@ CruDeassertSoftReset (
   )
 {
     MmioWrite32 (CRU_SOFTRST_CON (Index), 1U << (Bit + 16));
+}
+
+VOID
+CruSetGpllRate (
+  IN UINTN Rate
+  )
+{
+    CRU_PLL_RATE *PllRate;
+
+    DEBUG ((DEBUG_INFO, "CruSetGpllRate(): Rate = %lu Hz\n", Rate));
+
+    PllRate = CruFindPllRate (Rate);
+    ASSERT (PllRate != NULL);
+
+    CruSetPllRate (CRU_GPLL, PllRate);
 }

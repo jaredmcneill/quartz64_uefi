@@ -1,5 +1,5 @@
 /** @file
-*  PCIe2x1
+*  PCIe3x1
 *
 *  Copyright (c) 2022-2023, Jared McNeill <jmcneill@invisible.ca>
 *
@@ -13,15 +13,15 @@ Device (PCI0) {
     Name (_HID, "PNP0A08")
     Name (_CID, "PNP0A03")
     Name (_CCA, Zero)
-    Name (_UID, 0)
-    Name (_SEG, 0)
+    Name (_UID, 1)
+    Name (_SEG, 1)
     Name (_BBN, One)
 
     Name (_PRT, Package() {
-        Package (4) { 0x0FFFF, 0, Zero, 104 },
-        Package (4) { 0x0FFFF, 1, Zero, 104 },
-        Package (4) { 0x0FFFF, 2, Zero, 104 },
-        Package (4) { 0x0FFFF, 3, Zero, 104 }
+        Package (4) { 0x0FFFF, 0, Zero, 189 },
+        Package (4) { 0x0FFFF, 1, Zero, 189 },
+        Package (4) { 0x0FFFF, 2, Zero, 189 },
+        Package (4) { 0x0FFFF, 3, Zero, 189 }
     })
 
     Method (_CRS, 0, Serialized) {
@@ -35,15 +35,15 @@ Device (PCI0) {
         )
         DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed, NonCacheable, ReadWrite,
             0x00000000,   // Granularity
-            0xF4000000,   // Range Minimum
-            0xF5FFFFFF,   // Range Maximum
+            0xF2000000,   // Range Minimum
+            0xF3FFFFFF,   // Range Maximum
             0x00000000,   // Translation Offset
             0x02000000,   // Length
         )
         QWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed, NonCacheable, ReadWrite,
             0x0000000000000000,   // Granularity
-            0x0000000310000000,   // Range Minimum
-            0x000000033FFEFFFF,   // Range Maximum
+            0x0000000350000000,   // Range Minimum
+            0x000000037FFEFFFF,   // Range Maximum
             0x0000000000000000,   // Translation Offset
             0x000000002FFF0000,   // Length
         )
@@ -51,7 +51,7 @@ Device (PCI0) {
             0,                    // Granularity
             0x0000,               // Range Minimum
             0xFFFF,               // Range Maximum
-            0x000000033FFF0000,   // Translation Offset
+            0x000000037FFF0000,   // Translation Offset
             0x10000,              // Length
         )
         })
@@ -63,15 +63,15 @@ Device (PCI0) {
         Name (_CRS, ResourceTemplate () {
         QWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed, NonCacheable, ReadWrite,
             0x0000000000000000,   // Granularity
-            0x0000000300000000,   // Range Minimum
-            0x000000030FFFFFFF,   // Range Maximum
+            0x0000000340000000,   // Range Minimum
+            0x000000034FFFFFFF,   // Range Maximum
             0x0000000000000000,   // Translation Offset
             0x0000000010000000,   // Length
         )
         QWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed, NonCacheable, ReadWrite,
             0x0000000000000000,   // Granularity
-            0x00000003C0000000,   // Range Minimum
-            0x00000003C03FFFFF,   // Range Maximum
+            0x00000003C0400000,   // Range Minimum
+            0x00000003C07FFFFF,   // Range Maximum
             0x0000000000000000,   // Translation Offset
             0x0000000000400000,   // Length
         )

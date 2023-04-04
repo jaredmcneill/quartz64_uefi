@@ -1,7 +1,7 @@
 /** @file
 
   Copyright 2017, 2020 NXP
-  Copyright 2021, Jared McNeill <jmcneill@invisible.ca>
+  Copyright 2021-2023, Jared McNeill <jmcneill@invisible.ca>
 
   SPDX-License-Identifier: BSD-2-Clause-Patent
 
@@ -15,6 +15,7 @@
 #include <Library/CruLib.h>
 #include <Library/GpioLib.h>
 #include <Library/MultiPhyLib.h>
+#include <Library/Pcie30PhyLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <IndustryStandard/Pci.h>
 #include <IndustryStandard/Rk356x.h>
@@ -38,7 +39,10 @@
 #define  SMLH_LTSSM_STATE_LINK_UP       0x11
 
 /* DBI Registers */
+#define PCI_COMMAND                     0x0004
 #define PCI_DEVICE_CLASS                0x000A
+#define PCI_BAR0                        0x0010
+#define PCI_BAR1                        0x0014
 #define PCIE_LINK_CAPABILITY            0x007C
 #define PCIE_LINK_STATUS                0x0080
 #define  LINK_STATUS_WIDTH_SHIFT        20
@@ -82,21 +86,45 @@
 #define PCIE_RESET_GPIO_PIN             FixedPcdGet8  (PcdPcieResetGpioPin)
 #define PCIE_LINK_SPEED                 FixedPcdGet32 (PcdPcieLinkSpeed)
 #define PCIE_NUM_LANES                  FixedPcdGet32 (PcdPcieNumLanes)
+#define PCIE_APB_BASE                   FixedPcdGet64 (PcdPcieApbBase)
+#define PCIE_DBI_BASE                   FixedPcdGet64 (PcdPcieDbiBase)
+
 
 STATIC
 VOID
 PciSetupClocks (
-  VOID
+  IN UINTN Segment
   )
 {
-  CruDeassertSoftReset (10, 1); /* resetn_pcie20_powerup_req */
+  UINT32 SoftResetIndex;
+  UINT32 ClockIndex;
+  UINTN ClockOffset;
 
-  CruEnableClock (12, 5); /* clk_pcie20_pipe_en */
-  CruEnableClock (12, 4); /* clk_pcie20_aux_en */
-  CruEnableClock (12, 3); /* pclk_pcie20_en */
-  CruEnableClock (12, 2); /* aclk_pcie20_dbi_en */
-  CruEnableClock (12, 1); /* aclk_pcie20_slv_en */
-  CruEnableClock (12, 0); /* aclk_pcie20_mst_en */
+  if (Segment == PCIE_SEGMENT_PCIE20) {
+      SoftResetIndex = 10;
+      ClockIndex = 12;
+      ClockOffset = 0;
+  } else if (Segment == PCIE_SEGMENT_PCIE30X1) {
+      SoftResetIndex = 11;
+      ClockIndex = 12;
+      ClockOffset = 8;
+  } else if (Segment == PCIE_SEGMENT_PCIE30X2) {
+      SoftResetIndex = 12;
+      ClockIndex = 13;
+      ClockOffset = 0;
+  } else {
+      ASSERT(FALSE);
+      return;
+  }
+
+  CruDeassertSoftReset (SoftResetIndex, 1); /* resetn_pcie{20,30x1,30x2}_powerup_req */
+
+  CruEnableClock (ClockIndex, 5 + ClockOffset); /* clk_pcie{20,30x1,30x2}_pipe_en */
+  CruEnableClock (ClockIndex, 4 + ClockOffset); /* clk_pcie{20,30x1,30x2}_aux_en */
+  CruEnableClock (ClockIndex, 3 + ClockOffset); /* pclk_pcie{20,30x1,30x2}_en */
+  CruEnableClock (ClockIndex, 2 + ClockOffset); /* aclk_pcie{20,30x1,30x2}_dbi_en */
+  CruEnableClock (ClockIndex, 1 + ClockOffset); /* aclk_pcie{20,30x1,30x2}_slv_en */
+  CruEnableClock (ClockIndex, 0 + ClockOffset); /* aclk_pcie{20,30x1,30x2}_mst_en */
 }
 
 STATIC
@@ -284,8 +312,8 @@ InitializePciHost (
   VOID
   )
 {
-  EFI_PHYSICAL_ADDRESS     ApbBase = PCIE2X1_APB_BASE;
-  EFI_PHYSICAL_ADDRESS     DbiBase = PCIE2X1_DBI_BASE;
+  EFI_PHYSICAL_ADDRESS     ApbBase = PCIE_APB_BASE;
+  EFI_PHYSICAL_ADDRESS     DbiBase = PCIE_DBI_BASE;
   UINTN                    Retry;
   UINT32                   LinkSpeed;
   UINT32                   LinkWidth;
@@ -295,6 +323,16 @@ InitializePciHost (
   UINT64                   Cfg1Size;
   UINT64                   PciIoBase;
   UINT64                   PciIoSize;
+
+  /* Log settings */
+  DEBUG ((DEBUG_INFO, "PCIe: Segment %u\n", PCIE_SEGMENT));
+  DEBUG ((DEBUG_INFO, "PCIe: PciExpressBaseAddress 0x%lx\n", PCIE_BASE));
+  DEBUG ((DEBUG_INFO, "PCIe: ApbBase 0x%lx\n", PCIE_APB_BASE));
+  DEBUG ((DEBUG_INFO, "PCIe: DbiBase 0x%lx\n", PCIE_DBI_BASE));
+  DEBUG ((DEBUG_INFO, "PCIe: NumLanes %u\n", PCIE_NUM_LANES));
+  DEBUG ((DEBUG_INFO, "PCIe: LinkSpeed %u\n", PCIE_LINK_SPEED));
+  DEBUG ((DEBUG_INFO, "PCIe: Reset GPIO %u %u\n", PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN));
+  DEBUG ((DEBUG_INFO, "PCIe: Power GPIO %u %u\n", PCIE_POWER_GPIO_BANK, PCIE_POWER_GPIO_PIN));
 
   ASSERT (PCIE_RESET_GPIO_BANK != 0xFFU);
   ASSERT (PCIE_RESET_GPIO_PIN != 0xFFU);
@@ -309,16 +347,26 @@ InitializePciHost (
 
   /* Configure MULTI-PHY */
   CruSetPciePhyClockRate (2, 100000000);
-  // CruSetPciePhyClockRate (2, 24000000);
   MultiPhySetMode (2, MULTIPHY_MODE_PCIE);
 
+  if (PCIE_SEGMENT == PCIE_SEGMENT_PCIE30X1 || PCIE_SEGMENT == PCIE_SEGMENT_PCIE30X2) {
+    /* Configure PCIe 3.0 PHY */
+    Pcie30PhyInit ();
+  }
+
   DEBUG ((DEBUG_INFO, "PCIe: Setup clocks\n"));
-  PciSetupClocks ();
+  if (PCIE_SEGMENT == PCIE_SEGMENT_PCIE20) {
+    PciSetupClocks (PCIE_SEGMENT_PCIE20);
+  } else {
+    PciSetupClocks (PCIE_SEGMENT_PCIE30X1);
+    PciSetupClocks (PCIE_SEGMENT_PCIE30X2);
+  }
 
   DEBUG ((DEBUG_INFO, "PCIe: Switching to RC mode\n"));
   PciSetRcMode (ApbBase);
 
   /* Allow writing RO registers through the DBI */
+  DEBUG ((DEBUG_INFO, "PCIe: Enabling DBI access\n"));
   MmioOr32 (DbiBase + PL_MISC_CONTROL_1_OFF, DBI_RO_WR_EN);
 
   DEBUG ((DEBUG_INFO, "PCIe: Setup BARs\n"));
@@ -332,9 +380,9 @@ InitializePciHost (
   PciIoBase = 0x2FFF0000UL;
   PciIoSize = SIZE_64KB;
 
-  PciSetupAtu (DbiBase, 0, IATU_TYPE_CFG0, 0x300000000UL + Cfg0Base, Cfg0Base, Cfg0Size);
-  PciSetupAtu (DbiBase, 1, IATU_TYPE_CFG1, 0x300000000UL + Cfg1Base, Cfg1Base, Cfg1Size);
-  PciSetupAtu (DbiBase, 2, IATU_TYPE_IO,   0x300000000UL + PciIoBase, 0, PciIoSize);
+  PciSetupAtu (DbiBase, 0, IATU_TYPE_CFG0, PCIE_BASE + Cfg0Base, Cfg0Base, Cfg0Size);
+  PciSetupAtu (DbiBase, 1, IATU_TYPE_CFG1, PCIE_BASE + Cfg1Base, Cfg1Base, Cfg1Size);
+  PciSetupAtu (DbiBase, 2, IATU_TYPE_IO,   PCIE_BASE + PciIoBase, 0, PciIoSize);
 
   DEBUG ((DEBUG_INFO, "PCIe: Set link speed\n"));
   PciSetupLinkSpeed (DbiBase, PCIE_LINK_SPEED);
@@ -346,7 +394,7 @@ InitializePciHost (
   DEBUG ((DEBUG_INFO, "PCIe: Assert reset\n"));
   GpioPinSetPull (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, GPIO_PIN_PULL_NONE);
   GpioPinSetDirection (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, GPIO_PIN_OUTPUT);
-  GpioPinWrite (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, 0);
+  GpioPinWrite (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, FALSE);
 
   DEBUG ((DEBUG_INFO, "PCIe: Start LTSSM\n"));
 
@@ -354,7 +402,7 @@ InitializePciHost (
 
   gBS->Stall (100000);
   DEBUG ((DEBUG_INFO, "PCIe: Deassert reset\n"));
-  GpioPinWrite (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, 1);
+  GpioPinWrite (PCIE_RESET_GPIO_BANK, PCIE_RESET_GPIO_PIN, TRUE);
 
   /* Wait for link up */
   DEBUG ((DEBUG_INFO, "PCIe: Waiting for link up...\n"));

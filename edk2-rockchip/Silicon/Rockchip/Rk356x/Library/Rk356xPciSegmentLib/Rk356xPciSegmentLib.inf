@@ -37,3 +37,7 @@
   BaseLib
   PciLib
   DebugLib
+
+[FixedPcd]
+  gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress
+  gRk356xTokenSpaceGuid.PcdPcieDbiBase

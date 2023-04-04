@@ -32,6 +32,12 @@ CruEnableClock (
   IN UINT8 Bit
   );
 
+VOID
+PmuCruEnableClock (
+  IN UINT32 Index,
+  IN UINT8 Bit
+  );
+
 UINTN
 CruGetSdmmcClockRate (
   IN UINT8 Index
@@ -72,6 +78,11 @@ CruGetHdmiClockRate (
 
 VOID
 CruSetHdmiClockRate (
+  IN UINTN Rate
+  );
+
+VOID
+CruSetGpllRate (
   IN UINTN Rate
   );
 
