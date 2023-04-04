@@ -561,6 +561,10 @@ BoardInitDriverEntryPoint (
   GpioPinSetDirection (0, GPIO_PIN_PA6, GPIO_PIN_OUTPUT);
   GpioPinWrite (0, GPIO_PIN_PA6, TRUE);
 
+  /* Set GPIO1 PA4 (HUB_RST_GPIO1_A4_d) output high to take USB 2.0 hub out of reset */
+  GpioPinSetDirection (1, GPIO_PIN_PA4, GPIO_PIN_OUTPUT);
+  GpioPinWrite (1, GPIO_PIN_PA4, TRUE);
+
   /* PCIe setup */
   BoardInitPcie ();
 
