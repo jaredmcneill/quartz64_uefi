@@ -1,16 +1,15 @@
+BOARDS ?= QUARTZ64 SOQUARTZ ROC-RK3566-PC ROC-RK3568-PC
+TARGET ?= RELEASE
+
 .PHONY: all
-all: uefi_debug
+all: uefi
 
-.PHONY: uefi_release
-uefi_release:
-	@./build.sh RELEASE
-
-.PHONY: uefi_debug
-uefi_debug:
-	@./build.sh DEBUG
+.PHONY: uefi
+uefi:
+	@./build.sh $(TARGET) "$(BOARDS)"
 
 .PHONY: sdcard
-sdcard: uefi_release
+sdcard: uefi
 	rm -f sdcard.img
 	fallocate -l 33M sdcard.img
 	parted -s sdcard.img mklabel gpt
@@ -18,7 +17,7 @@ sdcard: uefi_release
 	parted -s sdcard.img unit s mkpart uboot 8MiB 16MiB
 	parted -s sdcard.img unit s mkpart env 16MiB 32MiB
 
-	for board in QUARTZ64 SOQUARTZ ROC-RK3566-PC; do				\
+	for board in $(BOARDS); do							\
 		cp sdcard.img $${board}_EFI.img;				\
 		dd if=idblock.bin of=$${board}_EFI.img 			\
 		    seek=64 conv=notrunc;						\
