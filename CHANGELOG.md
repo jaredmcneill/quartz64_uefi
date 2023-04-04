@@ -1,3 +1,4 @@
-#### 2023-03-30
+#### 2023-04-04
 
-* Fix VCCIO5 voltage on Quartz64. (#44)
+* Add support for Firefly ROC-RK3568-PC / StationPC Station P2 boards.
+* Add PCIe30 support.
