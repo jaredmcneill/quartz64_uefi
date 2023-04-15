@@ -26,6 +26,7 @@
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
   Platform/Rockchip/Rk356x/Rk356x.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
 
 [LibraryClasses]
   BaseLib
@@ -39,6 +40,9 @@
 [Guids]
 
 [Protocols]
+
+[Pcd]
+  gRk356xTokenSpaceGuid.PcdSystemTableMode
 
 [Depex]
   gEfiAcpiTableProtocolGuid

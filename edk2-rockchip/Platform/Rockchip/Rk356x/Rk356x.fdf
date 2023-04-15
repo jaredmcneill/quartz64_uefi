@@ -213,6 +213,11 @@ READ_LOCK_STATUS   = TRUE
   INF ArmPkg/Drivers/ArmScmiDxe/ArmScmiDxe.inf
 
   #
+  # Config
+  #
+  INF Platform/Rockchip/Rk356x/Drivers/ConfigDxe/ConfigDxe.inf
+
+  #
   # UEFI application (Shell Embedded Boot Loader)
   #
   INF ShellPkg/Application/Shell/Shell.inf

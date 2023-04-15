@@ -19,6 +19,7 @@
 #include <IndustryStandard/Rk356x.h>
 #include <libfdt.h>
 #include <Guid/Fdt.h>
+#include <ConfigVars.h>
 
 STATIC VOID *mFdtImage;
 
@@ -102,6 +103,15 @@ FdtDxeInitialize (
   EFI_STATUS Status;
   UINTN      FdtSize;
   VOID       *FdtImage = NULL;
+
+  switch (PcdGet32 (PcdSystemTableMode)) {
+  case SYSTEM_TABLE_MODE_BOTH:
+  case SYSTEM_TABLE_MODE_DT:
+    break;
+  default:
+    DEBUG ((DEBUG_ERROR, "Not installing FDT (user config)\n"));
+    return EFI_SUCCESS;
+  }
 
   FdtImage = (VOID*)(UINTN)PcdGet64 (PcdFdtBaseAddress);
   Retval = fdt_check_header (FdtImage);

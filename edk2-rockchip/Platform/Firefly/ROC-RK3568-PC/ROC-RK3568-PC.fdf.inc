@@ -12,7 +12,7 @@ INF Platform/Firefly/ROC-RK3568-PC/Drivers/BoardInitDxe/BoardInitDxe.inf
 #
 # Devicetree support
 #
-# INF Platform/Rockchip/Rk356x/Drivers/FdtDxe/FdtDxe.inf
+INF Platform/Rockchip/Rk356x/Drivers/FdtDxe/FdtDxe.inf
 
 #
 # ACPI Support

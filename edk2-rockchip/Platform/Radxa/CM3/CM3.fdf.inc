@@ -12,7 +12,7 @@ INF Platform/Radxa/CM3/Drivers/BoardInitDxe/BoardInitDxe.inf
 #
 # Devicetree support
 #
-# INF Platform/Rockchip/Rk356x/Drivers/FdtDxe/FdtDxe.inf
+INF Platform/Rockchip/Rk356x/Drivers/FdtDxe/FdtDxe.inf
 
 #
 # ACPI Support

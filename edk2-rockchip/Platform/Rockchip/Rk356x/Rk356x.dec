@@ -20,6 +20,7 @@
 
 [Guids]
   gRk356xEventResetGuid = {0x932EC83F, 0x31DB, 0x11E6, {0x9F, 0xD3, 0x63, 0xB4, 0xB4, 0xE4, 0xD4, 0xB4}}
+  gConfigDxeFormSetGuid = {0xCD7CC258, 0x31DB, 0x22E6, {0x9F, 0x22, 0x63, 0xB0, 0xB8, 0xEE, 0xD6, 0xB5}}
 
 [PcdsFixedAtBuild.common]
   gRk356xTokenSpaceGuid.PcdFdtBaseAddress|0x00B00000|UINT64|0x00000001
@@ -55,3 +56,4 @@
 
 [PcdsFixedAtBuild, PcdsPatchableInModule, PcdsDynamic, PcdsDynamicEx]
   gRk356xTokenSpaceGuid.PcdPlatformResetDelay|0|UINT32|0x00004000
+  gRk356xTokenSpaceGuid.PcdSystemTableMode|0|UINT32|0x00004001

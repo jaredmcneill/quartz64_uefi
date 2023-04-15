@@ -1,0 +1,22 @@
+/** @file
+ *
+ *  Copyright (c) 2023, Jared McNeill <jmcneill@invisible.ca>
+ *  Copyright (c) 2018, Andrei Warkentin <andrey.warkentin@gmail.com>
+ *  Copyright (c) 2020, ARM Limited. All rights reserved.
+ *
+ *  SPDX-License-Identifier: BSD-2-Clause-Patent
+ *
+ **/
+
+#langdef en-US  "English"
+
+#string STR_NULL_STRING          #language en-US ""
+
+#string STR_FORM_SET_TITLE       #language en-US "System Configuration"
+#string STR_FORM_SET_TITLE_HELP  #language en-US "Press <Enter> to configure system settings."
+
+#string STR_SYSCONFIG_SYSTAB_PROMPT   #language en-US "System Table Selection"
+#string STR_SYSCONFIG_SYSTAB_HELP     #language en-US "ACPI/DT choice for specific OSes"
+#string STR_SYSCONFIG_SYSTAB_ACPI     #language en-US "ACPI"
+#string STR_SYSCONFIG_SYSTAB_BOTH     #language en-US "ACPI + Devicetree"
+#string STR_SYSCONFIG_SYSTAB_DT       #language en-US "Devicetree"

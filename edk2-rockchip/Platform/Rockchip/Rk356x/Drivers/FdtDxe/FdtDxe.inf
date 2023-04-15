@@ -49,4 +49,5 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase
 
 [Pcd]
+  gRk356xTokenSpaceGuid.PcdSystemTableMode
 

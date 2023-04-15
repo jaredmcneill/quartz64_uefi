@@ -493,6 +493,11 @@
   gRk356xTokenSpaceGuid.PcdPlatformResetDelay|L"ResetDelay"|gRk356xTokenSpaceGuid|0x0|0
 
   #
+  # ConfigDxe
+  #
+  gRk356xTokenSpaceGuid.PcdSystemTableMode|L"SystemTableMode"|gConfigDxeFormSetGuid|0x0|0
+
+  #
   # Common UEFI ones.
   #
 
@@ -590,6 +595,11 @@
   Platform/Firefly/ROC-RK3568-PC/Drivers/BoardInitDxe/BoardInitDxe.inf
 
   #
+  # Config
+  #
+  Platform/Rockchip/Rk356x/Drivers/ConfigDxe/ConfigDxe.inf
+
+  #
   # FAT filesystem + GPT/MBR partitioning
   #
   MdeModulePkg/Universal/Disk/DiskIoDxe/DiskIoDxe.inf
@@ -626,7 +636,7 @@
   #
   # Devicetree support
   #
-  # Platform/Rockchip/Rk356x/Drivers/FdtDxe/FdtDxe.inf
+  Platform/Rockchip/Rk356x/Drivers/FdtDxe/FdtDxe.inf
 
   #
   # ACPI Support
