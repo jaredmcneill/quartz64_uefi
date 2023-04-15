@@ -128,7 +128,7 @@ ArmPlatformGetVirtualMemoryMap (
   // Firmware Volume
   VirtualMemoryTable[Index].PhysicalBase    = FixedPcdGet64 (PcdFdBaseAddress);
   VirtualMemoryTable[Index].VirtualBase     = VirtualMemoryTable[Index].PhysicalBase;
-  VirtualMemoryTable[Index].Length          = FixedPcdGet32 (PcdFdSize);
+  VirtualMemoryTable[Index].Length          = FixedPcdGet32 (PcdFdSize) - VariablesSize;
   VirtualMemoryTable[Index].Attributes      = ARM_MEMORY_REGION_ATTRIBUTE_WRITE_BACK;
   VirtualMemoryInfo[Index].Type             = RK356X_MEM_RESERVED_REGION;
   VirtualMemoryInfo[Index++].Name           = L"FD";
