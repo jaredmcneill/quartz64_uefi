@@ -28,8 +28,6 @@
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/BaseMemoryLib.h>
 #include <Library/BaseCryptLib.h>
-#include <Protocol/ArmScmi.h>
-#include <Protocol/ArmScmiClockProtocol.h>
 
 #include <IndustryStandard/Rk356x.h>
 #include <IndustryStandard/Rk356xCru.h>
@@ -108,133 +106,6 @@ STATIC CONST GPIO_IOMUX_CONFIG mGmac1IomuxConfig[] = {
   { "gmac1_txd2m0",       3, GPIO_PIN_PA2, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
   { "gmac1_txd3m0",       3, GPIO_PIN_PA3, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
 };
-
-STATIC
-EFI_STATUS
-BoardInitSetCpuSpeed (
-  VOID
-  )
-{
-  EFI_STATUS             Status;
-  SCMI_CLOCK_PROTOCOL    *ClockProtocol;
-  EFI_GUID               ClockProtocolGuid = ARM_SCMI_CLOCK_PROTOCOL_GUID;
-  UINT64                 CpuRate;
-  UINT32                 ClockId;
-  UINT32                 ClockProtocolVersion;
-  BOOLEAN                Enabled;
-  CHAR8                  ClockName[SCMI_MAX_STR_LEN];
-  UINT32                 TotalRates = 0;
-  UINT32                 ClockRateSize;
-  SCMI_CLOCK_RATE        *ClockRate;
-  SCMI_CLOCK_RATE_FORMAT ClockRateFormat;
-
-  Status = gBS->LocateProtocol (
-                  &ClockProtocolGuid,
-                  NULL,
-                  (VOID**)&ClockProtocol
-                  );
-  if (EFI_ERROR (Status)) {
-    ASSERT_EFI_ERROR (Status);
-    return Status;
-  }
-
-  Status = ClockProtocol->GetVersion (ClockProtocol, &ClockProtocolVersion);
-  if (EFI_ERROR (Status)) {
-    ASSERT_EFI_ERROR (Status);
-    return Status;
-  }
-  DEBUG ((DEBUG_ERROR, "SCMI clock management protocol version = %x\n",
-    ClockProtocolVersion));
-
-  ClockId = 0;
-
-  Status = ClockProtocol->GetClockAttributes (
-                            ClockProtocol,
-                            ClockId,
-                            &Enabled,
-                            ClockName
-                            );
-  if (EFI_ERROR (Status)) {
-    ASSERT_EFI_ERROR (Status);
-    return Status;
-  }
-
-  Status = ClockProtocol->RateGet (ClockProtocol, ClockId, &CpuRate);
-  if (EFI_ERROR (Status)) {
-    ASSERT_EFI_ERROR (Status);
-    return Status;
-  }
-
-  DEBUG ((DEBUG_INFO, "SCMI: %a: Current rate is %uHz\n", ClockName, CpuRate));
-
-  TotalRates = 0;
-  ClockRateSize = 0;
-  Status = ClockProtocol->DescribeRates (
-                            ClockProtocol,
-                            ClockId,
-                            &ClockRateFormat,
-                            &TotalRates,
-                            &ClockRateSize,
-                            ClockRate
-                            );
-  if (EFI_ERROR (Status) && Status != EFI_BUFFER_TOO_SMALL) {
-    ASSERT_EFI_ERROR (Status);
-    return Status;
-  }
-  ASSERT (Status == EFI_BUFFER_TOO_SMALL);
-  ASSERT (TotalRates > 0);
-  ASSERT (ClockRateFormat == ScmiClockRateFormatDiscrete);
-  if (Status != EFI_BUFFER_TOO_SMALL ||
-      TotalRates == 0 ||
-      ClockRateFormat != ScmiClockRateFormatDiscrete) {
-    return EFI_DEVICE_ERROR;
-  }
-  
-  ClockRateSize = sizeof (*ClockRate) * TotalRates;
-  ClockRate = AllocatePool (ClockRateSize);
-  ASSERT (ClockRate != NULL);
-  if (ClockRate == NULL) {
-    return EFI_OUT_OF_RESOURCES;
-  }
-  Status = ClockProtocol->DescribeRates (
-                            ClockProtocol,
-                            ClockId,
-                            &ClockRateFormat,
-                            &TotalRates,
-                            &ClockRateSize,
-                            ClockRate
-                            );
-  if (EFI_ERROR (Status)) {
-    ASSERT_EFI_ERROR (Status);
-    FreePool (ClockRate);
-    return Status;
-  }
-
-  CpuRate = ClockRate[TotalRates - 1].DiscreteRate.Rate;
-  FreePool (ClockRate);
-
-  DEBUG ((DEBUG_INFO, "SCMI: %a: New rate is %uHz\n", ClockName, CpuRate));
-
-  Status = ClockProtocol->RateSet (
-                            ClockProtocol,
-                            ClockId,
-                            CpuRate
-                            );
-  if (EFI_ERROR (Status)) {
-    ASSERT_EFI_ERROR (Status);
-    return Status;
-  }
-
-  Status = ClockProtocol->RateGet (ClockProtocol, ClockId, &CpuRate);
-  if (EFI_ERROR (Status)) {
-    ASSERT_EFI_ERROR (Status);
-    return Status;
-  }
-
-  DEBUG ((DEBUG_INFO, "SCMI: %a: Current rate is %uHz\n", ClockName, CpuRate));
-
-  return EFI_SUCCESS;
-}
 
 STATIC
 VOID
@@ -397,9 +268,6 @@ BoardInitDriverEntryPoint (
   /* Set GPIO0 PD3 (WORK_LED) output high to enable LED */
   GpioPinSetDirection (0, GPIO_PIN_PD3, GPIO_PIN_OUTPUT);
   GpioPinWrite (0, GPIO_PIN_PD3, TRUE);
-
-  /* Update CPU speed */
-  BoardInitSetCpuSpeed ();
 
   /* Enable automatic clock gating */
   MmioWrite32 (PMU_NOC_AUTO_CON0, 0xFFFFFFFFU);

@@ -17,12 +17,18 @@
 #include <Library/DxeServicesTableLib.h>
 #include <Library/HiiLib.h>
 #include <Library/IoLib.h>
+#include <Library/MemoryAllocationLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/UefiRuntimeServicesTableLib.h>
 #include <Library/PcdLib.h>
+#include <Protocol/ArmScmi.h>
+#include <Protocol/ArmScmiClockProtocol.h>
 #include <ConfigVars.h>
 #include "ConfigDxeFormSetGuid.h"
 #include "ConfigDxe.h"
+
+#define CLOCK_ID_CLK_SCMI_CPU     0
+#define FREQ_1_MHZ                1000000
 
 extern UINT8 ConfigDxeHiiBin[];
 extern UINT8 ConfigDxeStrings[];
@@ -88,6 +94,129 @@ InstallHiiPages (
   return EFI_SUCCESS;
 }
 
+STATIC
+EFI_STATUS
+GetMinMaxCpuSpeed (
+  IN BOOLEAN             MinSpeed,
+  OUT UINT64             *Speed
+  )
+{
+  EFI_STATUS             Status;
+  SCMI_CLOCK_PROTOCOL    *ClockProtocol;
+  EFI_GUID               ClockProtocolGuid = ARM_SCMI_CLOCK_PROTOCOL_GUID;
+  UINT32                 TotalRates = 0;
+  UINT32                 ClockRateSize;
+  SCMI_CLOCK_RATE        *ClockRate;
+  SCMI_CLOCK_RATE_FORMAT ClockRateFormat;
+  UINT32                 ClockId = CLOCK_ID_CLK_SCMI_CPU;
+
+  Status = gBS->LocateProtocol (
+                  &ClockProtocolGuid,
+                  NULL,
+                  (VOID**)&ClockProtocol
+                  );
+  if (EFI_ERROR (Status)) {
+    ASSERT_EFI_ERROR (Status);
+    return Status;
+  }
+
+  TotalRates = 0;
+  ClockRateSize = 0;
+  Status = ClockProtocol->DescribeRates (
+                            ClockProtocol,
+                            ClockId,
+                            &ClockRateFormat,
+                            &TotalRates,
+                            &ClockRateSize,
+                            ClockRate
+                            );
+  if (EFI_ERROR (Status) && Status != EFI_BUFFER_TOO_SMALL) {
+    ASSERT_EFI_ERROR (Status);
+    return Status;
+  }
+  ASSERT (Status == EFI_BUFFER_TOO_SMALL);
+  ASSERT (TotalRates > 0);
+  ASSERT (ClockRateFormat == ScmiClockRateFormatDiscrete);
+  if (Status != EFI_BUFFER_TOO_SMALL ||
+      TotalRates == 0 ||
+      ClockRateFormat != ScmiClockRateFormatDiscrete) {
+    return EFI_DEVICE_ERROR;
+  }
+  
+  ClockRateSize = sizeof (*ClockRate) * TotalRates;
+  ClockRate = AllocatePool (ClockRateSize);
+  ASSERT (ClockRate != NULL);
+  if (ClockRate == NULL) {
+    return EFI_OUT_OF_RESOURCES;
+  }
+  Status = ClockProtocol->DescribeRates (
+                            ClockProtocol,
+                            ClockId,
+                            &ClockRateFormat,
+                            &TotalRates,
+                            &ClockRateSize,
+                            ClockRate
+                            );
+  if (EFI_ERROR (Status)) {
+    ASSERT_EFI_ERROR (Status);
+    FreePool (ClockRate);
+    return Status;
+  }
+
+  for (UINTN x = 0; x < TotalRates; x++) {
+    DEBUG ((DEBUG_INFO, "SCMI: clock %u: Available rate %u is %uHz\n", ClockId, x, ClockRate[x].DiscreteRate.Rate));
+  }
+
+  *Speed = ClockRate[MinSpeed ? 0 : TotalRates - 1].DiscreteRate.Rate;
+  FreePool (ClockRate);
+
+  return EFI_SUCCESS;
+}
+
+STATIC
+EFI_STATUS
+SetCpuSpeed (
+  IN UINT64 CpuRate
+  )
+{
+  EFI_STATUS             Status;
+  SCMI_CLOCK_PROTOCOL    *ClockProtocol;
+  EFI_GUID               ClockProtocolGuid = ARM_SCMI_CLOCK_PROTOCOL_GUID;
+  UINT32                 ClockId = CLOCK_ID_CLK_SCMI_CPU;
+
+  Status = gBS->LocateProtocol (
+                  &ClockProtocolGuid,
+                  NULL,
+                  (VOID**)&ClockProtocol
+                  );
+  if (EFI_ERROR (Status)) {
+    ASSERT_EFI_ERROR (Status);
+    return Status;
+  }
+
+  DEBUG ((DEBUG_INFO, "SCMI: clock %u: New rate is %uHz\n", ClockId, CpuRate));
+
+  Status = ClockProtocol->RateSet (
+                            ClockProtocol,
+                            ClockId,
+                            CpuRate
+                            );
+  if (EFI_ERROR (Status)) {
+    ASSERT_EFI_ERROR (Status);
+    return Status;
+  }
+
+  Status = ClockProtocol->RateGet (ClockProtocol, ClockId, &CpuRate);
+  if (EFI_ERROR (Status)) {
+    ASSERT_EFI_ERROR (Status);
+    return Status;
+  }
+
+  DEBUG ((DEBUG_INFO, "SCMI: clock %u: Current rate is %uHz\n", ClockId, CpuRate));
+
+  return EFI_SUCCESS;
+}
+
 
 STATIC EFI_STATUS
 SetupVariables (
@@ -112,6 +241,24 @@ SetupVariables (
     ASSERT_EFI_ERROR (Status);
   }
 
+  Size = sizeof (UINT32);
+  Status = gRT->GetVariable (L"CpuClock",
+                  &gConfigDxeFormSetGuid,
+                  NULL, &Size, &Var32);
+  if (EFI_ERROR (Status)) {
+    Status = PcdSet32S (PcdCpuClock, PcdGet32 (PcdCpuClock));
+    ASSERT_EFI_ERROR (Status);
+  }
+
+  Size = sizeof (UINT32);
+  Status = gRT->GetVariable (L"CustomCpuClock",
+                             &gConfigDxeFormSetGuid,
+                             NULL, &Size, &Var32);
+  if (EFI_ERROR (Status)) {
+    Status = PcdSet32S (PcdCustomCpuClock, PcdGet32 (PcdCustomCpuClock));
+    ASSERT_EFI_ERROR (Status);
+  }
+
   return EFI_SUCCESS;
 }
 
@@ -121,7 +268,29 @@ ApplyVariables (
   VOID
   )
 {
-  // Nothing to do yet
+  EFI_STATUS Status;
+  UINT32     CpuClock = PcdGet32 (PcdCpuClock);
+  UINT32     CustomCpuClock = PcdGet32 (PcdCustomCpuClock);
+  UINT64     SpeedHz;
+
+  switch (CpuClock) {
+  case CPUCLOCK_DEFAULT:
+    SpeedHz = 0;
+    break;
+  case CPUCLOCK_LOW:
+  case CPUCLOCK_MAX:
+    Status = GetMinMaxCpuSpeed (CpuClock == CPUCLOCK_LOW, &SpeedHz);
+    if (EFI_ERROR (Status)) {
+      SpeedHz = 0;
+    }
+    break;
+  case CPUCLOCK_CUSTOM:
+    SpeedHz = (UINT64)CustomCpuClock * FREQ_1_MHZ;
+    break;
+  }
+  if (SpeedHz != 0) {
+    SetCpuSpeed (SpeedHz);
+  }
 }
 
 

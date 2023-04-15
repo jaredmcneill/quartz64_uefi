@@ -57,3 +57,5 @@
 [PcdsFixedAtBuild, PcdsPatchableInModule, PcdsDynamic, PcdsDynamicEx]
   gRk356xTokenSpaceGuid.PcdPlatformResetDelay|0|UINT32|0x00004000
   gRk356xTokenSpaceGuid.PcdSystemTableMode|0|UINT32|0x00004001
+  gRk356xTokenSpaceGuid.PcdCpuClock|2|UINT32|0x00004002
+  gRk356xTokenSpaceGuid.PcdCustomCpuClock|816|UINT32|0x00004003

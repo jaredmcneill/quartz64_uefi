@@ -31,6 +31,16 @@ formset
       name  = SystemTableMode,
       guid  = CONFIGDXE_FORM_SET_GUID;
 
+    efivarstore CPUCLOCK_VARSTORE_DATA,
+      attribute = EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS | EFI_VARIABLE_NON_VOLATILE,
+      name  = CpuClock,
+      guid  = CONFIGDXE_FORM_SET_GUID;
+
+    efivarstore CUSTOM_CPUCLOCK_VARSTORE_DATA,
+      attribute = EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS | EFI_VARIABLE_NON_VOLATILE,
+      name  = CustomCpuClock,
+      guid  = CONFIGDXE_FORM_SET_GUID;
+
     form formid = 1,
         title  = STRING_TOKEN(STR_FORM_SET_TITLE);
         subtitle text = STRING_TOKEN(STR_NULL_STRING);
@@ -41,7 +51,35 @@ formset
             flags       = NUMERIC_SIZE_4 | INTERACTIVE | RESET_REQUIRED,
             option text = STRING_TOKEN(STR_SYSCONFIG_SYSTAB_ACPI), value = SYSTEM_TABLE_MODE_ACPI, flags = DEFAULT;
             option text = STRING_TOKEN(STR_SYSCONFIG_SYSTAB_BOTH), value = SYSTEM_TABLE_MODE_BOTH, flags = 0;
-            option text = STRING_TOKEN(STR_SYSCONFIG_SYSTAB_DT), value = SYSTEM_TABLE_MODE_DT, flags =0;
+            option text = STRING_TOKEN(STR_SYSCONFIG_SYSTAB_DT), value = SYSTEM_TABLE_MODE_DT, flags = 0;
         endoneof;
+
+        oneof varid = CpuClock.Clock,
+            prompt      = STRING_TOKEN(STR_SYSCONFIG_CPUCLOCK_PROMPT),
+            help        = STRING_TOKEN(STR_SYSCONFIG_CPUCLOCK_HELP),
+            flags       = NUMERIC_SIZE_4 | INTERACTIVE | RESET_REQUIRED,
+            option text = STRING_TOKEN(STR_SYSCONFIG_CPUCLOCK_LOW), value = CPUCLOCK_LOW, flags = 0;
+            option text = STRING_TOKEN(STR_SYSCONFIG_CPUCLOCK_DEFAULT), value = CPUCLOCK_DEFAULT, flags = 0;
+            option text = STRING_TOKEN(STR_SYSCONFIG_CPUCLOCK_MAX), value = CPUCLOCK_MAX, flags = DEFAULT;
+            option text = STRING_TOKEN(STR_SYSCONFIG_CPUCLOCK_CUSTOM), value = CPUCLOCK_CUSTOM, flags = 0;
+        endoneof;
+        
+        grayoutif NOT ideqval CpuClock.Clock == 3;
+          oneof varid = CustomCpuClock.Clock,
+            prompt      = STRING_TOKEN(STR_SYSCONFIG_CUSTOM_CPUCLOCK_PROMPT),
+            help        = STRING_TOKEN(STR_SYSCONFIG_CUSTOM_CPUCLOCK_HELP),
+            flags       = NUMERIC_SIZE_4 | INTERACTIVE | RESET_REQUIRED,
+            option text = STRING_TOKEN(STR_SYSCONFIG_CUSTOM_CPUCLOCK_216), value = 216, flags = 0;
+            option text = STRING_TOKEN(STR_SYSCONFIG_CUSTOM_CPUCLOCK_312), value = 312, flags = 0;
+            option text = STRING_TOKEN(STR_SYSCONFIG_CUSTOM_CPUCLOCK_408), value = 408, flags = 0;
+            option text = STRING_TOKEN(STR_SYSCONFIG_CUSTOM_CPUCLOCK_816), value = 816, flags = DEFAULT;
+            option text = STRING_TOKEN(STR_SYSCONFIG_CUSTOM_CPUCLOCK_1008), value = 1008, flags = 0;
+            option text = STRING_TOKEN(STR_SYSCONFIG_CUSTOM_CPUCLOCK_1200), value = 1200, flags = 0;
+            option text = STRING_TOKEN(STR_SYSCONFIG_CUSTOM_CPUCLOCK_1416), value = 1416, flags = 0;
+            option text = STRING_TOKEN(STR_SYSCONFIG_CUSTOM_CPUCLOCK_1608), value = 1608, flags = 0;
+            option text = STRING_TOKEN(STR_SYSCONFIG_CUSTOM_CPUCLOCK_1800), value = 1800, flags = 0;
+            option text = STRING_TOKEN(STR_SYSCONFIG_CUSTOM_CPUCLOCK_1992), value = 1992, flags = 0;
+          endoneof;
+        endif;
     endform;
 endformset;
