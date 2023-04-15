@@ -30,4 +30,11 @@ typedef struct {
   UINT32 Clock;
 } CUSTOM_CPUCLOCK_VARSTORE_DATA;
 
+typedef struct {
+#define MULTIPHY_MODE_SEL_USB3 0
+#define MULTIPHY_MODE_SEL_PCIE 1
+#define MULTIPHY_MODE_SEL_SATA 2
+  UINT32 Mode;
+} MULTIPHY_MODE_VARSTORE_DATA;
+
 #endif /* CONFIG_VARS_H */

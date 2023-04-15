@@ -259,6 +259,17 @@ SetupVariables (
     ASSERT_EFI_ERROR (Status);
   }
 
+#ifdef QUARTZ64
+  Size = sizeof (UINT32);
+  Status = gRT->GetVariable (L"MultiPhy1Mode",
+                             &gConfigDxeFormSetGuid,
+                             NULL, &Size, &Var32);
+  if (EFI_ERROR (Status)) {
+    Status = PcdSet32S (PcdMultiPhy1Mode, PcdGet32 (PcdMultiPhy1Mode));
+    ASSERT_EFI_ERROR (Status);
+  }
+#endif
+
   return EFI_SUCCESS;
 }
 

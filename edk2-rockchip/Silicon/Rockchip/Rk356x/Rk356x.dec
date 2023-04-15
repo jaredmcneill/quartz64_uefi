@@ -67,3 +67,10 @@
   # Pcds for Pcie30Phy
   gRk356xTokenSpaceGuid.PcdPcie30PhyLane0LinkNum|1|UINT8|0x00000060
   gRk356xTokenSpaceGuid.PcdPcie30PhyLane1LinkNum|1|UINT8|0x00000061
+  # Pcds for SATA
+  gRk356xTokenSpaceGuid.PcdSataBaseAddr|0xFC000000|UINT64|0x00000070
+  gRk356xTokenSpaceGuid.PcdSataSize|0x400000|UINT64|0x00000071
+  gRk356xTokenSpaceGuid.PcdSataNumController|3|UINT32|0x00000072
+  gRk356xTokenSpaceGuid.PcdSata0Status|0|UINT8|0x00000073
+  gRk356xTokenSpaceGuid.PcdSata1Status|0|UINT8|0x00000074
+  gRk356xTokenSpaceGuid.PcdSata2Status|0|UINT8|0x00000075

@@ -1,0 +1,52 @@
+#  SataDxe.inf
+#
+#  Copyright 2022-2023, Jared McNeill <jmcneill@invisible.ca>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#
+
+[Defines]
+  INF_VERSION                     = 0x0001001A
+  BASE_NAME                       = SataDxe
+  FILE_GUID                       = B3713273-C0E4-4E22-8894-CA783F5641BC
+  MODULE_TYPE                     = DXE_DRIVER
+  VERSION_STRING                  = 1.0
+  ENTRY_POINT                     = InitializeSata
+
+[Sources.common]
+  Sata.c
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  IoLib
+  TimerLib
+  UefiDriverEntryPoint
+  UefiBootServicesTableLib
+  NonDiscoverableDeviceRegistrationLib
+  CruLib
+
+[Protocols]
+  gEdkiiNonDiscoverableDeviceProtocolGuid         ## PRODUCES
+
+[FixedPcd]
+  gRk356xTokenSpaceGuid.PcdSataBaseAddr
+  gRk356xTokenSpaceGuid.PcdSataSize
+  gRk356xTokenSpaceGuid.PcdSataNumController
+  gRk356xTokenSpaceGuid.PcdSata0Status
+  gRk356xTokenSpaceGuid.PcdSata1Status
+  gRk356xTokenSpaceGuid.PcdSata2Status
+
+[Guids]
+  gEfiEndOfDxeEventGroupGuid
+  
+[Depex]
+  TRUE

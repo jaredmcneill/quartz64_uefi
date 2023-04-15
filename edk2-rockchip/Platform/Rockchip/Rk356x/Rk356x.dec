@@ -59,3 +59,4 @@
   gRk356xTokenSpaceGuid.PcdSystemTableMode|0|UINT32|0x00004001
   gRk356xTokenSpaceGuid.PcdCpuClock|2|UINT32|0x00004002
   gRk356xTokenSpaceGuid.PcdCustomCpuClock|816|UINT32|0x00004003
+  gRk356xTokenSpaceGuid.PcdMultiPhy1Mode|0|UINT32|0x00004004

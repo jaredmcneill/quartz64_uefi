@@ -347,11 +347,13 @@ InitializePciHost (
 
   /* Configure MULTI-PHY */
   CruSetPciePhyClockRate (2, 100000000);
-  MultiPhySetMode (2, MULTIPHY_MODE_PCIE);
 
   if (PCIE_SEGMENT == PCIE_SEGMENT_PCIE30X1 || PCIE_SEGMENT == PCIE_SEGMENT_PCIE30X2) {
     /* Configure PCIe 3.0 PHY */
     Pcie30PhyInit ();
+  } else {
+    /* Configure PCIe 2.0 PHY */
+    MultiPhySetMode (2, MULTIPHY_MODE_PCIE);
   }
 
   DEBUG ((DEBUG_INFO, "PCIe: Setup clocks\n"));

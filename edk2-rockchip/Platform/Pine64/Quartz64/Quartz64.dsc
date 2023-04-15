@@ -235,11 +235,11 @@
 ###################################################################################################
 
 [BuildOptions]
-  GCC:*_*_*_CC_FLAGS          = -DRK356X
-  GCC:*_*_*_PP_FLAGS          = -DRK356X
-  GCC:*_*_*_ASLPP_FLAGS       = -DRK356X
-  GCC:*_*_*_ASLCC_FLAGS       = -DRK356X
-  GCC:*_*_*_VFRPP_FLAGS       = -DRK356X
+  GCC:*_*_*_CC_FLAGS          = -DRK356X -DQUARTZ64
+  GCC:*_*_*_PP_FLAGS          = -DRK356X -DQUARTZ64
+  GCC:*_*_*_ASLPP_FLAGS       = -DRK356X -DQUARTZ64
+  GCC:*_*_*_ASLCC_FLAGS       = -DRK356X -DQUARTZ64
+  GCC:*_*_*_VFRPP_FLAGS       = -DRK356X -DQUARTZ64
   GCC:RELEASE_*_*_CC_FLAGS    = -DMDEPKG_NDEBUG -DNDEBUG
 
 [BuildOptions.common.EDKII.DXE_RUNTIME_DRIVER]
@@ -448,6 +448,11 @@
   gRk356xTokenSpaceGuid.PcdMac1Status|0xF
 
   #
+  # SATA support
+  #
+  gRk356xTokenSpaceGuid.PcdSata1Status|0xF
+
+  #
   # PCI support
   #
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress|0x0000000300000000
@@ -486,6 +491,7 @@
   gRk356xTokenSpaceGuid.PcdSystemTableMode|L"SystemTableMode"|gConfigDxeFormSetGuid|0x0|0
   gRk356xTokenSpaceGuid.PcdCpuClock|L"CpuClock"|gConfigDxeFormSetGuid|0x0|2
   gRk356xTokenSpaceGuid.PcdCustomCpuClock|L"CustomCpuClock"|gConfigDxeFormSetGuid|0x0|816
+  gRk356xTokenSpaceGuid.PcdMultiPhy1Mode|L"MultiPhy1Mode"|gConfigDxeFormSetGuid|0x0|0
 
   #
   # Common UEFI ones.
@@ -658,6 +664,7 @@
   MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
   MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
   MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
+  Silicon/Rockchip/Rk356x/Drivers/SataDxe/SataDxe.inf
 
   #
   # TRNG Support

@@ -31,6 +31,7 @@
 
 #include <IndustryStandard/Rk356x.h>
 #include <IndustryStandard/Rk356xCru.h>
+#include <ConfigVars.h>
 
 #include "EthernetPhy.h"
 
@@ -278,9 +279,15 @@ BoardInitDriverEntryPoint (
                ((CORE_PVTPLL_RING_LENGTH_SEL_MASK | CORE_PVTPLL_OSC_EN | CORE_PVTPLL_START) << 16) |
                (5U << CORE_PVTPLL_RING_LENGTH_SEL_SHIFT) | CORE_PVTPLL_OSC_EN | CORE_PVTPLL_START);
 
-  /* Configure MULTI-PHY 0 and 1 for USB3 mode */
+  /* Configure MULTI-PHY 0 and 1 modes */
   MultiPhySetMode (0, MULTIPHY_MODE_USB3);
-  MultiPhySetMode (1, MULTIPHY_MODE_USB3);
+  if (PcdGet32 (PcdMultiPhy1Mode) == MULTIPHY_MODE_SEL_USB3) {
+    MultiPhySetMode (1, MULTIPHY_MODE_USB3);
+  } else {
+    ASSERT (PcdGet32 (PcdMultiPhy1Mode) == MULTIPHY_MODE_SEL_SATA);
+    CruSetPciePhyClockRate (1, 100000000);
+    MultiPhySetMode (1, MULTIPHY_MODE_SATA);
+  }
 
   /* Set GPIO4 PB5 (USB_HOST_PWREN) output high to power USB ports */
   GpioPinSetDirection (4, GPIO_PIN_PB5, GPIO_PIN_OUTPUT);

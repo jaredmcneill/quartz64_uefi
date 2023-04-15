@@ -68,7 +68,13 @@
   gRk356xTokenSpaceGuid.PcdMshc2SdioIrq
   gRk356xTokenSpaceGuid.PcdMshc2NonRemovable
 
+  gRk356xTokenSpaceGuid.PcdSataBaseAddr
+  gRk356xTokenSpaceGuid.PcdSataSize
+  gRk356xTokenSpaceGuid.PcdSata0Status
+  gRk356xTokenSpaceGuid.PcdSata1Status
+  gRk356xTokenSpaceGuid.PcdSata2Status
+
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress
-  
+
 [BuildOptions]
   GCC:*_*_*_ASL_FLAGS       = -vw3133 -vw3150

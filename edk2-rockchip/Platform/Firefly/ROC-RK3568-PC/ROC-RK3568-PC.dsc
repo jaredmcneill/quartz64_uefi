@@ -446,6 +446,11 @@
   gRk356xTokenSpaceGuid.PcdMac1Status|0xF
 
   #
+  # SATA support
+  #
+  gRk356xTokenSpaceGuid.PcdSata2Status|0xF
+
+  #
   # PCI support
   #
   gRk356xTokenSpaceGuid.PcdPcieApbBase|0xFE280000
@@ -670,6 +675,7 @@
   MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
   MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
   MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
+  Silicon/Rockchip/Rk356x/Drivers/SataDxe/SataDxe.inf
 
   #
   # TRNG Support

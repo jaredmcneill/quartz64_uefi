@@ -67,6 +67,7 @@
   gRk356xTokenSpaceGuid.PcdSystemTableMode
   gRk356xTokenSpaceGuid.PcdCpuClock
   gRk356xTokenSpaceGuid.PcdCustomCpuClock
+  gRk356xTokenSpaceGuid.PcdMultiPhy1Mode
 
 [Depex]
   gPcdProtocolGuid

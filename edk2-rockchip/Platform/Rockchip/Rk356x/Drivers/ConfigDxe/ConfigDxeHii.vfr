@@ -41,6 +41,13 @@ formset
       name  = CustomCpuClock,
       guid  = CONFIGDXE_FORM_SET_GUID;
 
+#ifdef QUARTZ64
+    efivarstore MULTIPHY_MODE_VARSTORE_DATA,
+      attribute = EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS | EFI_VARIABLE_NON_VOLATILE,
+      name  = MultiPhy1Mode,
+      guid  = CONFIGDXE_FORM_SET_GUID;
+#endif
+
     form formid = 1,
         title  = STRING_TOKEN(STR_FORM_SET_TITLE);
         subtitle text = STRING_TOKEN(STR_NULL_STRING);
@@ -81,5 +88,15 @@ formset
             option text = STRING_TOKEN(STR_SYSCONFIG_CUSTOM_CPUCLOCK_1992), value = 1992, flags = 0;
           endoneof;
         endif;
+
+#ifdef QUARTZ64
+        oneof varid = MultiPhy1Mode.Mode,
+            prompt      = STRING_TOKEN(STR_SYSCONFIG_MULTIPHY1_PROMPT),
+            help        = STRING_TOKEN(STR_SYSCONFIG_MULTIPHY1_HELP),
+            flags       = NUMERIC_SIZE_4 | INTERACTIVE | RESET_REQUIRED,
+            option text = STRING_TOKEN(STR_SYSCONFIG_MULTIPHY1_USB3), value = MULTIPHY_MODE_SEL_USB3, flags = DEFAULT;
+            option text = STRING_TOKEN(STR_SYSCONFIG_MULTIPHY1_SATA), value = MULTIPHY_MODE_SEL_SATA, flags = 0;
+        endoneof;
+#endif
     endform;
 endformset;
