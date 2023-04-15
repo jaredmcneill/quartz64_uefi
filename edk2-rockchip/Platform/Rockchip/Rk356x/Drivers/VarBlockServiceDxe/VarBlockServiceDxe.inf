@@ -1,0 +1,92 @@
+#/** @file
+#
+#  Support for the block device-backed "flash" device.
+#  The trick is to keep it inside the RPI firmware file itself...
+#
+#  Copyright (c) 2018, Andrei Warkentin <andrey.warkentin@gmail.com>
+#  Copyright (c) 2006-2013, Intel Corporation. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = VarBlockServiceDxe
+  FILE_GUID                      = 733cbac2-b23f-4b92-bc8e-fb01ce5907b7
+  MODULE_TYPE                    = DXE_RUNTIME_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = FvbInitialize
+
+#
+# The following information is for reference only and not required by the build
+# tools.
+#
+#  VALID_ARCHITECTURES           = AARCH64
+#
+
+[Sources]
+  FvbInfo.c
+  VarBlockService.h
+  VarBlockService.c
+  VarBlockServiceDxe.c
+
+[Packages]
+  ArmPkg/ArmPkg.dec
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Platform/Rockchip/Rk356x/Rk356x.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  DevicePathLib
+  DxeServicesTableLib
+  MemoryAllocationLib
+  PcdLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+  UefiRuntimeLib
+  SocLib
+
+[Guids]
+  gEfiEventVirtualAddressChangeGuid
+  gRk356xEventResetGuid
+  gEfiEventReadyToBootGuid
+
+[Protocols]
+  gEfiDiskIoProtocolGuid
+  gEfiLoadedImageProtocolGuid
+  gEfiBlockIoProtocolGuid
+  gEfiFirmwareVolumeBlockProtocolGuid           # PROTOCOL SOMETIMES_PRODUCED
+  gEfiDevicePathProtocolGuid                    # PROTOCOL SOMETIMES_PRODUCED
+
+[FixedPcd]
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableSize
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwWorkingSize
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareSize
+  gRk356xTokenSpaceGuid.PcdNvStorageVariableBase
+  gRk356xTokenSpaceGuid.PcdNvStorageFtwWorkingBase
+  gRk356xTokenSpaceGuid.PcdNvStorageFtwSpareBase
+  gRk356xTokenSpaceGuid.PcdNvStorageEventLogSize
+  gRk356xTokenSpaceGuid.PcdFirmwareBlockSize
+  gArmTokenSpaceGuid.PcdFdBaseAddress
+  gArmTokenSpaceGuid.PcdFdSize
+  gRk356xTokenSpaceGuid.PcdEmmcDxeBaseAddress
+  gRk356xTokenSpaceGuid.PcdMshcDxeBaseAddress
+  gRk356xTokenSpaceGuid.PcdFdStorageOffset
+
+[Pcd]
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwWorkingBase
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareBase
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableBase
+  gRk356xTokenSpaceGuid.PcdNvStorageEventLogBase
+  gRk356xTokenSpaceGuid.PcdPlatformResetDelay
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableBase64
+
+[FeaturePcd]
+
+[Depex]
+  TRUE

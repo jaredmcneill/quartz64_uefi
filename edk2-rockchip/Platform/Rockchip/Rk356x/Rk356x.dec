@@ -1,7 +1,7 @@
 ## @file
 #
 #  Copyright (c) 2021, Andrei Warkentin <andrey.warkentin@gmail.com>
-#  Copyright (c) 2021, Jared McNeill <jmcneill@invisible.ca>
+#  Copyright (c) 2021-2023, Jared McNeill <jmcneill@invisible.ca>
 #
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
 #
@@ -18,8 +18,11 @@
 
 [Protocols]
 
+[Guids]
+  gRk356xEventResetGuid = {0x932EC83F, 0x31DB, 0x11E6, {0x9F, 0xD3, 0x63, 0xB4, 0xB4, 0xE4, 0xD4, 0xB4}}
+
 [PcdsFixedAtBuild.common]
-  gRk356xTokenSpaceGuid.PcdFdtBaseAddress|0x00AE0000|UINT64|0x00000001
+  gRk356xTokenSpaceGuid.PcdFdtBaseAddress|0x00B00000|UINT64|0x00000001
   gRk356xTokenSpaceGuid.PcdFdtSize|0x10000|UINT32|0x00000002
   gRk356xTokenSpaceGuid.PcdTfaBaseAddress|0x00000000|UINT64|0x00000003
   gRk356xTokenSpaceGuid.PcdTfaSize|0x00A00000|UINT32|0x00000004
@@ -42,6 +45,13 @@
   gRk356xTokenSpaceGuid.PcdGicPmuIrq3|0x0|UINT32|0x00000034
   gRk356xTokenSpaceGuid.PcdRkMtlMailBoxBase|0x0010f000|UINT64|0x00001000
   gRk356xTokenSpaceGuid.PcdRkMtlMailBoxSize|0x100|UINT32|0x00001001
-  gRk356xTokenSpaceGuid.PcdRkMtlMailBoxSmcId|0x82000010|UINT32|0x00010002
+  gRk356xTokenSpaceGuid.PcdRkMtlMailBoxSmcId|0x82000010|UINT32|0x00001002
+  gRk356xTokenSpaceGuid.PcdNvStorageEventLogBase|0x0|UINT32|0x00002000
+  gRk356xTokenSpaceGuid.PcdNvStorageEventLogSize|0x0|UINT32|0x00002001
+  gRk356xTokenSpaceGuid.PcdNvStorageVariableBase|0x0|UINT32|0x00002002
+  gRk356xTokenSpaceGuid.PcdNvStorageFtwSpareBase|0x0|UINT32|0x00002003
+  gRk356xTokenSpaceGuid.PcdNvStorageFtwWorkingBase|0x0|UINT32|0x00002004
+  gRk356xTokenSpaceGuid.PcdFdStorageOffset|0x00100000|UINT32|0x00003000
 
 [PcdsFixedAtBuild, PcdsPatchableInModule, PcdsDynamic, PcdsDynamicEx]
+  gRk356xTokenSpaceGuid.PcdPlatformResetDelay|0|UINT32|0x00004000

@@ -66,10 +66,10 @@ build_fit() {
 	board_upper=`echo $board | tr '[:lower:]' '[:upper:]'`
 	echo " => Building FIT"
 	./scripts/extractbl31.py ${RKBIN}/${BL31}
-	cp -f Build/${board}/${RKUEFIBUILDTYPE}_GCC5/FV/RK356X_EFI.fd Build/RK356X_EFI.fd
 	cat uefi.its | sed "s,@BOARDTYPE@,${type},g" > ${board_upper}_EFI.its
 	./${RKBIN}/tools/mkimage -f ${board_upper}_EFI.its -E ${board_upper}_EFI.itb
-	rm -f bl31_0x*.bin Build/RK356X_EFI.fd ${board_upper}_EFI.its
+	dd if=Build/${board}/${RKUEFIBUILDTYPE}_GCC5/FV/RK356X_EFI.fd of=${board_upper}_EFI.itb bs=512 seek=$((1024 * 1024 / 512))
+	rm -f bl31_0x*.bin ${board_upper}_EFI.its
 }
 
 fetch_deps

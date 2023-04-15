@@ -13,15 +13,13 @@
 	images {
 		uboot {
 			description = "UEFI";
-			data = /incbin/("./Build/RK356X_EFI.fd");
+			data-position = <0x00100000>;
+			data-size = <0x100000>;
 			type = "standalone";
 			arch = "arm64";
 			os = "U-Boot";
 			compression = "none";
 			load = <0x00a00000>;
-			hash {
-				algo = "sha256";
-			};
 		};
 		atf-1 {
 			description = "ARM Trusted Firmware";
@@ -101,7 +99,7 @@
 			type = "flat_dt";
 			arch = "arm64";
 			compression = "none";
-			load = <0x00ae0000>;
+			load = <0x00b00000>;
 			hash {
 				algo = "sha256";
 			};

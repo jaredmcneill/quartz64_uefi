@@ -60,7 +60,11 @@
   gArmTokenSpaceGuid.PcdArmPrimaryCoreMask
   gArmTokenSpaceGuid.PcdArmPrimaryCore
   gArmTokenSpaceGuid.PcdFdSize
-
+  gRk356xTokenSpaceGuid.PcdNvStorageEventLogSize
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableSize
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwWorkingSize
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareSize
+  
 [Pcd]
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialClockRate
   gArmTokenSpaceGuid.PcdSystemMemoryBase
