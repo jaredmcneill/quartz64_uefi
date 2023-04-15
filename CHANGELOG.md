@@ -1,7 +1,5 @@
-#### 2023-04-15
+#### 2023-04-16
 
-* Add support for persisting UEFI environment variables to the boot media (SD card or eMMC).
-* Add support for booting with FDT.
-* Add config menu for selecting ACPI, FDT, or both.
-* Add config menu for setting custom CPU frequencies.
-* ROC-RK3568-PC: Enable built-in USB 2.0 hub.
+* Add SATA support for Quartz64 and ROC-RK3568-PC.
+* Add config menu for selecting between USB3 and SATA ports on Quartz64.
+* Correctly mark UEFI env var memory range as RT data.
