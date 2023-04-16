@@ -116,14 +116,15 @@
   ArmGenericTimerCounterLib|ArmPkg/Library/ArmGenericTimerPhyCounterLib/ArmGenericTimerPhyCounterLib.inf
 
   # Rockchip SoC libraries
+  CpuVoltageLib|Silicon/Rockchip/Rk356x/Library/Tsc4525CpuVoltageLib/CpuVoltageLib.inf
   CruLib|Silicon/Rockchip/Rk356x/Library/CruLib/CruLib.inf
   GpioLib|Silicon/Rockchip/Rk356x/Library/GpioLib/GpioLib.inf
   I2cLib|Silicon/Rockchip/Rk356x/Library/I2cLib/I2cLib.inf
   MultiPhyLib|Silicon/Rockchip/Rk356x/Library/MultiPhyLib/MultiPhyLib.inf
   OtpLib|Silicon/Rockchip/Rk356x/Library/OtpLib/OtpLib.inf
+  Pcie30PhyLib|Silicon/Rockchip/Rk356x/Library/Pcie30PhyLib/Pcie30PhyLib.inf
   SdramLib|Silicon/Rockchip/Rk356x/Library/SdramLib/SdramLib.inf
   SocLib|Silicon/Rockchip/Rk356x/Library/SocLib/SocLib.inf
-  Pcie30PhyLib|Silicon/Rockchip/Rk356x/Library/Pcie30PhyLib/Pcie30PhyLib.inf
 
   # Devices
   NonDiscoverableDeviceRegistrationLib|MdeModulePkg/Library/NonDiscoverableDeviceRegistrationLib/NonDiscoverableDeviceRegistrationLib.inf

@@ -52,6 +52,7 @@
   UefiDriverEntryPoint
   UefiLib
   UefiRuntimeServicesTableLib
+  CpuVoltageLib
 
 [Guids]
   gConfigDxeFormSetGuid

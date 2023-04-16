@@ -116,6 +116,7 @@
   ArmGenericTimerCounterLib|ArmPkg/Library/ArmGenericTimerPhyCounterLib/ArmGenericTimerPhyCounterLib.inf
 
   # Rockchip SoC libraries
+  CpuVoltageLib|Silicon/Rockchip/Rk356x/Library/Tsc4525CpuVoltageLib/CpuVoltageLib.inf
   CruLib|Silicon/Rockchip/Rk356x/Library/CruLib/CruLib.inf
   GpioLib|Silicon/Rockchip/Rk356x/Library/GpioLib/GpioLib.inf
   I2cLib|Silicon/Rockchip/Rk356x/Library/I2cLib/I2cLib.inf

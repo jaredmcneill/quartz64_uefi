@@ -74,3 +74,10 @@
   gRk356xTokenSpaceGuid.PcdSata0Status|0|UINT8|0x00000073
   gRk356xTokenSpaceGuid.PcdSata1Status|0|UINT8|0x00000074
   gRk356xTokenSpaceGuid.PcdSata2Status|0|UINT8|0x00000075
+  # Pcds for CPU voltage
+  gRk356xTokenSpaceGuid.PcdCpuVoltageI2cBusBase|0xFDD40000|UINT32|0x00000080
+  gRk356xTokenSpaceGuid.PcdCpuVoltageI2cAddr|0x1c|UINT8|0x00000081
+  gRk356xTokenSpaceGuid.PcdCpuVoltageVselReg|0x11|UINT8|0x00000082
+  gRk356xTokenSpaceGuid.PcdCpuVoltageUVolBase|600000|UINT32|0x00000083
+  gRk356xTokenSpaceGuid.PcdCpuVoltageUVolStep|6250|UINT32|0x00000084
+  gRk356xTokenSpaceGuid.PcdCpuVoltageRampDelay|2300|UINT32|0x00000085

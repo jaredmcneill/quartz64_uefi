@@ -21,6 +21,7 @@
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/UefiRuntimeServicesTableLib.h>
 #include <Library/PcdLib.h>
+#include <Library/CpuVoltageLib.h>
 #include <Protocol/ArmScmi.h>
 #include <Protocol/ArmScmiClockProtocol.h>
 #include <ConfigVars.h>
@@ -217,6 +218,37 @@ SetCpuSpeed (
   return EFI_SUCCESS;
 }
 
+STATIC
+EFI_STATUS
+GetCpuSpeed (
+  OUT UINT64 *CpuRate
+  )
+{
+  EFI_STATUS             Status;
+  SCMI_CLOCK_PROTOCOL    *ClockProtocol;
+  EFI_GUID               ClockProtocolGuid = ARM_SCMI_CLOCK_PROTOCOL_GUID;
+  UINT32                 ClockId = CLOCK_ID_CLK_SCMI_CPU;
+
+  Status = gBS->LocateProtocol (
+                  &ClockProtocolGuid,
+                  NULL,
+                  (VOID**)&ClockProtocol
+                  );
+  if (EFI_ERROR (Status)) {
+    ASSERT_EFI_ERROR (Status);
+    return Status;
+  }
+
+  Status = ClockProtocol->RateGet (ClockProtocol, ClockId, CpuRate);
+  if (EFI_ERROR (Status)) {
+    ASSERT_EFI_ERROR (Status);
+    return Status;
+  }
+
+  DEBUG ((DEBUG_INFO, "SCMI: clock %u: Current rate is %uHz\n", ClockId, *CpuRate));
+
+  return EFI_SUCCESS;
+}
 
 STATIC EFI_STATUS
 SetupVariables (
@@ -283,6 +315,7 @@ ApplyVariables (
   UINT32     CpuClock = PcdGet32 (PcdCpuClock);
   UINT32     CustomCpuClock = PcdGet32 (PcdCustomCpuClock);
   UINT64     SpeedHz;
+  UINT64     CurSpeedHz;
 
   switch (CpuClock) {
   case CPUCLOCK_DEFAULT:
@@ -299,8 +332,20 @@ ApplyVariables (
     SpeedHz = (UINT64)CustomCpuClock * FREQ_1_MHZ;
     break;
   }
+
+  Status = GetCpuSpeed (&CurSpeedHz);
+  if (EFI_ERROR (Status)) {
+    SpeedHz = 0;
+  }
+
   if (SpeedHz != 0) {
+    if (CurSpeedHz < SpeedHz) {
+      Status = CpuVoltageSet (SpeedHz);
+    }
     SetCpuSpeed (SpeedHz);
+    if (CurSpeedHz > SpeedHz) {
+      Status = CpuVoltageSet (SpeedHz);
+    }
   }
 }
 

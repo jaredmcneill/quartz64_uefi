@@ -1,0 +1,46 @@
+#/** @file
+#
+#  TSC4525 CPU voltage library.
+#
+#  Copyright (c) 2023, Jared McNeill <jmcneill@invisible.ca>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = CpuVoltageLib
+  FILE_GUID                      = 9380AC40-F81E-4FE9-9D4B-9795390A37B0
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = CpuVoltageLib
+  CONSTRUCTOR                    = CpuVoltageLibConstructor
+
+[Sources]
+  CpuVoltageLib.c
+
+[Packages]
+  ArmPkg/ArmPkg.dec
+  ArmPlatformPkg/ArmPlatformPkg.dec
+  MdePkg/MdePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  Silicon/Rockchip/Rk356x/Rk356x.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  IoLib
+  PcdLib
+  I2cLib
+  GpioLib
+
+[FixedPcd]
+  gRk356xTokenSpaceGuid.PcdCpuVoltageI2cBusBase
+  gRk356xTokenSpaceGuid.PcdCpuVoltageI2cAddr
+  gRk356xTokenSpaceGuid.PcdCpuVoltageVselReg
+  gRk356xTokenSpaceGuid.PcdCpuVoltageUVolBase
+  gRk356xTokenSpaceGuid.PcdCpuVoltageUVolStep
+  gRk356xTokenSpaceGuid.PcdCpuVoltageRampDelay
+
+[Guids]
