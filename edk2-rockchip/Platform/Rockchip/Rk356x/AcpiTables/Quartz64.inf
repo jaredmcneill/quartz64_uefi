@@ -67,6 +67,12 @@
   gRk356xTokenSpaceGuid.PcdMshc2Status
   gRk356xTokenSpaceGuid.PcdMshc2SdioIrq
   gRk356xTokenSpaceGuid.PcdMshc2NonRemovable
+
+  gRk356xTokenSpaceGuid.PcdSataBaseAddr
+  gRk356xTokenSpaceGuid.PcdSataSize
+  gRk356xTokenSpaceGuid.PcdSata0Status
+  gRk356xTokenSpaceGuid.PcdSata1Status
+  gRk356xTokenSpaceGuid.PcdSata2Status
   
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress
 
