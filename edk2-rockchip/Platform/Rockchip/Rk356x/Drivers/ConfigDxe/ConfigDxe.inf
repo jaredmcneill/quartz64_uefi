@@ -63,12 +63,16 @@
 [Protocols]
 
 [FixedPcd]
+  gRk356xTokenSpaceGuid.PcdFanGpioBank
+  gRk356xTokenSpaceGuid.PcdFanGpioPin
+  gRk356xTokenSpaceGuid.PcdFanGpioActiveHigh
 
 [Pcd]
   gRk356xTokenSpaceGuid.PcdSystemTableMode
   gRk356xTokenSpaceGuid.PcdCpuClock
   gRk356xTokenSpaceGuid.PcdCustomCpuClock
   gRk356xTokenSpaceGuid.PcdMultiPhy1Mode
+  gRk356xTokenSpaceGuid.PcdFanMode
 
 [Depex]
   gPcdProtocolGuid

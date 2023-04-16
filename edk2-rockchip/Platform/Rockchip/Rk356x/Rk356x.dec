@@ -53,6 +53,9 @@
   gRk356xTokenSpaceGuid.PcdNvStorageFtwSpareBase|0x0|UINT32|0x00002003
   gRk356xTokenSpaceGuid.PcdNvStorageFtwWorkingBase|0x0|UINT32|0x00002004
   gRk356xTokenSpaceGuid.PcdFdStorageOffset|0x00100000|UINT32|0x00003000
+  gRk356xTokenSpaceGuid.PcdFanGpioBank|0xFF|UINT8|0x00003001
+  gRk356xTokenSpaceGuid.PcdFanGpioPin|0xFF|UINT8|0x00003002
+  gRk356xTokenSpaceGuid.PcdFanGpioActiveHigh|TRUE|BOOLEAN|0x00003003
 
 [PcdsFixedAtBuild, PcdsPatchableInModule, PcdsDynamic, PcdsDynamicEx]
   gRk356xTokenSpaceGuid.PcdPlatformResetDelay|0|UINT32|0x00004000
@@ -60,3 +63,4 @@
   gRk356xTokenSpaceGuid.PcdCpuClock|2|UINT32|0x00004002
   gRk356xTokenSpaceGuid.PcdCustomCpuClock|816|UINT32|0x00004003
   gRk356xTokenSpaceGuid.PcdMultiPhy1Mode|0|UINT32|0x00004004
+  gRk356xTokenSpaceGuid.PcdFanMode|0|UINT32|0x00040005

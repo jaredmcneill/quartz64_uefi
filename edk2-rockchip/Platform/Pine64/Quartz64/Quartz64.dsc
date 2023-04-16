@@ -474,6 +474,12 @@
   gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|22
 
   #
+  # Fan support
+  #
+  gRk356xTokenSpaceGuid.PcdFanGpioBank|0
+  gRk356xTokenSpaceGuid.PcdFanGpioPin|27
+
+  #
   # This board has inverted polarity for the PWREN pin on the SD card slot
   #
   gRk356xTokenSpaceGuid.PcdMshcDxePwrEnUsed|TRUE
@@ -493,6 +499,7 @@
   gRk356xTokenSpaceGuid.PcdCpuClock|L"CpuClock"|gConfigDxeFormSetGuid|0x0|2
   gRk356xTokenSpaceGuid.PcdCustomCpuClock|L"CustomCpuClock"|gConfigDxeFormSetGuid|0x0|816
   gRk356xTokenSpaceGuid.PcdMultiPhy1Mode|L"MultiPhy1Mode"|gConfigDxeFormSetGuid|0x0|0
+  gRk356xTokenSpaceGuid.PcdFanMode|L"FanMode"|gConfigDxeFormSetGuid|0x0|1
 
   #
   # Common UEFI ones.

@@ -22,6 +22,7 @@
 #include <Library/UefiRuntimeServicesTableLib.h>
 #include <Library/PcdLib.h>
 #include <Library/CpuVoltageLib.h>
+#include <Library/GpioLib.h>
 #include <Protocol/ArmScmi.h>
 #include <Protocol/ArmScmiClockProtocol.h>
 #include <ConfigVars.h>
@@ -30,6 +31,9 @@
 
 #define CLOCK_ID_CLK_SCMI_CPU     0
 #define FREQ_1_MHZ                1000000
+#define FAN_GPIO_BANK             FixedPcdGet8 (PcdFanGpioBank)
+#define FAN_GPIO_PIN              FixedPcdGet8 (PcdFanGpioPin)
+#define FAN_GPIO_ENABLE_VALUE     FixedPcdGetBool (PcdFanGpioActiveHigh)
 
 extern UINT8 ConfigDxeHiiBin[];
 extern UINT8 ConfigDxeStrings[];
@@ -302,6 +306,18 @@ SetupVariables (
   }
 #endif
 
+#if FAN_GPIO_BANK != 0xFF
+  ASSERT (FAN_GPIO_PIN != 0xFF);
+  Size = sizeof (UINT32);
+  Status = gRT->GetVariable (L"FanMode",
+                             &gConfigDxeFormSetGuid,
+                             NULL, &Size, &Var32);
+  if (EFI_ERROR (Status)) {
+    Status = PcdSet32S (PcdFanMode, PcdGet32 (PcdFanMode));
+    ASSERT_EFI_ERROR (Status);
+  }
+#endif
+
   return EFI_SUCCESS;
 }
 
@@ -317,6 +333,19 @@ ApplyVariables (
   UINT64     SpeedHz;
   UINT64     CurSpeedHz;
 
+#if FAN_GPIO_BANK != 0xFF
+  /*
+   * Fan settings
+   */
+  if (PcdGet32 (PcdFanMode) == FAN_MODE_ON) {
+    GpioPinSetDirection (FAN_GPIO_BANK, FAN_GPIO_PIN, GPIO_PIN_OUTPUT);
+    GpioPinWrite (FAN_GPIO_BANK, FAN_GPIO_PIN, FAN_GPIO_ENABLE_VALUE);
+  }
+#endif
+
+  /*
+   * CPU clock settings
+   */
   switch (CpuClock) {
   case CPUCLOCK_DEFAULT:
     SpeedHz = 0;
