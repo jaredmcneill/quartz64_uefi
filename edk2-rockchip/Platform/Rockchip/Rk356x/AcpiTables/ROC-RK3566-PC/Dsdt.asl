@@ -16,6 +16,7 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
     include ("Cpu.asl")
     include ("Tsadc.asl")
     include ("Uart.asl")
+    include ("Wdt.asl")
     include ("Usb2.asl")
     include ("Usb3.asl")
     include ("Gmac.asl")
