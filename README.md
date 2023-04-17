@@ -27,7 +27,7 @@ Connect a serial console to UART2 using settings `115200 8n1`.
 | ESXi-Arm | 1.12 | HDMI, USB2, USB3, serial, PCIe, ethernet | |
 | Fedora | 36 | HDMI, USB2, USB3, serial, PCIe, thermal sensors | Needs `irqchip.gicv3_nolpi=1` for MSI support |
 | FreeBSD | 14.0-CURRENT | ? | Mangled serial output, boot stuck waiting for random seed |
-| NetBSD | 9.99.x | HDMI, USB2, USB3, serial, SD card, PCIe, eMMC, SATA, ethernet, thermal sensors | |
+| NetBSD | 9.99.x | HDMI, USB2, USB3, serial, SD card, PCIe, eMMC, SATA, ethernet, thermal sensors, watchdog | |
 | OpenBSD | 7.0-current | HDMI, USB2, USB3, serial | To use HDMI console, enter `set tty fb0` at the bootloader prompt. |
 | Ubuntu | 21.04 | HDMI, USB2, USB3, serial, PCIe, thermal sensors | Needs `irqchip.gicv3_nolpi=1` for MSI support |
 | Windows PE | ? | HDMI, USB3, PCIe | BSOD when plugging device in to USB2 port (#2) |
