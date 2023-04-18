@@ -32,6 +32,5 @@
   CruLib
 
 [FixedPcd]
-  gRk356xTokenSpaceGuid.PcdMultiPhyUsb3DataBits
 
 [Guids]

@@ -345,9 +345,6 @@ InitializePciHost (
     gBS->Stall (100000);
   }
 
-  /* Configure MULTI-PHY */
-  CruSetPciePhyClockRate (2, 100000000);
-
   if (PCIE_SEGMENT == PCIE_SEGMENT_PCIE30X1 || PCIE_SEGMENT == PCIE_SEGMENT_PCIE30X2) {
     /* Configure PCIe 3.0 PHY */
     Pcie30PhyInit ();
