@@ -17,6 +17,7 @@ TRUST_INI=RK3568TRUST.ini
 MINIALL_INI=RK3568MINIALL.ini
 
 RKBIN=edk2-rockchip-non-osi/rkbin
+FIRMWARE_VER="$(git describe --tags --dirty)"
 
 fetch_deps() {
 	git submodule update --init --recursive
@@ -33,6 +34,7 @@ build_uefi() {
 	board=$2
 	echo " => Building UEFI"
 	build -n $(getconf _NPROCESSORS_ONLN) -b ${RKUEFIBUILDTYPE} -a AARCH64 -t GCC5 \
+	    -D FIRMWARE_VER="${FIRMWARE_VER}" \
 	    -p Platform/${vendor}/${board}/${board}.dsc
 }
 
