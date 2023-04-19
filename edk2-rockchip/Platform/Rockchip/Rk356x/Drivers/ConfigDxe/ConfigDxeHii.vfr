@@ -49,7 +49,7 @@ formset
 #endif
 
 #if FixedPcdGet8 (PcdFanGpioBank) != 0xFF
-    efivarstore MULTIPHY_MODE_VARSTORE_DATA,
+    efivarstore FAN_VARSTORE_DATA,
       attribute = EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS | EFI_VARIABLE_NON_VOLATILE,
       name  = FanMode,
       guid  = CONFIGDXE_FORM_SET_GUID;
@@ -107,13 +107,12 @@ formset
 #endif
 
 #if FixedPcdGet8 (PcdFanGpioBank) != 0xFF
-        oneof varid = FanMode.Mode,
+        checkbox varid = FanMode.Mode,
             prompt      = STRING_TOKEN(STR_SYSCONFIG_FAN_PROMPT),
             help        = STRING_TOKEN(STR_SYSCONFIG_FAN_HELP),
-            flags       = NUMERIC_SIZE_4 | INTERACTIVE | RESET_REQUIRED,
-            option text = STRING_TOKEN(STR_SYSCONFIG_FAN_OFF), value = FAN_MODE_OFF, flags = 0;
-            option text = STRING_TOKEN(STR_SYSCONFIG_FAN_ON), value = FAN_MODE_ON, flags = DEFAULT;
-        endoneof;
+            flags       = CHECKBOX_DEFAULT | CHECKBOX_DEFAULT_MFG | RESET_REQUIRED,
+            default     = 1,
+        endcheckbox;
 #endif
     endform;
 endformset;

@@ -38,9 +38,7 @@ typedef struct {
 } MULTIPHY_MODE_VARSTORE_DATA;
 
 typedef struct {
-#define FAN_MODE_OFF 0
-#define FAN_MODE_ON  1
-  UINT32 Mode;
+  BOOLEAN Mode;
 } FAN_VARSTORE_DATA;
 
 #endif /* CONFIG_VARS_H */

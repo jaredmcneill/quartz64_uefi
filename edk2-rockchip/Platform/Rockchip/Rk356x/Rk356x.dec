@@ -63,4 +63,4 @@
   gRk356xTokenSpaceGuid.PcdCpuClock|2|UINT32|0x00004002
   gRk356xTokenSpaceGuid.PcdCustomCpuClock|816|UINT32|0x00004003
   gRk356xTokenSpaceGuid.PcdMultiPhy1Mode|0|UINT32|0x00004004
-  gRk356xTokenSpaceGuid.PcdFanMode|0|UINT32|0x00040005
+  gRk356xTokenSpaceGuid.PcdFanMode|FALSE|BOOLEAN|0x00040005

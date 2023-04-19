@@ -261,6 +261,9 @@ SetupVariables (
 {
   UINTN      Size;
   UINT32     Var32;
+#if FAN_GPIO_BANK != 0xFF
+  BOOLEAN    VarBool;
+#endif
   EFI_STATUS Status;
 
   /*
@@ -308,12 +311,12 @@ SetupVariables (
 
 #if FAN_GPIO_BANK != 0xFF
   ASSERT (FAN_GPIO_PIN != 0xFF);
-  Size = sizeof (UINT32);
+  Size = sizeof (BOOLEAN);
   Status = gRT->GetVariable (L"FanMode",
                              &gConfigDxeFormSetGuid,
-                             NULL, &Size, &Var32);
+                             NULL, &Size, &VarBool);
   if (EFI_ERROR (Status)) {
-    Status = PcdSet32S (PcdFanMode, PcdGet32 (PcdFanMode));
+    Status = PcdSetBoolS (PcdFanMode, PcdGetBool (PcdFanMode));
     ASSERT_EFI_ERROR (Status);
   }
 #endif
@@ -337,7 +340,7 @@ ApplyVariables (
   /*
    * Fan settings
    */
-  if (PcdGet32 (PcdFanMode) == FAN_MODE_ON) {
+  if (PcdGetBool (PcdFanMode)) {
     GpioPinSetDirection (FAN_GPIO_BANK, FAN_GPIO_PIN, GPIO_PIN_OUTPUT);
     GpioPinWrite (FAN_GPIO_BANK, FAN_GPIO_PIN, FAN_GPIO_ENABLE_VALUE);
   }

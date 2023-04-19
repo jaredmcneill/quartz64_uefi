@@ -41,12 +41,10 @@
 #string STR_SYSCONFIG_CUSTOM_CPUCLOCK_1800   #language en-US "1800"
 #string STR_SYSCONFIG_CUSTOM_CPUCLOCK_1992   #language en-US "1992"
 
-#string STR_SYSCONFIG_MULTIPHY1_PROMPT   #language en-US "USB3/SATA Selection"
+#string STR_SYSCONFIG_MULTIPHY1_PROMPT   #language en-US "USB3/SATA Mux Selection"
 #string STR_SYSCONFIG_MULTIPHY1_HELP     #language en-US "Enable USB3 or SATA port"
 #string STR_SYSCONFIG_MULTIPHY1_USB3     #language en-US "USB3"
 #string STR_SYSCONFIG_MULTIPHY1_SATA     #language en-US "SATA"
 
-#string STR_SYSCONFIG_FAN_PROMPT   #language en-US "Fan Mode"
+#string STR_SYSCONFIG_FAN_PROMPT   #language en-US "Enable FAN Power"
 #string STR_SYSCONFIG_FAN_HELP     #language en-US "Settings for GPIO fan"
-#string STR_SYSCONFIG_FAN_ON       #language en-US "Always on"
-#string STR_SYSCONFIG_FAN_OFF      #language en-US "Off"
