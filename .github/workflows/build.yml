@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name: Install toolchain
       run: |
         sudo apt install gcc-aarch64-linux-gnu iasl device-tree-compiler python3-pyelftools
