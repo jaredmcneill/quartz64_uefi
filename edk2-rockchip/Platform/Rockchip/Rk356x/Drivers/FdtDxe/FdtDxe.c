@@ -83,6 +83,35 @@ FixUartSpeed (
   return EFI_SUCCESS;
 }
 
+#ifdef QUARTZ64
+STATIC
+EFI_STATUS
+FixMultiPhy1Mode (
+  VOID
+  )
+{
+  INTN Node;
+
+  Node = fdt_path_offset (mFdtImage, "/sata@fc400000");
+  if (Node < 0) {
+    DEBUG ((DEBUG_ERROR, "Node /sata@fc400000 not found"));
+    return EFI_SUCCESS;
+  }
+  fdt_setprop_string (mFdtImage, Node, "status",
+                      PcdGet32 (PcdMultiPhy1Mode) == MULTIPHY_MODE_SEL_SATA ? "okay" : "disabled");
+
+  Node = fdt_path_offset (mFdtImage, "/usb@fd000000");
+  if (Node < 0) {
+    DEBUG ((DEBUG_ERROR, "Node /usb@fd000000 not found"));
+    return EFI_SUCCESS;
+  }
+  fdt_setprop_string (mFdtImage, Node, "status",
+                      PcdGet32 (PcdMultiPhy1Mode) == MULTIPHY_MODE_SEL_USB3 ? "okay" : "disabled");
+
+  return EFI_SUCCESS;
+}
+#endif
+
 /**
   @param  ImageHandle   of the loaded driver
   @param  SystemTable   Pointer to the System Table
@@ -152,6 +181,13 @@ FdtDxeInitialize (
   if (EFI_ERROR (Status)) {
     Print (L"Failed to fix UART speed: %r\n", Status);
   }
+
+#ifdef QUARTZ64
+  Status = FixMultiPhy1Mode ();
+  if (EFI_ERROR (Status)) {
+    Print (L"Failed to fix MULTI-PHY1 mode: %r\n", Status);
+  }
+#endif
 
   DEBUG ((DEBUG_INFO, "Installed devicetree at address %p\n", mFdtImage));
   Status = gBS->InstallConfigurationTable (&gFdtTableGuid, mFdtImage);

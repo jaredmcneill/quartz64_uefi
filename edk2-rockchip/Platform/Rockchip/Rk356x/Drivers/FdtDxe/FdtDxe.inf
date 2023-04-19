@@ -50,4 +50,5 @@
 
 [Pcd]
   gRk356xTokenSpaceGuid.PcdSystemTableMode
+  gRk356xTokenSpaceGuid.PcdMultiPhy1Mode
 
