@@ -18,6 +18,7 @@
 
 [Sources]
   OtpLib.c
+  OtpUtil.c
 
 [Packages]
   ArmPkg/ArmPkg.dec

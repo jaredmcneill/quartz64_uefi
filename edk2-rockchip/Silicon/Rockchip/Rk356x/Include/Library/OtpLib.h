@@ -16,4 +16,9 @@ OtpRead (
     OUT UINT8 *Data
     );
 
+UINT64
+OtpGetSerial (
+    VOID
+    );
+
 #endif /* OTPLIB_H__ */
