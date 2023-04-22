@@ -1,6 +1,5 @@
-#### 2023-04-17
+#### 2023-04-22
 
-* Add watchdog device to ACPI tables.
-* Adjust CPU voltage when changing frequency.
-* Quartz64: Add SATA device to ACPI tables.
-* Quartz64: Add config menu for turning the optional fan on and off.
+* Quartz64: Patch DT based on USB3/SATA config option.
+* Quartz64: Fix for fan setting control.
+* USB3 clock fixes.
