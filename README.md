@@ -16,6 +16,14 @@ Prebuild images are also provided for stable ports and are available in the [rel
 
 **Note:** The ROCK3 Compute Module port is still work in progress: as such no prebuild images are released for those boards.
 
+## Installing
+
+In order to have the board booting in UEFI, the firmware has to be located in one of the supported boot devices. Each board have its peculiarities, that are explained in dedicated documentation page:
+
+* PINE64 Quartz64 Model A - TBD
+* [Firefly ROC-RK3566-PC / StationPC Station M2 - Firefly ROC-RK3568-PC / StationPC Station P2](docs/firefly-ROC-RK356x-PC.md)
+* Radxa ROCK3 Computing Module - TBD
+
 ## Running
 
 Connect a serial console to UART2 using settings `115200 8n1`.
