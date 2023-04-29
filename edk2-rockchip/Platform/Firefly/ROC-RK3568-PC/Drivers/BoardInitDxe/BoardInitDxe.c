@@ -337,18 +337,7 @@ BoardInitPmic (
   DEBUG ((DEBUG_INFO, "PMIC: Detected RK%03X ver 0x%X\n", ChipName, ChipVer));
   ASSERT (ChipName == 0x809);
 
-  /* Check LD01 and LD09 are configured correctly. */
-  PmicRead (PMIC_LDO1_ON_VSEL, &Value);
-  ASSERT (Value == 0x0c); /* 0.8V */
-  PmicRead (PMIC_LDO9_ON_VSEL, &Value);
-  ASSERT (Value == 0x30); /* 1.8V */
-
-  /* Enable LDO1 and LDO9 for HDMI */
-  PmicWrite (PMIC_POWER_EN1, 0x11);
-  PmicWrite (PMIC_POWER_EN3, 0x11);
-
-
-  /* Initialize PMIC for HDMI */
+  /* Initialize PMIC */
   PmicWrite (PMIC_LDO1_ON_VSEL, 0x0c);  /* 0.9V - vdda0v9_image */
   PmicWrite (PMIC_LDO2_ON_VSEL, 0x0c);  /* 0.9V - vdda_0v9 */
   PmicWrite (PMIC_LDO3_ON_VSEL, 0x0c);  /* 0.9V - vdd0v9_pmu */
@@ -361,7 +350,7 @@ BoardInitPmic (
 
   PmicWrite (PMIC_POWER_EN1, 0xff); /* LDO1, LDO2, LDO3, LDO4 */
   PmicWrite (PMIC_POWER_EN2, 0xee); /* LDO6, LDO7, LDO8 */
-  PmicWrite (PMIC_POWER_EN3, 0x55); /* LDO9, SW1*/
+  PmicWrite (PMIC_POWER_EN3, 0x55); /* LDO9, SW1 */
 }
 
 STATIC
