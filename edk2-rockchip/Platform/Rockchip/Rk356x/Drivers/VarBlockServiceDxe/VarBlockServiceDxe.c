@@ -11,6 +11,17 @@
 
 #include "VarBlockService.h"
 
+// Non-discoverable device path, must match the format used in
+// NonDiscoverableDeviceRegistrationLib.c
+#pragma pack (1)
+typedef struct {
+  VENDOR_DEVICE_PATH          Vendor;
+  UINT64                      BaseAddress;
+  UINT8                       ResourceType;
+  EFI_DEVICE_PATH_PROTOCOL    End;
+} NON_DISCOVERABLE_DEVICE_PATH;
+#pragma pack ()
+
 //
 // Minimum delay to enact before reset, when variables are dirty (in μs).
 // Needed to ensure that devices have time to flush their write cache
@@ -286,19 +297,29 @@ IsBootDevice (
 {
   SOC_BOOT_DEVICE BootDevice;
   EFI_DEV_PATH *Device;
+  NON_DISCOVERABLE_DEVICE_PATH *DevicePath;
+  CHAR16 *DevicePathText;
   
   BootDevice = SocGetBootDevice ();
   Device = (EFI_DEV_PATH *) DevicePathFromHandle (Handle);
-  
-  DEBUG ((DEBUG_INFO, "IsBootDevice: DevPath type 0x%x subtype 0x%x\n", Device->DevPath.Type, Device->DevPath.SubType));
+  DevicePathText = ConvertDevicePathToText (&Device->DevPath, FALSE, FALSE);
+
+  DEBUG ((DEBUG_INFO, "IsBootDevice: DevPath %s type 0x%x subtype 0x%x\n", DevicePathText, Device->DevPath.Type, Device->DevPath.SubType));
+  gBS->FreePool (DevicePathText);
 
   if (Device->DevPath.Type == HARDWARE_DEVICE_PATH && Device->DevPath.SubType == HW_MEMMAP_DP) {
-    if (BootDevice == SOC_BOOT_DEVICE_EMMC) {
-      return Device->MemMap.StartingAddress == PcdGet32 (PcdEmmcDxeBaseAddress);
-    }
-
+    DEBUG ((DEBUG_INFO, "IsBootDevice: HW_MEMMAP_DP device @ 0x%lX\n", Device->MemMap.StartingAddress));
     if (BootDevice == SOC_BOOT_DEVICE_SD) {
       return Device->MemMap.StartingAddress == PcdGet32 (PcdMshcDxeBaseAddress);
+    }
+  }
+
+  if (Device->DevPath.Type == HARDWARE_DEVICE_PATH && Device->DevPath.SubType == HW_VENDOR_DP &&
+      CompareGuid (&Device->Vendor.Guid, &gEdkiiNonDiscoverableDeviceProtocolGuid)) {
+    DEBUG ((DEBUG_INFO, "IsBootDevice: HW_VENDOR_DP (non-discoverable) device @ 0x%lX\n", ((NON_DISCOVERABLE_DEVICE_PATH *)Device)->BaseAddress));
+    if (BootDevice == SOC_BOOT_DEVICE_EMMC) {
+      DevicePath = (NON_DISCOVERABLE_DEVICE_PATH *) Device;
+      return DevicePath->BaseAddress == PcdGet32 (PcdEmmcDxeBaseAddress);
     }
   }
 

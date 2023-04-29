@@ -62,6 +62,7 @@
   gEfiBlockIoProtocolGuid
   gEfiFirmwareVolumeBlockProtocolGuid           # PROTOCOL SOMETIMES_PRODUCED
   gEfiDevicePathProtocolGuid                    # PROTOCOL SOMETIMES_PRODUCED
+  gEdkiiNonDiscoverableDeviceProtocolGuid
 
 [FixedPcd]
   gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableSize

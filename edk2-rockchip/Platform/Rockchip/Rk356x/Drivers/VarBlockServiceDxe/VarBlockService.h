@@ -17,6 +17,7 @@
 #include <Library/PcdLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/UefiRuntimeLib.h>
+#include <Library/BaseMemoryLib.h>
 #include <Protocol/DevicePath.h>
 #include <Protocol/FirmwareVolumeBlock.h>
 #include <Protocol/BlockIo.h>
