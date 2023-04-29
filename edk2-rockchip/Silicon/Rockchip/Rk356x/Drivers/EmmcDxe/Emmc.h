@@ -16,6 +16,7 @@
 #define SD_MMC_HC_HOST_CTRL2    0x3E
 
 // eMMC Registers
+#define SDMMC_BACKEND_POWER     ((UINT32)PcdGet32 (PcdEmmcDxeBaseAddress) + 0x104)
 #define DWCMSHC_HOST_CTRL3      ((UINT32)PcdGet32 (PcdEmmcDxeBaseAddress) + 0x508)
 #define EMMC_DLL_CTRL           ((UINT32)PcdGet32 (PcdEmmcDxeBaseAddress) + 0x800)
 #define EMMC_DLL_RXCLK          ((UINT32)PcdGet32 (PcdEmmcDxeBaseAddress) + 0x804)

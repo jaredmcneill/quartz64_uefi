@@ -490,6 +490,11 @@
   gRk356xTokenSpaceGuid.PcdMshc2NonRemovable|TRUE
 
   #
+  # Limit eMMC to 52 MHz
+  #
+  gRk356xTokenSpaceGuid.PcdEmmcForceHighSpeed|TRUE
+
+  #
   # RTC support (hym8563 at 0x51 on I2C5)
   #
   gRk356xTokenSpaceGuid.PcdRtcI2cBusBase|0xFE5E0000

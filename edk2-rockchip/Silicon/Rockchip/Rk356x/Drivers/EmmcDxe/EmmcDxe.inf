@@ -47,6 +47,7 @@
 
 [Pcd]
   gRk356xTokenSpaceGuid.PcdEmmcDxeBaseAddress
+  gRk356xTokenSpaceGuid.PcdEmmcForceHighSpeed
 
 [Depex]
   TRUE
