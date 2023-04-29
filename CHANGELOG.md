@@ -1,5 +1,5 @@
-#### 2023-04-22
+#### 2023-04-29
 
-* Quartz64: Patch DT based on USB3/SATA config option.
-* Quartz64: Fix for fan setting control.
-* USB3 clock fixes.
+* Add support for persistent UEFI settings when booting from eMMC.
+* ROC-RK3568-PC: Fix eMMC detection in UEFI.
+* Update EDK II submodules.
