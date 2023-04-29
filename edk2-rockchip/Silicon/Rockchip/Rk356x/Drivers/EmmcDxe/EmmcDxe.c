@@ -279,6 +279,9 @@ EmmcDxeInitialize (
   /* Disable Command Conflict Check */
   MmioWrite32 (DWCMSHC_HOST_CTRL3, 0);
 
+  /* Switch to eMMC mode */
+  MmioOr32 (EMMC_EMMC_CTRL, BIT0);
+
   /* Disable DLL for identification */
   MmioWrite32 (EMMC_DLL_CTRL, 0);
   MmioWrite32 (EMMC_DLL_RXCLK, BIT29);
