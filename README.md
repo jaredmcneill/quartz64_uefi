@@ -18,11 +18,11 @@ Prebuild images are also provided for stable ports and are available in the [rel
 
 ## Installing
 
-In order to have the board booting in UEFI, the firmware has to be located in one of the supported boot devices. Each board have its peculiarities, that are explained in dedicated documentation page:
+In order to have the board booting in UEFI, the firmware has to be located in one of the supported boot devices. If the device (SD card, eMMC) are removable, the easiest way is to use `dd`, [Etcher](https://www.balena.io/etcher), etc. to write the appropriate .img file to the device.
 
-* PINE64 Quartz64 Model A - TBD
-* [Firefly ROC-RK3566-PC / StationPC Station M2 - Firefly ROC-RK3568-PC / StationPC Station P2](docs/firefly-ROC-RK356x-PC.md)
-* Radxa ROCK3 Computing Module - TBD
+### Board specific installation guides
+
+* [Firefly ROC-RK3566-PC and ROC-RK3568-PC, StationPC Station M2 and P2](docs/firefly-ROC-RK356x-PC.md)
 
 ## Running
 
