@@ -2246,6 +2246,17 @@ OhciInitialiseController (
   }
   DEBUG ((EFI_D_ERROR, "OHCI started for controller @ %p\n", Ohc->Controller));
   Bus++;
+
+  Status = gBS->CreateEventEx (
+              EVT_NOTIFY_SIGNAL,
+              TPL_NOTIFY,
+              OhcExitBootService,
+              Ohc,
+              &gEfiEventExitBootServicesGuid,
+              &Ohc->ExitBootServiceEvent
+              );
+  ASSERT_EFI_ERROR (Status);
+
   return EFI_SUCCESS;
 
 FREE_OHC:
