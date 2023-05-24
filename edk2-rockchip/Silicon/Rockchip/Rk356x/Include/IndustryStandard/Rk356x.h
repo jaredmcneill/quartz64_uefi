@@ -23,6 +23,7 @@
 #define PMUCRU_BASE         0xFDD00000UL
 #define CRU_BASE            0xFDD20000UL
 #define I2C0_BASE           0xFDD40000UL
+#define I2C5_BASE           0xFE5E0000UL
 #define UART_BASE(n)        ((n) == 0 ? 0xFDD50000UL : (0xFE650000UL + ((n) - 1) * 0x10000))
 #define GPIO_BASE(n)        ((n) == 0 ? 0xFDD60000UL : (0xFE740000UL + ((n) - 1) * 0x10000))
 #define PMU_BASE            0xFDD90000UL

@@ -37,10 +37,13 @@
 #define  RTC_MON_MASK           0x1F
 #define  RTC_CENTURY_MASK       0x80
 #define RTC_YEARS               0x08
+#define RTC_CLK_OUT             0x0D
 
 STATIC UINTN                    mRtcI2cBusBase = FixedPcdGet32 (PcdRtcI2cBusBase);
 STATIC EFI_EVENT                mVirtualAddressChangeEvent = NULL;
 STATIC BOOLEAN                  mRuntimeEnable = FALSE;
+STATIC INT16                    mTimeZone = EFI_UNSPECIFIED_TIMEZONE;
+STATIC UINT8                    mDaylight = 0;
 
 STATIC
 EFI_STATUS
@@ -109,14 +112,25 @@ LibGetTime (
     Time->Hour = BcdToDecimal8 (Hours & RTC_HOURS_MASK);
     Time->Minute = BcdToDecimal8 (Minutes & RTC_MINUTES_MASK);
     Time->Second = BcdToDecimal8 (Seconds & RTC_SECONDS_MASK);
-    Time->TimeZone = EFI_UNSPECIFIED_TIMEZONE;
-    Time->Daylight = 0;
+
+    Time->TimeZone = mTimeZone;
+    Time->Daylight = mDaylight;
 
     if (Time->Month == 0) {
         Time->Month = 1;
     }
     if (Time->Day == 0) {
         Time->Day = 1;
+    }
+
+    // Update the Capabilities info
+    if (Capabilities != NULL) {
+        Capabilities->Resolution = 1;
+        // Accuracy in ppm multiplied by 1,000,000, e.g. for 10ppm set 10,000,000
+        // using an average crystal clock value since data sheet doesn't mention it
+        Capabilities->Accuracy = 10000000;
+        // FALSE: Setting the time does not clear the values below the resolution level
+        Capabilities->SetsToZero = FALSE;
     }
 
     return EFI_SUCCESS;
@@ -131,6 +145,9 @@ LibSetTime (
     EFI_STATUS Status;
 
     DEBUG ((DEBUG_INFO, "LibSetTime() called\n"));
+
+    mTimeZone = Time->TimeZone;
+    mDaylight = Time->Daylight;
 
     if (Time->Year < 2000 || Time->Year > 2099) {
         DEBUG ((DEBUG_ERROR, "WARNING: Year should be between 2000 and 2099\n"));

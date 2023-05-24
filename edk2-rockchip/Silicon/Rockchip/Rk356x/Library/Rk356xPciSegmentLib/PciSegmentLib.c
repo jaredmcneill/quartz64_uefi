@@ -18,9 +18,17 @@
 
 #include <IndustryStandard/Rk356x.h>
 
-#define PCIE_DBI_BASE                   FixedPcdGet64 (PcdPcieDbiBase)
-#define PCIE_BASE                       FixedPcdGet64 (PcdPciExpressBaseAddress)
-#define PCIE_SEGMENT                    ((PCIE_BASE - 0x300000000UL) / 0x40000000UL)
+#define PCIE2X1_S                       0x300000000UL /* 1024MB */
+#define PCIE3X1_S                       0x340000000UL /* 1024MB */
+#define PCIE3X2_S                       0x380000000UL /* 1024MB */
+
+#define PCIE2X1_DBI                     0x3C0000000   /* 4MB */
+#define PCIE3X1_DBI                     0x3C0400000   /* 4MB */
+#define PCIE3X2_DBI                     0x3C0800000   /* 4MB */
+
+#define PCIE2X1_SEGMENT                 ((PCIE2X1_S - 0x300000000UL) / 0x40000000UL)
+#define PCIE3X1_SEGMENT                 ((PCIE3X1_S - 0x300000000UL) / 0x40000000UL)
+#define PCIE3X2_SEGMENT                 ((PCIE3X2_S - 0x300000000UL) / 0x40000000UL)
 
 typedef enum {
   PciCfgWidthUint8      = 0,
@@ -49,8 +57,12 @@ PciSegmentLibGetConfigBase (
   UINT32 Bus = (Address & 0xff00000) >> 20;
 
   switch ((UINT16)(Address >> 32)) {
-  case PCIE_SEGMENT:
-    return Bus == 0 ? PCIE_DBI_BASE : PCIE_BASE + 0x8000;
+  case PCIE2X1_SEGMENT:
+    return Bus == 0 ? PCIE2X1_DBI : PCIE2X1_S + 0x8000;
+  case PCIE3X1_SEGMENT:
+    return Bus == 0 ? PCIE3X1_DBI : PCIE3X1_S + 0x8000;
+  case PCIE3X2_SEGMENT:
+    return Bus == 0 ? PCIE3X2_DBI : PCIE3X2_S + 0x8000;
   default:
     ASSERT (FALSE);
   }

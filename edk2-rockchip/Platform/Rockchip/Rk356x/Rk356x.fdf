@@ -232,6 +232,7 @@ READ_LOCK_STATUS   = TRUE
   INF MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
   INF MdeModulePkg/Universal/DriverHealthManagerDxe/DriverHealthManagerDxe.inf
   INF MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
+  # INF MdeModulePkg/Universal/BootManagerPolicyDxe/BootManagerPolicyDxe.inf
   INF MdeModulePkg/Application/UiApp/UiApp.inf
 
   #
@@ -252,7 +253,9 @@ READ_LOCK_STATUS   = TRUE
   INF MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
   INF MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
   INF EmbeddedPkg/Drivers/NonCoherentIoMmuDxe/NonCoherentIoMmuDxe.inf
-  INF MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
+  !if $(SATA_ENABLE) == TRUE
+    INF MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
+  !endif
 
   #
   # SD
@@ -270,12 +273,14 @@ READ_LOCK_STATUS   = TRUE
   #
   # AHCI Support
   #
-  INF MdeModulePkg/Bus/Pci/SataControllerDxe/SataControllerDxe.inf
-  INF MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
-  INF MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
-  INF MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
-  INF MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
-  INF Silicon/Rockchip/Rk356x/Drivers/SataDxe/SataDxe.inf
+  !if $(SATA_ENABLE) == TRUE
+    INF MdeModulePkg/Bus/Pci/SataControllerDxe/SataControllerDxe.inf
+    INF MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
+    INF MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
+    INF MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
+    INF MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
+    INF Silicon/Rockchip/Rk356x/Drivers/SataDxe/SataDxe.inf
+  !endif
 
   #
   # TRNG Support
@@ -291,6 +296,53 @@ READ_LOCK_STATUS   = TRUE
   # RAM Disk Support
   #
   INF MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
+
+  #
+  # PXE
+  #
+  !if $(NETWORK_ENABLE) == TRUE
+    INF NetworkPkg/SnpDxe/SnpDxe.inf
+    INF NetworkPkg/DpcDxe/DpcDxe.inf
+    INF NetworkPkg/MnpDxe/MnpDxe.inf
+    INF NetworkPkg/ArpDxe/ArpDxe.inf
+    INF NetworkPkg/Ip4Dxe/Ip4Dxe.inf
+    INF NetworkPkg/Udp4Dxe/Udp4Dxe.inf
+    INF NetworkPkg/Dhcp4Dxe/Dhcp4Dxe.inf
+    INF NetworkPkg/Mtftp4Dxe/Mtftp4Dxe.inf
+    INF NetworkPkg/TcpDxe/TcpDxe.inf
+    INF NetworkPkg/UefiPxeBcDxe/UefiPxeBcDxe.inf
+
+    !if $(NETWORK_IP6_ENABLE) == TRUE
+      INF  NetworkPkg/Ip6Dxe/Ip6Dxe.inf
+      INF  NetworkPkg/Dhcp6Dxe/Dhcp6Dxe.inf
+      INF  NetworkPkg/Udp6Dxe/Udp6Dxe.inf
+      INF  NetworkPkg/Mtftp6Dxe/Mtftp6Dxe.inf
+    !endif
+
+    INF  NetworkPkg/DnsDxe/DnsDxe.inf
+    INF  NetworkPkg/HttpDxe/HttpDxe.inf
+    INF  NetworkPkg/HttpUtilitiesDxe/HttpUtilitiesDxe.inf
+    # INF  NetworkPkg/HttpBootDxe/HttpBootDxe.inf
+
+    !if $(NETWORK_IPSEC_ENABLE) == TRUE
+      INF  NetworkPkg/IpSecDxe/IpSecDxe.inf
+    !endif
+
+    !if $(NETWORK_TLS_ENABLE) == TRUE
+      INF  NetworkPkg/TlsDxe/TlsDxe.inf
+      INF  NetworkPkg/TlsAuthConfigDxe/TlsAuthConfigDxe.inf
+    !endif
+
+    !if $(NETWORK_VLAN_ENABLE) == TRUE
+      INF  NetworkPkg/VlanConfigDxe/VlanConfigDxe.inf
+    !endif
+
+    !if $(NETWORK_ISCSI_ENABLE) == TRUE
+      INF  NetworkPkg/IScsiDxe/IScsiDxe.inf
+    !endif
+
+    INF Drivers/Realtek/Bus/Pcie/PcieNetworking/RtkUndiDxe.inf
+  !endif
 
 
 [FV.FVMAIN_COMPACT]
