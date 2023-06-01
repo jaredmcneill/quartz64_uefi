@@ -95,7 +95,7 @@
 		};
 		fdt {
 			description = "UEFI dtb";
-			data = /incbin/("./@BOARDTYPE@.dtb");
+			data = /incbin/("./dtb/@BOARDTYPE@.dtb");
 			type = "flat_dt";
 			arch = "arm64";
 			compression = "none";
