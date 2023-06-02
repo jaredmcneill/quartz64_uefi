@@ -11,7 +11,8 @@ jobs:
         fetch-depth: 0
     - name: Install toolchain
       run: |
-        sudo apt install gcc-aarch64-linux-gnu iasl device-tree-compiler python3-pyelftools
+        sudo apt update
+        sudo apt --fix-missing install gcc-aarch64-linux-gnu iasl device-tree-compiler python3-pyelftools
     - name: Build
       run: |
         make sdcard
