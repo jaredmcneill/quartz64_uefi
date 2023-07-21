@@ -39,9 +39,10 @@
   gFdtTableGuid
 
 [Protocols]
+  gEfiHiiDatabaseProtocolGuid
 
 [Depex]
-  TRUE
+  gEfiHiiDatabaseProtocolGuid
 
 [FixedPcd]
   gRk356xTokenSpaceGuid.PcdFdtBaseAddress
