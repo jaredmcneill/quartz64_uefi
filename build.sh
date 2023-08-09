@@ -102,6 +102,10 @@ for board in ${RKUEFIBOARDS}; do
 		build_uefi Firefly ROC-RK3568-PC
 		build_fit ROC-RK3568-PC rk3568-firefly-roc-pc
 		;;
+	CORE3566)
+		build_uefi Luckfox Core3566
+		build_fit Core3566 rk3566-luckfox-core3566
+		;;
 	*)
 		echo "Unknown board ${board}"
 		exit 1
