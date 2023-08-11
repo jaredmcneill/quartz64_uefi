@@ -616,9 +616,16 @@ MshcWriteBlockData (
   ASSERT ((mMshcCommand & BIT_CMD_WRITE) == BIT_CMD_WRITE);
 
   if (mMshcCommand & BIT_CMD_WAIT_PRVDATA_COMPLETE) {
+    TimeOut = 100000;
     do {
       Data = MmioRead32 (DWEMMC_STATUS);
-    } while (Data & DWEMMC_STS_DATA_BUSY);
+      TimeOut--;
+    } while ((Data & DWEMMC_STS_DATA_BUSY) && (TimeOut > 0));
+
+    if (TimeOut == 0) {
+        DEBUG ((DEBUG_ERROR, "%a():  CMD=%d Timeout waiting for DWEMMC_STATUS DWEMMC_STS_DATA_BUSY\n", __func__, mMshcCommand&0x3f));
+        return EFI_DEVICE_ERROR;
+    }
   }
 
   if (!(((mMshcCommand&0x3f) == 6) || ((mMshcCommand&0x3f) == 51))) {
@@ -650,8 +657,16 @@ MshcWriteBlockData (
   }
 
   for (Count = 0; Count < Size32; Count++) {
-    while(MMC_GET_FCNT(MmioRead32(DWEMMC_STATUS)) >32)
-    MicroSecondDelay(1);
+    TimeOut = 100000;
+    while((MMC_GET_FCNT(MmioRead32(DWEMMC_STATUS)) >32) && (TimeOut > 0))
+    {
+      MicroSecondDelay(1);
+      TimeOut--;
+    }
+    if (TimeOut == 0) {
+      DEBUG ((DEBUG_ERROR, "%a():  CMD=%d DWEMMC_STATUS timeout\n", __func__, mMshcCommand&0x3f));
+      return EFI_DEVICE_ERROR;
+    }
     MmioWrite32(DWEMMC_DATA, *DataBuffer++);
   }
 
