@@ -57,7 +57,7 @@
 
 /*
  * PMIC registers
-*/
+ */
 #define PMIC_I2C_ADDR           0x20
 
 #define PMIC_CHIP_NAME          0xed
@@ -308,6 +308,14 @@ BoardInitDriverEntryPoint (
 
   /* WiFi setup */
   BoardInitWiFi ();
+
+  /*
+   * Set GPIO0 PA5 (nEXTRST) output high,
+   * "Driven high (CM4_3.3V) once CM4 CPU has started to boot".
+   * Used to get external devices out of reset state.
+   */
+  GpioPinSetDirection (0, GPIO_PIN_PA5, GPIO_PIN_OUTPUT);
+  GpioPinWrite (0, GPIO_PIN_PA5, TRUE);
 
   return EFI_SUCCESS;
 }
