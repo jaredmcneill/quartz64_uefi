@@ -102,6 +102,10 @@ for board in ${RKUEFIBOARDS}; do
 		build_uefi Firefly ROC-RK3568-PC
 		build_fit ROC-RK3568-PC rk3568-firefly-roc-pc
 		;;
+	ORANGEPI3B)
+		build_uefi OrangePi OrangePi3B
+		build_fit OrangePi3B rk3566-orangepi-3b
+		;;
 	*)
 		echo "Unknown board ${board}"
 		exit 1
