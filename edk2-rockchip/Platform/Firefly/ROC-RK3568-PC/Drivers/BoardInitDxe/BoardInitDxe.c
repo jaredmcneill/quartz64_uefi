@@ -240,8 +240,8 @@ BoardInitGmac (
   DEBUG ((DEBUG_INFO, "BOARD: GMAC0 MAC address %02X:%02X:%02X:%02X:%02X:%02X\n",
           Hash[0], Hash[1], Hash[2],
           Hash[3], Hash[4], Hash[5]));
-  MacLo = Hash[3] | (Hash[2] << 8) | (Hash[1] << 16) | (Hash[0] << 24);
-  MacHi = Hash[5] | (Hash[4] << 8);
+  MacLo = Hash[0] | (Hash[1] << 8) | (Hash[2] << 16) | (Hash[3] << 24);
+  MacHi = Hash[4] | (Hash[5] << 8);
   MmioWrite32 (GMAC0_MAC_ADDRESS0_LOW, MacLo);
   MmioWrite32 (GMAC0_MAC_ADDRESS0_HIGH, MacHi);
 
@@ -249,8 +249,8 @@ BoardInitGmac (
   DEBUG ((DEBUG_INFO, "BOARD: GMAC1 MAC address %02X:%02X:%02X:%02X:%02X:%02X\n",
           Hash[0], Hash[1], Hash[2],
           Hash[3], Hash[4], Hash[5]));
-  MacLo = Hash[3] | (Hash[2] << 8) | (Hash[1] << 16) | (Hash[0] << 24);
-  MacHi = Hash[5] | (Hash[4] << 8);
+  MacLo = Hash[0] | (Hash[1] << 8) | (Hash[2] << 16) | (Hash[3] << 24);
+  MacHi = Hash[4] | (Hash[5] << 8);
   MmioWrite32 (GMAC1_MAC_ADDRESS0_LOW, MacLo);
   MmioWrite32 (GMAC1_MAC_ADDRESS0_HIGH, MacHi);
 
