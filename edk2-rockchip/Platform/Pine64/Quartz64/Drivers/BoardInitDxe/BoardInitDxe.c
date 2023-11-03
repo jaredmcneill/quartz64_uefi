@@ -27,7 +27,6 @@
 #include <Library/MemoryAllocationLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/BaseMemoryLib.h>
-#include <Library/BaseCryptLib.h>
 
 #include <IndustryStandard/Rk356x.h>
 #include <IndustryStandard/Rk356xCru.h>
@@ -114,8 +113,6 @@ BoardInitGmac (
   VOID
   )
 {
-  UINT8 OtpData[32];
-  UINT8 Hash[SHA256_DIGEST_SIZE];
   UINT32 MacLo, MacHi;
 
   /* Assert reset */
@@ -152,15 +149,7 @@ BoardInitGmac (
   CruDeassertSoftReset (14, 12);
 
   /* Generate a MAC address from the first 32 bytes in the OTP and write it to GMAC */
-  OtpRead (0x00, sizeof (OtpData), OtpData);
-  Sha256HashAll (OtpData, sizeof (OtpData), Hash);
-  Hash[0] &= 0xFE;
-  Hash[0] |= 0x02;
-  DEBUG ((DEBUG_INFO, "BOARD: MAC address %02X:%02X:%02X:%02X:%02X:%02X\n",
-          Hash[0], Hash[1], Hash[2],
-          Hash[3], Hash[4], Hash[5]));
-  MacLo = Hash[0] | (Hash[1] << 8) | (Hash[2] << 16) | (Hash[3] << 24);
-  MacHi = Hash[4] | (Hash[5] << 8);
+  OtpGetMacAddress (&MacLo, &MacHi);
   MmioWrite32 (GMAC1_MAC_ADDRESS0_LOW, MacLo);
   MmioWrite32 (GMAC1_MAC_ADDRESS0_HIGH, MacHi);
 

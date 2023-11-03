@@ -22,12 +22,14 @@
 
 [Packages]
   ArmPkg/ArmPkg.dec
+  CryptoPkg/CryptoPkg.dec
   MdePkg/MdePkg.dec
   EmbeddedPkg/EmbeddedPkg.dec
   Silicon/Rockchip/Rk356x/Rk356x.dec
 
 [LibraryClasses]
   BaseLib
+  BaseCryptLib
   DebugLib
   IoLib
   TimerLib

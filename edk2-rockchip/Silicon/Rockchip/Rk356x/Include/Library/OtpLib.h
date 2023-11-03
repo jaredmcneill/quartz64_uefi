@@ -21,4 +21,10 @@ OtpGetSerial (
     VOID
     );
 
+VOID
+OtpGetMacAddress (
+    OUT UINT32 *MacLo,
+    OUT UINT32 *MacHi
+    );
+
 #endif /* OTPLIB_H__ */

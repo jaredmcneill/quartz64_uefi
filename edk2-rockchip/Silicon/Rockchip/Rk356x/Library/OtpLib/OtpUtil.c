@@ -10,6 +10,7 @@
 
 #include <Uefi.h>
 #include <Library/BaseLib.h>
+#include <Library/BaseCryptLib.h>
 #include <Library/DebugLib.h>
 #include <Library/IoLib.h>
 #include <Library/TimerLib.h>
@@ -319,4 +320,28 @@ OtpGetSerial (
   BoardSerial |= (UINT64)CalculateCrc32NoComp (BoardSerial, SerialHi, sizeof SerialHi) << 32;
 
   return BoardSerial;
+}
+
+VOID
+OtpGetMacAddress (
+  OUT UINT32 *MacLo,
+  OUT UINT32 *MacHi
+  )
+{
+  UINT8 OtpData[32];
+  UINT8 Hash[SHA256_DIGEST_SIZE];
+
+  /* Generate MAC addresses from the first 32 bytes in the OTP */
+  OtpRead (0x00, sizeof (OtpData), OtpData);
+  Sha256HashAll (OtpData, sizeof (OtpData), Hash);
+
+  /* Clear multicast bit, set locally administered bit. */
+  Hash[0] &= 0xFE;
+  Hash[0] |= 0x02;
+  /* ... and for compatibility with old drivers (see https://github.com/jaredmcneill/quartz64_uefi/pull/68) */
+  Hash[3] &= 0xFE;
+  Hash[3] |= 0x02;
+
+  *MacLo = Hash[0] | (Hash[1] << 8) | (Hash[2] << 16) | (Hash[3] << 24);
+  *MacHi = Hash[4] | (Hash[5] << 8);
 }
