@@ -17,10 +17,12 @@ TRUST_INI=RK3568TRUST.ini
 MINIALL_INI=RK3568MINIALL.ini
 
 RKBIN=edk2-rockchip-non-osi/rkbin
-FIRMWARE_VER="$(git describe --tags --dirty)"
+#FIRMWARE_VER="$(git describe --tags --dirty)"
+FIRMWARE_VER="1"
 
 fetch_deps() {
-	git submodule update --init --recursive
+	#git submodule update --init --recursive
+	true
 }
 
 build_uefitools() {
@@ -106,6 +108,11 @@ for board in ${RKUEFIBOARDS}; do
 		build_uefi OrangePi OrangePi3B
 		build_fit OrangePi3B rk3566-orangepi-3b
 		;;
+        XPI-3566-ZERO)
+                build_uefi Geniatech XPI-3566-ZERO
+                build_fit XPI-3566-ZERO rk3566-xpi-3566-zero
+                ;;
+
 	*)
 		echo "Unknown board ${board}"
 		exit 1
