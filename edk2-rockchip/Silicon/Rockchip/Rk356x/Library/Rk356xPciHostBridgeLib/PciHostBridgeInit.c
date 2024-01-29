@@ -347,7 +347,11 @@ InitializePciHost (
 
   if (PCIE_SEGMENT == PCIE_SEGMENT_PCIE30X1 || PCIE_SEGMENT == PCIE_SEGMENT_PCIE30X2) {
     /* Configure PCIe 3.0 PHY */
-    EFI_STATUS Status; Status = Pcie30PhyInit (); if (EFI_ERROR(Status)) { return Status; }
+    EFI_STATUS Status;
+    Status = Pcie30PhyInit ();
+    if (EFI_ERROR(Status)) {
+      return Status;
+    }
   } else {
     /* Configure PCIe 2.0 PHY */
     MultiPhySetMode (2, MULTIPHY_MODE_PCIE);
