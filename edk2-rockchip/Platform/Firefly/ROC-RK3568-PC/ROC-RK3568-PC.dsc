@@ -404,6 +404,10 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterStride|4
   gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterAccessWidth|32
 
+  # UART3 and 4
+  gRk356xTokenSpaceGuid.PcdUart3Status|0xF
+  gRk356xTokenSpaceGuid.PcdUart4Status|0xF
+
   # TODO: Use 1.5M baud
   gEfiMdePkgTokenSpaceGuid.PcdUartDefaultBaudRate|115200
   

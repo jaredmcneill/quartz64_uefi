@@ -60,6 +60,8 @@
   gRk356xTokenSpaceGuid.PcdXhc1Status
   gRk356xTokenSpaceGuid.PcdMac0Status
   gRk356xTokenSpaceGuid.PcdMac1Status
+  gRk356xTokenSpaceGuid.PcdUart3Status
+  gRk356xTokenSpaceGuid.PcdUart4Status
 
   gRk356xTokenSpaceGuid.PcdMshc1Status
   gRk356xTokenSpaceGuid.PcdMshc1SdioIrq

@@ -94,6 +94,9 @@
  */
 #define GRF_IOFUNC_SEL0                       (SYS_GRF + 0x0300)
 #define  GMAC1_IOMUX_SEL                      BIT8
+#define GRF_IOFUNC_SEL3                       (SYS_GRF + 0x030c)
+#define  UART3_IOMUX_SEL                      BIT14
+#define  UART4_IOMUX_SEL                      BIT12
 #define GRF_IOFUNC_SEL5                       (SYS_GRF + 0x0314)
 #define  PCIE30X2_IOMUX_SEL_MASK              (BIT7|BIT6)
 #define  PCIE30X2_IOMUX_SEL_M1                BIT6
@@ -154,6 +157,16 @@ STATIC CONST GPIO_IOMUX_CONFIG mPcie30x2IomuxConfig[] = {
   { "pcie30x2_clkreqnm1", 2, GPIO_PIN_PD4, 4, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
   { "pcie30x2_perstnm1",  2, GPIO_PIN_PD6, 4, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
   { "pcie30x2_wakenm1",   2, GPIO_PIN_PD5, 4, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
+};
+
+STATIC CONST GPIO_IOMUX_CONFIG mUart3IomuxConfig[] = {
+  { "uart3_rxm1",         3, GPIO_PIN_PC0, 4, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_DEFAULT },
+  { "uart3_txm1",         3, GPIO_PIN_PB7, 4, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_DEFAULT },
+};
+
+STATIC CONST GPIO_IOMUX_CONFIG mUart4IomuxConfig[] = {
+  { "uart4_rxm1",         3, GPIO_PIN_PB1, 4, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_DEFAULT },
+  { "uart4_txm1",         3, GPIO_PIN_PB2, 4, GPIO_PIN_PULL_UP, GPIO_PIN_DRIVE_DEFAULT },
 };
 
 STATIC
@@ -359,6 +372,23 @@ BoardInitWiFi (
   MicroSecondDelay (100000);
 }
 
+STATIC
+VOID
+BoardInitUart (
+  VOID
+  )
+{
+  DEBUG ((DEBUG_INFO, "BOARD: UART init\n"));
+
+  /* Select M1 mux solution for UART3 and UART4 */
+  MmioWrite32 (GRF_IOFUNC_SEL3, (UART3_IOMUX_SEL << 16) | UART3_IOMUX_SEL |
+                                (UART4_IOMUX_SEL << 16) | UART4_IOMUX_SEL);
+
+  /* Configure pins */
+  GpioSetIomuxConfig (mUart3IomuxConfig, ARRAY_SIZE (mUart3IomuxConfig));
+  GpioSetIomuxConfig (mUart4IomuxConfig, ARRAY_SIZE (mUart4IomuxConfig));
+}
+
 EFI_STATUS
 EFIAPI
 BoardInitDriverEntryPoint (
@@ -416,6 +446,9 @@ BoardInitDriverEntryPoint (
 
   /* WiFi setup */
   BoardInitWiFi ();
+
+  /* UART setup */
+  BoardInitUart ();
 
   return EFI_SUCCESS;
 }

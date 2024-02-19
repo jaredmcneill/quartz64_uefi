@@ -80,3 +80,6 @@
   gRk356xTokenSpaceGuid.PcdCpuVoltageUVolBase|600000|UINT32|0x00000083
   gRk356xTokenSpaceGuid.PcdCpuVoltageUVolStep|6250|UINT32|0x00000084
   gRk356xTokenSpaceGuid.PcdCpuVoltageRampDelay|2300|UINT32|0x00000085
+  # Pcds for UART
+  gRk356xTokenSpaceGuid.PcdUart3Status|0|UINT8|0x00000090
+  gRk356xTokenSpaceGuid.PcdUart4Status|0|UINT8|0x00000091
