@@ -29,8 +29,7 @@ Device (MAC0) {
     Method (_CRS, 0x0, Serialized) {
         Name (RBUF, ResourceTemplate() {
             Memory32Fixed (ReadWrite, 0xFE2A0000, 0x10000)
-            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 59 }
-            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 56 }
+            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 59, 56 }
         })
         Return (RBUF)
     }
@@ -66,8 +65,7 @@ Device (MAC1) {
     Method (_CRS, 0x0, Serialized) {
         Name (RBUF, ResourceTemplate() {
             Memory32Fixed (ReadWrite, 0xFE010000, 0x10000)
-            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 64 }
-            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 61 }
+            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 64, 61 }
         })
         Return (RBUF)
     }
