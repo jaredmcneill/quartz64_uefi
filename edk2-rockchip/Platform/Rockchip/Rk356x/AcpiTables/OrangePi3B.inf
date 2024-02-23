@@ -12,12 +12,12 @@
 [Defines]
   INF_VERSION                    = 0x0001001A
   BASE_NAME                      = Rk356xAcpiTables
-  FILE_GUID                      = 9E2A1712-DCCC-45DA-9D67-9819EAB130A1
+  FILE_GUID                      = 0FBE0D20-3528-4F07-838B-9A711C62654F
   MODULE_TYPE                    = USER_DEFINED
   VERSION_STRING                 = 1.0
 
 [Sources]
-  Quartz64/Dsdt.asl
+  OrangePi3B/Dsdt.asl
   Dbg2.aslc
   Fadt.aslc
   Gtdt.aslc
