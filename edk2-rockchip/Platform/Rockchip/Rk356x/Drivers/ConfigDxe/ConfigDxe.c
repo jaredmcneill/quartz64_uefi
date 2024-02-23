@@ -1,6 +1,7 @@
 /** @file
  *
  *  Copyright (c) 2023, Jared McNeill <jmcneill@invisible.ca>
+ *  Copyright (c) 2023, Mario Bălănică <mariobalanica02@gmail.com>
  *  Copyright (c) 2019 - 2020, ARM Limited. All rights reserved.
  *  Copyright (c) 2018 - 2020, Andrei Warkentin <andrey.warkentin@gmail.com>
  *
@@ -25,6 +26,7 @@
 #include <Library/GpioLib.h>
 #include <Protocol/ArmScmi.h>
 #include <Protocol/ArmScmiClockProtocol.h>
+#include <Protocol/MemoryAttribute.h>
 #include <ConfigVars.h>
 #include "ConfigDxeFormSetGuid.h"
 #include "ConfigDxe.h"
@@ -261,9 +263,7 @@ SetupVariables (
 {
   UINTN      Size;
   UINT32     Var32;
-#if FAN_GPIO_BANK != 0xFF
   BOOLEAN    VarBool;
-#endif
   EFI_STATUS Status;
 
   /*
@@ -277,6 +277,15 @@ SetupVariables (
                   NULL, &Size, &Var32);
   if (EFI_ERROR (Status)) {
     Status = PcdSet32S (PcdSystemTableMode, PcdGet32 (PcdSystemTableMode));
+    ASSERT_EFI_ERROR (Status);
+  }
+
+  Size = sizeof (BOOLEAN);
+  Status = gRT->GetVariable (L"MemAttrProtocolEnable",
+                             &gConfigDxeFormSetGuid,
+                             NULL, &Size, &VarBool);
+  if (EFI_ERROR (Status)) {
+    Status = PcdSetBoolS (PcdMemAttrProtocolEnable, PcdGetBool (PcdMemAttrProtocolEnable));
     ASSERT_EFI_ERROR (Status);
   }
 
@@ -403,6 +412,77 @@ RemoveTables (
 }
 
 
+/**
+  This function uninstalls the recently added EFI_MEMORY_ATTRIBUTE_PROTOCOL
+  to workaround older versions of OS loaders/shims using it incorrectly and
+  throwing a Synchronous Exception.
+
+  Source: https://github.com/edk2-porting/edk2-rk3588/commit/842db13abdcf46a2cc45570806dd7c0e0bc00db8
+
+  See:
+    - https://github.com/microsoft/mu_silicon_arm_tiano/issues/124
+    - https://edk2.groups.io/g/devel/topic/99631663
+**/
+STATIC
+VOID
+EFIAPI
+UninstallMemoryAttributeProtocol (
+  VOID
+  )
+{
+  EFI_STATUS                      Status;
+  EFI_HANDLE                      *Handles;
+  UINTN                           HandleCount;
+  EFI_MEMORY_ATTRIBUTE_PROTOCOL   *MemoryAttributeProtocol;
+
+  Status = gBS->LocateHandleBuffer (
+                  ByProtocol,
+                  &gEfiMemoryAttributeProtocolGuid,
+                  NULL,
+                  &HandleCount,
+                  &Handles
+                  );
+  ASSERT_EFI_ERROR (Status);
+  ASSERT (HandleCount == 1);
+
+  Status = gBS->HandleProtocol (
+                  Handles[0],
+                  &gEfiMemoryAttributeProtocolGuid,
+                  (VOID **)&MemoryAttributeProtocol
+                  );
+  ASSERT_EFI_ERROR (Status);
+
+  Status = gBS->UninstallMultipleProtocolInterfaces (
+                  Handles[0],
+                  &gEfiMemoryAttributeProtocolGuid,
+                  MemoryAttributeProtocol,
+                  NULL
+                  );
+  ASSERT_EFI_ERROR (Status);
+
+  gBS->FreePool (Handles);
+}
+
+
+STATIC
+VOID
+EFIAPI
+RemoveMemAttrProtocol (
+  EFI_EVENT           Event,
+  VOID                *Context
+  )
+{
+  gBS->CloseEvent (Event);
+
+  if (PcdGetBool (PcdMemAttrProtocolEnable) == TRUE) {
+    return;
+  }
+
+  DEBUG ((DEBUG_INFO, "Removing EFI_MEMORY_ATTRIBUTE_PROTOCOL\n"));
+  UninstallMemoryAttributeProtocol ();
+}
+
+
 EFI_STATUS
 EFIAPI
 ConfigInitialize (
@@ -411,7 +491,7 @@ ConfigInitialize (
   )
 {
   EFI_STATUS                      Status;
-  EFI_EVENT                       EndOfDxeEvent;
+  EFI_EVENT                       Event;
 
   Status = SetupVariables ();
   if (Status != EFI_SUCCESS) {
@@ -426,15 +506,19 @@ ConfigInitialize (
   }
 
   Status = gBS->CreateEventEx (EVT_NOTIFY_SIGNAL, TPL_NOTIFY, RemoveTables,
-                               NULL, &gEfiEndOfDxeEventGroupGuid, &EndOfDxeEvent);
+                               NULL, &gEfiEndOfDxeEventGroupGuid, &Event);
   ASSERT_EFI_ERROR (Status);
 
   Status = gBS->CreateEventEx (EVT_NOTIFY_SIGNAL, TPL_NOTIFY, RemoveTables,
-                               NULL, &gEfiAcpiTableGuid, &EndOfDxeEvent);
+                               NULL, &gEfiAcpiTableGuid, &Event);
   ASSERT_EFI_ERROR (Status);
   
   Status = gBS->CreateEventEx (EVT_NOTIFY_SIGNAL, TPL_NOTIFY, RemoveTables,
-                               NULL, &gEfiAcpi10TableGuid, &EndOfDxeEvent);
+                               NULL, &gEfiAcpi10TableGuid, &Event);
+  ASSERT_EFI_ERROR (Status);
+
+  Status = gBS->CreateEventEx (EVT_NOTIFY_SIGNAL, TPL_NOTIFY, RemoveMemAttrProtocol,
+                               NULL, &gEfiEndOfDxeEventGroupGuid, &Event);
   ASSERT_EFI_ERROR (Status);
 
   return EFI_SUCCESS;

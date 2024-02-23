@@ -19,6 +19,10 @@ typedef struct {
 } SYSTEM_TABLE_MODE_VARSTORE_DATA;
 
 typedef struct {
+  BOOLEAN Enable;
+} MEMATTR_VARSTORE_DATA;
+
+typedef struct {
 #define CPUCLOCK_LOW     0
 #define CPUCLOCK_DEFAULT 1
 #define CPUCLOCK_MAX     2
