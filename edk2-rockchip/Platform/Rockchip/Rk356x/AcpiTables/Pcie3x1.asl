@@ -17,6 +17,18 @@ Device (PCI0) {
     Name (_SEG, 1)
     Name (_BBN, One)
 
+    OperationRegion (PGRF, SystemMemory, 0xFDCB8000, 0x100)
+    Field (PGRF, DWordAcc, NoLock, Preserve) {
+        Offset  (0x80),
+        PSTA,   32
+    }
+    Method (_STA, 0, Serialized) {
+        If (PSTA & 0x4000) {
+            Return (0xF)
+        }
+        Return (0x0)
+    }
+
     Name (_PRT, Package() {
         Package (4) { 0x0FFFF, 0, Zero, 189 },
         Package (4) { 0x0FFFF, 1, Zero, 189 },
