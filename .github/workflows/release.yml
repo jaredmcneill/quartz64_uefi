@@ -51,6 +51,15 @@ jobs:
           asset_path: ./SOQUARTZ_EFI.img.gz
           asset_name: SOQUARTZ_EFI.img.gz
           asset_content_type: application/gzip
+      - name: upload PINETAB2_EFI artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./PINETAB2_EFI.img.gz
+          asset_name: PINETAB2_EFI.img.gz
+          asset_content_type: application/gzip
       - name: upload ROC-RK3566-PC_EFI artifact
         uses: actions/upload-release-asset@v1
         env:
