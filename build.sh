@@ -110,6 +110,10 @@ for board in ${RKUEFIBOARDS}; do
 		build_uefi Pine64 PineTab2
 		build_fit PineTab2 rk3566-pinetab2
 		;;
+	NANOPI-R5S)
+		build_uefi FriendlyElec NanoPi-R5S
+		build_fit NanoPi-R5S rk3568-nanopi-r5s
+		;;
 	*)
 		echo "Unknown board ${board}"
 		exit 1
