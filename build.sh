@@ -110,6 +110,10 @@ for board in ${RKUEFIBOARDS}; do
 		build_uefi Pine64 PineTab2
 		build_fit PineTab2 rk3566-pinetab2
 		;;
+	ZERO-3W)
+		build_uefi Radxa Zero-3W
+		build_fit Zero-3W rk3566-radxa-zero-3w
+		;;
 	*)
 		echo "Unknown board ${board}"
 		exit 1
