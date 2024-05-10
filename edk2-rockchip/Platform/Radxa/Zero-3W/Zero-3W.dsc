@@ -5,6 +5,7 @@
 #  Copyright (c) 2015 - 2021, Intel Corporation. All rights reserved.
 #  Copyright (c) 2017 - 2021, Andrei Warkentin <andrey.warkentin@gmail.com>
 #  Copyright (C) 2021, Jared McNeill <jmcneill@invisible.ca>
+#  Copyright (c) 2023, Dang Huynh <danct12@disroot.org>
 #
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
 #
@@ -17,7 +18,7 @@
 ################################################################################
 [Defines]
   PLATFORM_NAME                  = Zero-3W
-  PLATFORM_GUID                  = 381B9B4F-A5CD-44E0-B781-CD7036A900F9
+  PLATFORM_GUID                  = 2EDE49F2-1EFA-4149-AE6E-EA4D1BA2A23F
   PLATFORM_VERSION               = 1.0
   DSC_SPECIFICATION              = 0x0001001A
   OUTPUT_DIRECTORY               = Build/$(PLATFORM_NAME)
@@ -122,9 +123,9 @@
   I2cLib|Silicon/Rockchip/Rk356x/Library/I2cLib/I2cLib.inf
   MultiPhyLib|Silicon/Rockchip/Rk356x/Library/MultiPhyLib/MultiPhyLib.inf
   OtpLib|Silicon/Rockchip/Rk356x/Library/OtpLib/OtpLib.inf
-  Pcie30PhyLib|Silicon/Rockchip/Rk356x/Library/Pcie30PhyLib/Pcie30PhyLib.inf
   SdramLib|Silicon/Rockchip/Rk356x/Library/SdramLib/SdramLib.inf
   SocLib|Silicon/Rockchip/Rk356x/Library/SocLib/SocLib.inf
+  Pcie30PhyLib|Silicon/Rockchip/Rk356x/Library/Pcie30PhyLib/Pcie30PhyLib.inf
 
   # Devices
   NonDiscoverableDeviceRegistrationLib|MdeModulePkg/Library/NonDiscoverableDeviceRegistrationLib/NonDiscoverableDeviceRegistrationLib.inf
@@ -236,11 +237,11 @@
 ###################################################################################################
 
 [BuildOptions]
-  GCC:*_*_*_CC_FLAGS          = -DRK356X -DRADAXAZERO3W
-  GCC:*_*_*_PP_FLAGS          = -DRK356X -DRADAXAZERO3W
-  GCC:*_*_*_ASLPP_FLAGS       = -DRK356X -DRADAXAZERO3W
-  GCC:*_*_*_ASLCC_FLAGS       = -DRK356X -DRADAXAZERO3W
-  GCC:*_*_*_VFRPP_FLAGS       = -DRK356X -DRADAXAZERO3W
+  GCC:*_*_*_CC_FLAGS          = -DRK356X -DRADXAZERO3W
+  GCC:*_*_*_PP_FLAGS          = -DRK356X -DRADXAZERO3W
+  GCC:*_*_*_ASLPP_FLAGS       = -DRK356X -DRADXAZERO3W
+  GCC:*_*_*_ASLCC_FLAGS       = -DRK356X -DRADXAZERO3W
+  GCC:*_*_*_VFRPP_FLAGS       = -DRK356X -DRADXAZERO3W
   GCC:RELEASE_*_*_CC_FLAGS    = -DMDEPKG_NDEBUG -DNDEBUG
 
 [BuildOptions.common.EDKII.DXE_RUNTIME_DRIVER]
@@ -334,11 +335,7 @@
   gEmbeddedTokenSpaceGuid.PcdMemoryTypeEfiLoaderCode|20
   gEmbeddedTokenSpaceGuid.PcdMemoryTypeEfiLoaderData|0
 
-  !ifdef $(FIRMWARE_VER)
-    gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString|L"$(FIRMWARE_VER)"
-  !else
-    gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString|L"EDK2-DEV"
-  !endif
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVersionString|L"EDK2-DEV"
 
   # Default platform supported RFC 4646 languages: (American) English
   gEfiMdePkgTokenSpaceGuid.PcdUefiVariableDefaultPlatformLangCodes|"en-US"
@@ -428,10 +425,10 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor|L"EDK2"
   gEfiMdeModulePkgTokenSpaceGuid.PcdSetNxForStack|TRUE
   gEfiMdeModulePkgTokenSpaceGuid.PcdImageProtectionPolicy|0x3
-  gRk356xTokenSpaceGuid.PcdPlatformName|"Radxa Zero 3 W"
+  gRk356xTokenSpaceGuid.PcdPlatformName|"Radxa Zero-3W"
   gRk356xTokenSpaceGuid.PcdCpuName|"Rockchip RK3566 (Cortex-A55)"
   gRk356xTokenSpaceGuid.PcdPlatformVendorName|"Radxa"
-  gRk356xTokenSpaceGuid.PcdFamilyName|"Zero 3 W"
+  gRk356xTokenSpaceGuid.PcdFamilyName|"Zero3"
   gRk356xTokenSpaceGuid.PcdProductUrl|"http://radxa.com/products/zeros/zero3w/"
   gRk356xTokenSpaceGuid.PcdMemoryVendorName|"Micron"
 
@@ -444,11 +441,6 @@
   gRk356xTokenSpaceGuid.PcdEhc1Status|0xF
   gRk356xTokenSpaceGuid.PcdXhc0Status|0xF
   gRk356xTokenSpaceGuid.PcdXhc1Status|0xF
-
-  #
-  # Ethernet support
-  #
-  gRk356xTokenSpaceGuid.PcdMac1Status|0xF
 
   #
   # SATA support
@@ -472,14 +464,8 @@
   gEfiMdePkgTokenSpaceGuid.PcdPciIoTranslation|0x000000033FFF0000
   gRk356xTokenSpaceGuid.PcdPcieResetGpioBank|1
   gRk356xTokenSpaceGuid.PcdPcieResetGpioPin|10
-  gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|0
-  gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|22
-
-  #
-  # Fan support
-  #
-  gRk356xTokenSpaceGuid.PcdFanGpioBank|0
-  gRk356xTokenSpaceGuid.PcdFanGpioPin|27
+  gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|4
+  gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|19
 
   #
   # This board has inverted polarity for the PWREN pin on the SD card slot
@@ -501,7 +487,6 @@
   gRk356xTokenSpaceGuid.PcdCpuClock|L"CpuClock"|gConfigDxeFormSetGuid|0x0|2
   gRk356xTokenSpaceGuid.PcdCustomCpuClock|L"CustomCpuClock"|gConfigDxeFormSetGuid|0x0|816
   gRk356xTokenSpaceGuid.PcdMultiPhy1Mode|L"MultiPhy1Mode"|gConfigDxeFormSetGuid|0x0|0
-  gRk356xTokenSpaceGuid.PcdFanMode|L"FanMode"|gConfigDxeFormSetGuid|0x0|1
 
   #
   # Common UEFI ones.

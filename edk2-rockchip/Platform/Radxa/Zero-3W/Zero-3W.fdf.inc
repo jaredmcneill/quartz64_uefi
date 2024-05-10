@@ -1,5 +1,6 @@
 #
 # Copyright (c) 2021, Jared McNeill <jmcneill@invisible.ca>
+# Copyright (c) 2023, Dang Huynh <danct12@disroot.org>
 #
 # SPDX-License-Identifier: BSD-2-Clause-Patent
 #
@@ -29,6 +30,6 @@ INF Platform/Rockchip/Rk356x/Drivers/PlatformSmbiosDxe/PlatformSmbiosDxe.inf
 INF MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
 
 #
-# Radxa logo (splash screen)
+# TianoCore logo (splash screen)
 #
 INF MdeModulePkg/Logo/LogoDxe.inf
