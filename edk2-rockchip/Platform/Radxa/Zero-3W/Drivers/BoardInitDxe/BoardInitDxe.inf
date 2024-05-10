@@ -3,6 +3,7 @@
 #  Board init Radxa Zero 3W platforms
 #
 #  Copyright (c) 2021 Jared McNeill <jmcneill@invisible.ca>
+#  Copyright (c) 2023, Dang Huynh <danct12@disroot.org>
 #
 #  SPDX-License-Identifier: BSD-2-Clause-Patent
 #
@@ -18,11 +19,11 @@
 
 [Sources]
   BoardInitDxe.c
-  EthernetPhy.c
 
 [Packages]
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
+  CryptoPkg/CryptoPkg.dec
   ArmPlatformPkg/ArmPlatformPkg.dec
   ArmPkg/ArmPkg.dec
   EmbeddedPkg/EmbeddedPkg.dec
@@ -34,6 +35,7 @@
   UefiBootServicesTableLib
   MemoryAllocationLib
   BaseMemoryLib
+  BaseCryptLib
   BaseLib
   UefiLib
   UefiDriverEntryPoint
@@ -50,8 +52,6 @@
 
 [Protocols]
 
-[Pcd]
-  gRk356xTokenSpaceGuid.PcdMultiPhy1Mode
 
 [Depex]
   TRUE

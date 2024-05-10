@@ -1,5 +1,5 @@
 /** @file
-*  Differentiated System Description Table Fields (DSDT) for the PINE Quartz64.
+*  Differentiated System Description Table Fields (DSDT) for the Radxa Zero 3W.
 *
 *  Copyright (c) 2022, Jared McNeill <jmcneill@invisible.ca>
 *
@@ -22,7 +22,6 @@ DefinitionBlock ("DsdtTable.aml", "DSDT",
     include ("Gmac.asl")
     include ("Mshc.asl")
     include ("Emmc.asl")
-    include ("Sata.asl")
     include ("Pcie2x1.asl")
 
   } // Scope (_SB)

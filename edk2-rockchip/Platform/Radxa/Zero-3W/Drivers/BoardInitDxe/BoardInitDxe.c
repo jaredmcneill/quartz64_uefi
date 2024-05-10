@@ -3,6 +3,7 @@
  *  Board init for the Radxa Zero 3W platform
  *
  *  Copyright (c) 2021, Jared McNeill <jmcneill@invisible.ca>
+ *  Copyright (c) 2023, Dang Huynh <danct12@disroot.org>
  *
  *  SPDX-License-Identifier: BSD-2-Clause-Patent
  *
@@ -27,33 +28,11 @@
 #include <Library/MemoryAllocationLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/BaseMemoryLib.h>
+#include <Library/BaseCryptLib.h>
 
 #include <IndustryStandard/Rk356x.h>
 #include <IndustryStandard/Rk356xCru.h>
 #include <ConfigVars.h>
-
-#include "EthernetPhy.h"
-
-/*
- * GMAC registers
- */
-#define GMAC1_MAC_ADDRESS0_LOW  (GMAC1_BASE + 0x0304)
-#define GMAC1_MAC_ADDRESS0_HIGH (GMAC1_BASE + 0x0300)
-
-#define GRF_MAC1_CON0           (SYS_GRF + 0x0388)
-#define  CLK_RX_DL_CFG_SHIFT    8
-#define  CLK_TX_DL_CFG_SHIFT    0
-#define GRF_MAC1_CON1           (SYS_GRF + 0x038C)
-#define  PHY_INTF_SEL_SHIFT     4
-#define  PHY_INTF_SEL_MASK      (0x7U << PHY_INTF_SEL_SHIFT)
-#define  PHY_INTF_SEL_RGMII     (1U << PHY_INTF_SEL_SHIFT)
-#define  FLOWCTRL               BIT3
-#define  MAC_SPEED              BIT2
-#define  RXCLK_DLY_ENA          BIT1
-#define  TXCLK_DLY_ENA          BIT0
-
-#define TX_DELAY                0x30
-#define RX_DELAY                0x10
 
 /*
  * PMIC registers
@@ -88,74 +67,6 @@
  */
 #define PMU_NOC_AUTO_CON0                     (PMU_BASE + 0x0070)
 #define PMU_NOC_AUTO_CON1                     (PMU_BASE + 0x0074)
-
-STATIC CONST GPIO_IOMUX_CONFIG mGmac1IomuxConfig[] = {
-  { "gmac1_mdcm0",        3, GPIO_PIN_PC4, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_mdiom0",       3, GPIO_PIN_PC5, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_txd0m0",       3, GPIO_PIN_PB5, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
-  { "gmac1_txd1m0",       3, GPIO_PIN_PB6, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
-  { "gmac1_txenm0",       3, GPIO_PIN_PB7, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_rxd0m0",       3, GPIO_PIN_PB1, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_rxd1m0",       3, GPIO_PIN_PB2, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_rxdvcrsm0",    3, GPIO_PIN_PB3, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_rxclkm0",      3, GPIO_PIN_PA7, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_txclkm0",      3, GPIO_PIN_PA6, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_1 },
-  { "gmac1_mclkinoutm0",  3, GPIO_PIN_PC0, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_rxd2m0",       3, GPIO_PIN_PA4, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_rxd3m0",       3, GPIO_PIN_PA5, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_DEFAULT },
-  { "gmac1_txd2m0",       3, GPIO_PIN_PA2, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
-  { "gmac1_txd3m0",       3, GPIO_PIN_PA3, 3, GPIO_PIN_PULL_NONE, GPIO_PIN_DRIVE_2 },
-};
-
-STATIC
-VOID
-BoardInitGmac (
-  VOID
-  )
-{
-  UINT32 MacLo, MacHi;
-
-  /* Assert reset */
-  CruAssertSoftReset (14, 12);
-
-  /* Configure pins */
-  GpioSetIomuxConfig (mGmac1IomuxConfig, ARRAY_SIZE (mGmac1IomuxConfig));
-
-  /* Setup clocks */
-  MmioWrite32 (CRU_CLKSEL_CON (33), 0x00370004);  // Set rmii1_mode to rgmii mode
-                                                  // Set rgmii1_clk_sel to 125M
-                                                  // Set rmii1_extclk_sel to mac1 clock from IO
-
-  /* Configure GMAC1 */
-  MmioWrite32 (GRF_MAC1_CON0,
-               0x7F7F0000U |
-               (TX_DELAY << CLK_TX_DL_CFG_SHIFT) |
-               (RX_DELAY << CLK_RX_DL_CFG_SHIFT));
-  MmioWrite32 (GRF_MAC1_CON1,
-               ((PHY_INTF_SEL_MASK | TXCLK_DLY_ENA | RXCLK_DLY_ENA) << 16) |
-               PHY_INTF_SEL_RGMII |
-               TXCLK_DLY_ENA |
-               RXCLK_DLY_ENA);
-
-  /* Reset PHY */
-  GpioPinSetDirection (0, GPIO_PIN_PC3, GPIO_PIN_OUTPUT);
-  MicroSecondDelay (1000);
-  GpioPinWrite (0, GPIO_PIN_PC3, 0);
-  MicroSecondDelay (20000);
-  GpioPinWrite (0, GPIO_PIN_PC3, 1);
-  MicroSecondDelay (100000);
-
-  /* Deassert reset */
-  CruDeassertSoftReset (14, 12);
-
-  /* Generate a MAC address from the first 32 bytes in the OTP and write it to GMAC */
-  OtpGetMacAddress (&MacLo, &MacHi);
-  MmioWrite32 (GMAC1_MAC_ADDRESS0_LOW, MacLo);
-  MmioWrite32 (GMAC1_MAC_ADDRESS0_HIGH, MacHi);
-
-  /* Initialize Ethernet PHY */
-  EthernetPhyInit (GMAC1_BASE);
-}
 
 STATIC
 EFI_STATUS
@@ -244,7 +155,7 @@ BoardInitDriverEntryPoint (
 {
   DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() called\n"));
 
-  SocSetDomainVoltage (PMUIO2, VCC_3V3);  /* VCC3V3_PMU */
+  SocSetDomainVoltage (PMUIO2, VCC_1V8);  /* VCCA1V8_PMU */
   SocSetDomainVoltage (VCCIO1, VCC_3V3);  /* VCCIO_ACODEC (PCIe) */
   SocSetDomainVoltage (VCCIO2, VCC_1V8);  /* VCCIO_FLASH */
   SocSetDomainVoltage (VCCIO3, VCC_3V3);  /* VCCIO_SD */
@@ -255,10 +166,6 @@ BoardInitDriverEntryPoint (
 
   BoardInitPmic ();
 
-  /* Set GPIO0 PD3 (WORK_LED) output high to enable LED */
-  GpioPinSetDirection (0, GPIO_PIN_PD3, GPIO_PIN_OUTPUT);
-  GpioPinWrite (0, GPIO_PIN_PD3, TRUE);
-
   /* Enable automatic clock gating */
   MmioWrite32 (PMU_NOC_AUTO_CON0, 0xFFFFFFFFU);
   MmioWrite32 (PMU_NOC_AUTO_CON1, 0x000F000FU);
@@ -268,21 +175,15 @@ BoardInitDriverEntryPoint (
                ((CORE_PVTPLL_RING_LENGTH_SEL_MASK | CORE_PVTPLL_OSC_EN | CORE_PVTPLL_START) << 16) |
                (5U << CORE_PVTPLL_RING_LENGTH_SEL_SHIFT) | CORE_PVTPLL_OSC_EN | CORE_PVTPLL_START);
 
-  /* Configure MULTI-PHY modes */
+  /* Configure MULTI-PHY 0 and 1 for USB3 mode */
   MultiPhySetMode (0, MULTIPHY_MODE_USB3);
-  if (PcdGet32 (PcdMultiPhy1Mode) == MULTIPHY_MODE_SEL_USB3) {
-    MultiPhySetMode (1, MULTIPHY_MODE_USB3);
-  } else {
-    ASSERT (PcdGet32 (PcdMultiPhy1Mode) == MULTIPHY_MODE_SEL_SATA);
-    MultiPhySetMode (1, MULTIPHY_MODE_SATA);
-  }
+  MultiPhySetMode (1, MULTIPHY_MODE_USB3);
 
-  /* Set GPIO4 PB5 (USB_HOST_PWREN) output high to power USB ports */
-  GpioPinSetDirection (4, GPIO_PIN_PB5, GPIO_PIN_OUTPUT);
-  GpioPinWrite (4, GPIO_PIN_PB5, TRUE);
-
-  /* GMAC setup */
-  BoardInitGmac ();
+  /* Set GPIO4 PC4 and PC5 (USB_HOST_PWREN) output high to power USB ports */
+  GpioPinSetDirection (4, GPIO_PIN_PC4, GPIO_PIN_OUTPUT);
+  GpioPinWrite (4, GPIO_PIN_PC4, TRUE);
+  GpioPinSetDirection (4, GPIO_PIN_PC5, GPIO_PIN_OUTPUT);
+  GpioPinWrite (4, GPIO_PIN_PC5, TRUE);
 
   return EFI_SUCCESS;
 }
