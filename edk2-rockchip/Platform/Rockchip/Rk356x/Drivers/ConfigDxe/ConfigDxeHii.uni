@@ -21,8 +21,8 @@
 #string STR_SYSCONFIG_SYSTAB_BOTH     #language en-US "ACPI + Devicetree"
 #string STR_SYSCONFIG_SYSTAB_DT       #language en-US "Devicetree"
 
-#string STR_SYSCONFIG_MEMATTR_PROMPT    #language en-US "EFI_MEMORY_ATTRIBUTE_PROTOCOL Support"
-#string STR_SYSCONFIG_MEMATTR_HELP      #language en-US "Disable EFI_MEMORY_ATTRIBUTE_PROTOCOL support to work around buggy Linux distributions."
+#string STR_SYSCONFIG_MEMATTR_PROMPT    #language en-US "Memory Protection Support"
+#string STR_SYSCONFIG_MEMATTR_HELP      #language en-US "Enable support for UEFI memory attribute protocol."
 
 #string STR_SYSCONFIG_CPUCLOCK_PROMPT   #language en-US "CPU Clock"
 #string STR_SYSCONFIG_CPUCLOCK_HELP     #language en-US "CPU Speed"
