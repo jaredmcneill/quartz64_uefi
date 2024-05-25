@@ -11,11 +11,10 @@ uefi:
 .PHONY: sdcard
 sdcard: uefi
 	rm -f sdcard.img
-	fallocate -l 33M sdcard.img
+	fallocate -l 16M sdcard.img
 	parted -s sdcard.img mklabel gpt
-	parted -s sdcard.img unit s mkpart loader 64 8MiB
-	parted -s sdcard.img unit s mkpart uboot 8MiB 16MiB
-	parted -s sdcard.img unit s mkpart env 16MiB 32MiB
+	parted -s sdcard.img unit s mkpart loader 64s 20479s
+	parted -s sdcard.img unit s mkpart uboot 20480s 15MiB
 
 	for board in $(BOARDS); do							\
 		cp sdcard.img $${board}_EFI.img;				\
