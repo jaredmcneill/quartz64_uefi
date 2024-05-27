@@ -78,3 +78,12 @@ jobs:
           asset_path: ./ROC-RK3568-PC_EFI.img.gz
           asset_name: ROC-RK3568-PC_EFI.img.gz
           asset_content_type: application/gzip
+      - name: upload ZERO-3W_EFI artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./ZERO-3W_EFI.img.gz
+          asset_name: ZERO-3W_EFI.img.gz
+          asset_content_type: application/gzip
