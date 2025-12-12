@@ -114,6 +114,10 @@ for board in ${RKUEFIBOARDS}; do
 		build_uefi Radxa Zero-3W
 		build_fit Zero-3W rk3566-radxa-zero-3w
 		;;
+	ODROID-M1S)
+		build_uefi HardKernel Odroid-M1S
+		build_fit Odroid-M1S rk3566-hardkernel-odroid-m1s
+		;;
 	*)
 		echo "Unknown board ${board}"
 		exit 1
