@@ -470,8 +470,13 @@
   gEfiMdePkgTokenSpaceGuid.PcdPciIoTranslation|0x000000033FFF0000
   gRk356xTokenSpaceGuid.PcdPcieResetGpioBank|1
   gRk356xTokenSpaceGuid.PcdPcieResetGpioPin|10
-  gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|0
-  gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|20
+  gRk356xTokenSpaceGuid.PcdPciePowerGpioBank|2
+  gRk356xTokenSpaceGuid.PcdPciePowerGpioPin|18
+
+  #
+  # Limit eMMC to 52 MHz
+  #
+  gRk356xTokenSpaceGuid.PcdEmmcForceHighSpeed|TRUE
 
   # XXX
   # Odroid M1S has a Silergy SYR838 regulator, might be similar to the OrangePi's 
