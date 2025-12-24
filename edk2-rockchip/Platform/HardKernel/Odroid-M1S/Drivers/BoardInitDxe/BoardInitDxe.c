@@ -32,6 +32,8 @@
 #include <IndustryStandard/Rk356x.h>
 #include <IndustryStandard/Rk356xCru.h>
 
+#include "EthernetPhy.h"
+
 /*
  * GMAC registers
  */
@@ -120,9 +122,10 @@ BoardInitGmac (
   GpioSetIomuxConfig (mGmac1IomuxConfig, ARRAY_SIZE (mGmac1IomuxConfig));
 
   /* Setup clocks */
-  MmioWrite32 (CRU_CLKSEL_CON (33), 0x00370004);  // Set rmii1_mode to rgmii mode
+  MmioWrite32 (CRU_CLKSEL_CON (33), 0x00370004);  // Set rmii1_mode to rgmii mode IO clock
+  //MmioWrite32 (CRU_CLKSEL_CON (33), 0x00370000);  // Set rmii1_mode to rgmii mode SOC clock
                                                   // Set rgmii1_clk_sel to 125M
-                                                  // Set rmii1_extclk_sel to mac1 clock from IO
+                                                  // Set rmii1_extclk_sel to mac1 clock from SOC/IO
 
   /* Configure GMAC1 */
   MmioWrite32 (GRF_MAC1_CON0,
@@ -136,11 +139,11 @@ BoardInitGmac (
                RXCLK_DLY_ENA);
 
   /* Reset PHY */
-  GpioPinSetDirection (0, GPIO_PIN_PB7, GPIO_PIN_OUTPUT);
+  GpioPinSetDirection (3, GPIO_PIN_PB7, GPIO_PIN_OUTPUT);
   MicroSecondDelay (1000);
-  GpioPinWrite (0, GPIO_PIN_PB7, 0);
+  GpioPinWrite (3, GPIO_PIN_PB7, 0);
   MicroSecondDelay (20000);
-  GpioPinWrite (0, GPIO_PIN_PB7, 1);
+  GpioPinWrite (3, GPIO_PIN_PB7, 1);
   MicroSecondDelay (100000);
 
   /* Deassert reset */
@@ -150,6 +153,8 @@ BoardInitGmac (
   OtpGetMacAddress (&MacLo, &MacHi);
   MmioWrite32 (GMAC1_MAC_ADDRESS0_LOW, MacLo);
   MmioWrite32 (GMAC1_MAC_ADDRESS0_HIGH, MacHi);
+
+  EthernetPhyInit (GMAC1_BASE);
 }
 
 STATIC

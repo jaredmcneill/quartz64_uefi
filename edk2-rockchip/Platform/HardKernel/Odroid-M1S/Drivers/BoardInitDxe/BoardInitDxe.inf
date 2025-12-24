@@ -18,6 +18,7 @@
 
 [Sources]
   BoardInitDxe.c
+  EthernetPhy.c
 
 [Packages]
   MdePkg/MdePkg.dec
