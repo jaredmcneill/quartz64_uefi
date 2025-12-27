@@ -52,8 +52,8 @@
 #define  RXCLK_DLY_ENA          BIT1
 #define  TXCLK_DLY_ENA          BIT0
 
-#define TX_DELAY                0x4E
-#define RX_DELAY                0x2C
+#define TX_DELAY                0x4F
+#define RX_DELAY                0x2D
 
 /*
  * PMIC registers
@@ -123,9 +123,8 @@ BoardInitGmac (
 
   /* Setup clocks */
   MmioWrite32 (CRU_CLKSEL_CON (33), 0x00370004);  // Set rmii1_mode to rgmii mode IO clock
-  //MmioWrite32 (CRU_CLKSEL_CON (33), 0x00370000);  // Set rmii1_mode to rgmii mode SOC clock
                                                   // Set rgmii1_clk_sel to 125M
-                                                  // Set rmii1_extclk_sel to mac1 clock from SOC/IO
+                                                  // Set rmii1_extclk_sel to mac1 clock from IO
 
   /* Configure GMAC1 */
   MmioWrite32 (GRF_MAC1_CON0,
@@ -271,14 +270,26 @@ BoardInitDriverEntryPoint (
   MultiPhySetMode (0, MULTIPHY_MODE_USB3);
   MultiPhySetMode (1, MULTIPHY_MODE_USB3);
 
-  /* Set GPIO0 PA6 (USB_HOST5V_EN) output high to power USB ports */
-  GpioPinSetDirection (0, GPIO_PIN_PA6, GPIO_PIN_OUTPUT);
-  GpioPinWrite (0, GPIO_PIN_PA6, TRUE);
-
-  /* XXX: Add OTG PWREN?  GPIO0 A5 */
-
   /* GMAC setup */
   BoardInitGmac ();
 
+  /* Set GPIO0 PA6, PA5 and GPIO3 PB0 output high to power USB ports */
+  DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() enabling power on CON_USB3\n"));
+  GpioPinSetDirection (0, GPIO_PIN_PA5, GPIO_PIN_OUTPUT);
+  GpioPinWrite (0, GPIO_PIN_PA5, TRUE);
+  DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() enabling power on CON_USB2\n"));
+  GpioPinSetDirection (3, GPIO_PIN_PB0, GPIO_PIN_OUTPUT);
+  GpioPinWrite (3, GPIO_PIN_PB0, TRUE);
+
+#if 0
+  /* Powering up the OTG port seems to be causing enough of a brown out to reset the board
+   * with the PS I'm using right now.  I also don't see it being super useful.
+   */
+  DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() enabling power on CON_OTG\n"));
+  GpioPinSetDirection (0, GPIO_PIN_PA6, GPIO_PIN_OUTPUT);
+  GpioPinWrite (0, GPIO_PIN_PA6, TRUE);
+#endif
+
+  DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() Finished\n"));
   return EFI_SUCCESS;
 }
