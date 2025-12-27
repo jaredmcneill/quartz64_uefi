@@ -31,13 +31,14 @@
 #define	GMAC_MAC_MDIO_DATA			0x0204
 
 /* MII registers */
-#define MII_PHYIDR1                         0x02
-#define MII_PHYIDR2                         0x03
+#define MII_BMSR	0x01
+#define MII_PHYIDR1	0x02
+#define MII_PHYIDR2	0x03
 
 /* Realtek RTL8211F PHY registers */
-#define	PAGSR			                    0x1F
-#define LCR                                 0x10
-#define LCR_VALUE                           0x6940
+#define PAGSR		0x1F
+#define LCR		0x10
+#define LCR_VALUE	0x6940
 
 STATIC
 VOID
@@ -75,6 +76,13 @@ PhyRead (
     }
 }
 
+#if 0
+/* This gets marked as unused because the setup calls for the phy
+ * are commented out below.  I'm leaving it in in case it is needed
+ * for getting the ethernet port working (NetBSD sees the GMAC and
+ * attaches the eqos(4) driver to it, but the reset times out because
+ * the phy doesn't seem to be talking over the MDIO lines.
+ */
 STATIC
 VOID
 PhyWrite (
@@ -110,34 +118,32 @@ PhyWrite (
         ASSERT (FALSE);
     }
 }
-
-STATIC
-VOID
-RTL8211FPhyInit (
-    IN EFI_PHYSICAL_ADDRESS GmacBase
-    )
-{
-    PhyWrite (GmacBase, 0, PAGSR, 0xD04);
-    MicroSecondDelay (10000);
-    PhyWrite (GmacBase, 0, LCR, LCR_VALUE);
-    MicroSecondDelay (10000);
-    PhyWrite (GmacBase, 0, PAGSR, 0);
-}
+#endif
 
 VOID
 EthernetPhyInit (
     IN EFI_PHYSICAL_ADDRESS GmacBase
     )
 {
-    UINT16 PhyId[2];
+    UINT16 PhyId[2] = {0, 0};
+    UINT16 bmsr = 0;
 
-    PhyRead (GmacBase, 0, MII_PHYIDR1, &PhyId[0]);
-    PhyRead (GmacBase, 0, MII_PHYIDR2, &PhyId[1]);
-    
+    PhyRead (GmacBase, 1, MII_PHYIDR1, &PhyId[0]);
+    PhyRead (GmacBase, 1, MII_PHYIDR2, &PhyId[1]);
+
     if (PhyId[0] == 0x001C && PhyId[1] == 0xC916) {
         DEBUG ((DEBUG_INFO, "MDIO: Found Realtek RTL8211F GbE PHY\n"));
-        RTL8211FPhyInit (GmacBase);
+#if 0
+	/* I don't think any of this is actually needed to bring the PHY up. */
+        PhyWrite (GmacBase, 0, PAGSR, 0xD04);
+        MicroSecondDelay (10000);
+        PhyWrite (GmacBase, 0, LCR, LCR_VALUE);
+        MicroSecondDelay (10000);
+        PhyWrite (GmacBase, 0, PAGSR, 0);
+#endif
     } else {
-        DEBUG ((DEBUG_INFO, "MDIO: Unknown PHY ID %04X %04X\n", PhyId[0], PhyId[1]));
+        PhyRead (GmacBase, 1, MII_BMSR, &bmsr);
+        DEBUG ((DEBUG_INFO, "MDIO: Unknown PHY ID [%04X,%04X] [%04X]\n", PhyId[0], PhyId[1], bmsr));
+	MicroSecondDelay (2000000);
     }
 }
