@@ -270,9 +270,6 @@ BoardInitDriverEntryPoint (
   MultiPhySetMode (0, MULTIPHY_MODE_USB3);
   MultiPhySetMode (1, MULTIPHY_MODE_USB3);
 
-  /* GMAC setup */
-  BoardInitGmac ();
-
   /* Set GPIO0 PA6, PA5 and GPIO3 PB0 output high to power USB ports */
   DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() enabling power on CON_USB3\n"));
   GpioPinSetDirection (0, GPIO_PIN_PA5, GPIO_PIN_OUTPUT);
@@ -289,6 +286,9 @@ BoardInitDriverEntryPoint (
   GpioPinSetDirection (0, GPIO_PIN_PA6, GPIO_PIN_OUTPUT);
   GpioPinWrite (0, GPIO_PIN_PA6, TRUE);
 #endif
+
+  /* GMAC setup */
+  BoardInitGmac ();
 
   DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() Finished\n"));
   return EFI_SUCCESS;

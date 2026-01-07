@@ -128,8 +128,8 @@ EthernetPhyInit (
     UINT16 PhyId[2] = {0, 0};
     UINT16 bmsr = 0;
 
-    PhyRead (GmacBase, 1, MII_PHYIDR1, &PhyId[0]);
-    PhyRead (GmacBase, 1, MII_PHYIDR2, &PhyId[1]);
+    PhyRead (GmacBase, 0, MII_PHYIDR1, &PhyId[0]);
+    PhyRead (GmacBase, 0, MII_PHYIDR2, &PhyId[1]);
 
     if (PhyId[0] == 0x001C && PhyId[1] == 0xC916) {
         DEBUG ((DEBUG_INFO, "MDIO: Found Realtek RTL8211F GbE PHY\n"));
@@ -142,7 +142,7 @@ EthernetPhyInit (
         PhyWrite (GmacBase, 0, PAGSR, 0);
 #endif
     } else {
-        PhyRead (GmacBase, 1, MII_BMSR, &bmsr);
+        PhyRead (GmacBase, 0, MII_BMSR, &bmsr);
         DEBUG ((DEBUG_INFO, "MDIO: Unknown PHY ID [%04X,%04X] [%04X]\n", PhyId[0], PhyId[1], bmsr));
 	MicroSecondDelay (2000000);
     }
