@@ -6,6 +6,7 @@ This repository contains a port of Tianocore EDK II to various Rockchip RK356x b
 * [Firefly ROC-RK3566-PC](https://en.t-firefly.com/product/industry/rocrk3566pc.html) / [StationPC Station M2](https://www.stationpc.com/product/stationm2)
 * [Firefly ROC-RK3568-PC](https://en.t-firefly.com/product/industry/rocrk3568pc.html) / [StationPC Station P2](https://www.stationpc.com/product/stationp2)
 * [Radxa ROCK3 Computing Module](https://wiki.radxa.com/Rock3/CM3)
+* [Hardkernel ODROID-M1S](https://wiki.odroid.com/odroid-m1s/odroid-m1s)
 
 ## Building an SD card / eMMC image
 
