@@ -137,16 +137,15 @@ BoardInitGmac (
                TXCLK_DLY_ENA |
                RXCLK_DLY_ENA);
 
+  /* Deassert reset */
+  CruDeassertSoftReset (14, 12);
+
   /* Reset PHY */
-  GpioPinSetDirection (3, GPIO_PIN_PB7, GPIO_PIN_OUTPUT);
-  MicroSecondDelay (1000);
+  MicroSecondDelay (100000); // one tenth second of sleep to allow full power-on
   GpioPinWrite (3, GPIO_PIN_PB7, 0);
   MicroSecondDelay (20000);
   GpioPinWrite (3, GPIO_PIN_PB7, 1);
   MicroSecondDelay (100000);
-
-  /* Deassert reset */
-  CruDeassertSoftReset (14, 12);
 
   /* Generate a MAC address from the first 32 bytes in the OTP and write it to GMAC */
   OtpGetMacAddress (&MacLo, &MacHi);
@@ -255,6 +254,11 @@ BoardInitDriverEntryPoint (
   SocSetDomainVoltage (VCCIO6, VCC_3V3);
   SocSetDomainVoltage (VCCIO7, VCC_3V3);
 
+  /* Setup and deassert reset on the phy ahead of powering it on */
+  GpioPinSetDirection (3, GPIO_PIN_PB7, GPIO_PIN_OUTPUT);
+  MicroSecondDelay (1000);
+  GpioPinWrite (3, GPIO_PIN_PB7, 1);
+
   BoardInitPmic ();
 
   /* Enable automatic clock gating */
@@ -277,15 +281,6 @@ BoardInitDriverEntryPoint (
   DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() enabling power on CON_USB2\n"));
   GpioPinSetDirection (3, GPIO_PIN_PB0, GPIO_PIN_OUTPUT);
   GpioPinWrite (3, GPIO_PIN_PB0, TRUE);
-
-#if 0
-  /* Powering up the OTG port seems to be causing enough of a brown out to reset the board
-   * with the PS I'm using right now.  I also don't see it being super useful.
-   */
-  DEBUG ((DEBUG_INFO, "BOARD: BoardInitDriverEntryPoint() enabling power on CON_OTG\n"));
-  GpioPinSetDirection (0, GPIO_PIN_PA6, GPIO_PIN_OUTPUT);
-  GpioPinWrite (0, GPIO_PIN_PA6, TRUE);
-#endif
 
   /* GMAC setup */
   BoardInitGmac ();
