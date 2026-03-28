@@ -49,13 +49,11 @@ build_idblock() {
 		| sed 's/^dis_printf_training=.*$/dis_printf_training=1/' 	\
 		> `pwd`/Build/ddrbin_param.txt
 	./${RKBIN}/tools/ddrbin_tool `pwd`/Build/ddrbin_param.txt ${RKBIN}/${DDR}
-	./${RKBIN}/tools/ddrbin_tool -g `pwd`/Build/ddrbin_param_dump.txt ${RKBIN}/${DDR}
 
 	# Create idblock.bin
 	(cd ${RKBIN} && ./tools/boot_merger RKBOOT/${MINIALL_INI})
-	./${RKBIN}/tools/boot_merger unpack --loader ${RKBIN}/rk356x_spl_loader_*.bin --output .
+	./${RKBIN}/tools/boot_merger unpack -i ${RKBIN}/rk356x_spl_loader_*.bin -o .
 	cat ${FLASHFILES} > idblock.bin
-	git checkout ${RKBIN}/${DDR}
 
 	# Cleanup
 	rm -f ${RKBIN}/rk356x_spl_loader_*.bin

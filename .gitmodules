@@ -7,3 +7,6 @@
 [submodule "edk2-non-osi"]
 	path = edk2-non-osi
 	url = https://github.com/tianocore/edk2-non-osi
+[submodule "edk2-rockchip-non-osi/rkbin"]
+	path = edk2-rockchip-non-osi/rkbin
+	url = https://github.com/rockchip-linux/rkbin

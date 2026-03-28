@@ -265,18 +265,7 @@ InstallDumpVarEventHandlers (
   )
 {
   EFI_STATUS Status;
-  EFI_EVENT ResetEvent;
   EFI_EVENT ReadyToBootEvent;
-
-  Status = gBS->CreateEventEx (
-                  EVT_NOTIFY_SIGNAL,
-                  TPL_CALLBACK,
-                  DumpVars,
-                  NULL,
-                  &gRk356xEventResetGuid,
-                  &ResetEvent
-                );
-  ASSERT_EFI_ERROR (Status);
 
   Status = gBS->CreateEventEx (
                   EVT_NOTIFY_SIGNAL,
