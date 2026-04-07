@@ -266,7 +266,7 @@
 
   gArmTokenSpaceGuid.PcdArmGicV3WithV2Legacy|FALSE
 
-gRk356xTokenSpaceGuid.PcdSystemTableMode|L"CpuClock"|gConfigDxeFormSetGuid|0x0|1
+gRk356xTokenSpaceGuid.PcdSystemTableMode|L"SystemTableMode"|gConfigDxeFormSetGuid|0x0|1
 [PcdsFixedAtBuild.common]
   gEfiMdePkgTokenSpaceGuid.PcdMaximumUnicodeStringLength|1000000
   gEfiMdePkgTokenSpaceGuid.PcdMaximumAsciiStringLength|1000000
