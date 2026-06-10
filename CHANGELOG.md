@@ -1,3 +1,3 @@
-#### v2.1
+#### v2.2
 
-* Fix duplicate MAC address on ROC-RK3568-PC.
+* Fix RTC on ROC-RK3566-PC and ROC-RK3568-PC.
