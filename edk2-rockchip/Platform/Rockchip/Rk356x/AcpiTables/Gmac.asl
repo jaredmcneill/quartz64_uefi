@@ -18,18 +18,19 @@ Device (MAC0) {
     Name (_DSD, Package () {
         ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
         Package () {
-            Package () { "compatible", Package () { "snps,dwmac-4.20a", "snps,dwmac" } },
-            Package () { "interrupt-names", Package () { "macirq", "eth_wake_irq" } },
+            Package () { "compatible", Package () { "snps,dwc-qos-ethernet-4.10", "snps,dwmac-4.20a", "snps,dwmac" } },
+            Package () { "interrupt-names", Package () { "macirq", "eth_wake_irq", "eth_lpi", "rx-queue-0", "tx-queue-0" } },
             Package () { "snps,mixed-burst", 1 },
             Package () { "snps,tso", 1 },
             Package () { "snps,axi-config", "AXIC" },
+            Package () { "phy-mode", "rgmii" },
         }
     })
 
     Method (_CRS, 0x0, Serialized) {
         Name (RBUF, ResourceTemplate() {
             Memory32Fixed (ReadWrite, 0xFE2A0000, 0x10000)
-            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 59, 56 }
+            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 59, 56, 55, 57, 58 }
         })
         Return (RBUF)
     }
@@ -54,18 +55,19 @@ Device (MAC1) {
     Name (_DSD, Package () {
         ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
         Package () {
-            Package () { "compatible", Package () { "snps,dwmac-4.20a", "snps,dwmac" } },
-            Package () { "interrupt-names", Package () { "macirq", "eth_wake_irq" } },
+            Package () { "compatible", Package () { "snps,dwc-qos-ethernet-4.10", "snps,dwmac-4.20a", "snps,dwmac" } },
+            Package () { "interrupt-names", Package () { "macirq", "eth_wake_irq", "eth_lpi", "rx-queue-0", "tx-queue-0" } },
             Package () { "snps,mixed-burst", 1 },
             Package () { "snps,tso", 1 },
             Package () { "snps,axi-config", "AXIC" },
+            Package () { "phy-mode", "rgmii" },
         }
     })
 
     Method (_CRS, 0x0, Serialized) {
         Name (RBUF, ResourceTemplate() {
             Memory32Fixed (ReadWrite, 0xFE010000, 0x10000)
-            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 64, 61 }
+            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) { 64, 61, 60, 62, 63 }
         })
         Return (RBUF)
     }
