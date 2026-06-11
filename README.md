@@ -38,7 +38,7 @@ Connect a serial console to UART2 using settings `115200 8n1`.
 | FreeBSD | 15.0 | HDMI, USB2, USB3, SATA, serial | |
 | NetBSD | 10.x and later | HDMI, USB2, USB3, serial, SD card, PCIe, eMMC, SATA, ethernet, thermal sensors, watchdog | |
 | OpenBSD | 7.8 | HDMI, USB2, USB3, serial | To use HDMI console, enter `set tty fb0` at the bootloader prompt. |
-| Ubuntu | 21.04 | HDMI, USB2, USB3, serial, PCIe, thermal sensors | Needs `irqchip.gicv3_nolpi=1` for MSI support |
+| Ubuntu | 26.04 LTS | HDMI, USB2, USB3, serial, PCIe, ethernet, thermal sensors | Needs `irqchip.gicv3_nolpi=1` for MSI support |
 | Windows PE | ? | HDMI, USB3, PCIe | BSOD when plugging device in to USB2 port (#2) |
 
 ## eMMC controller Device-Specific Method (_DSM)
