@@ -49,8 +49,8 @@
 #define  RXCLK_DLY_ENA          BIT1
 #define  TXCLK_DLY_ENA          BIT0
 
-#define TX_DELAY                0x4E
-#define RX_DELAY                0x2C
+#define TX_DELAY                0x4F
+#define RX_DELAY                0x24
 
 /*
  * PMIC registers

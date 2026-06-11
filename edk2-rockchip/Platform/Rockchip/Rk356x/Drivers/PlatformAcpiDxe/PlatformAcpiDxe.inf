@@ -34,6 +34,7 @@
   DxeServicesLib
   AcpiLib
   MemoryAllocationLib
+  PcdLib
   UefiBootServicesTableLib
   UefiDriverEntryPoint
 
@@ -43,6 +44,7 @@
 
 [Pcd]
   gRk356xTokenSpaceGuid.PcdSystemTableMode
+  gRk356xTokenSpaceGuid.PcdFamilyName
 
 [Depex]
   gEfiAcpiTableProtocolGuid

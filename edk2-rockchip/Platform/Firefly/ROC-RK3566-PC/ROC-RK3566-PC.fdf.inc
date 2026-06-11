@@ -21,6 +21,7 @@ INF MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
 INF MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
 INF Platform/Rockchip/Rk356x/Drivers/PlatformAcpiDxe/PlatformAcpiDxe.inf
 INF RuleOverride = ACPITABLE Platform/Rockchip/Rk356x/AcpiTables/$(PLATFORM_NAME).inf
+INF RuleOverride = ACPITABLE Platform/Rockchip/Rk356x/AcpiTables/ROC-RK3566-PC-AcpiOnly.inf
 
 #
 # SMBIOS Support

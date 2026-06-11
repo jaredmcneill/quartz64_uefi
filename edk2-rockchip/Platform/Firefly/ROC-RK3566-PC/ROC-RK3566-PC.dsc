@@ -35,6 +35,7 @@
 [Components.common]
   Platform/Firefly/ROC-RK3566-PC/Drivers/BoardInitDxe/BoardInitDxe.inf
   MdeModulePkg/Logo/LogoDxe.inf
+  Platform/Rockchip/Rk356x/AcpiTables/ROC-RK3566-PC-AcpiOnly.inf
 
 [PcdsFixedAtBuild.common]
   #
@@ -58,8 +59,9 @@
   gRk356xTokenSpaceGuid.PcdXhc1Status|0xF
 
   #
-  # Ethernet support
+  # Ethernet: stock Gmac.asl in DSDT (ACPI+DT). ACPI-only uses ROC-RK3566-PC-AcpiOnly.inf.
   #
+  gRk356xTokenSpaceGuid.PcdMac0Status|0
   gRk356xTokenSpaceGuid.PcdMac1Status|0xF
 
   #
